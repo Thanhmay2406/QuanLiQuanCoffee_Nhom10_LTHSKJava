@@ -1,5 +1,5 @@
 /*
- * @ (#) Ban.java   1.0     Oct 25, 2025
+ * @ (#) HoaDon.java   1.0     Oct 25, 2025
  *
  * Copyright (c) 2025 IUH.
  * All rights reserved.
@@ -26,8 +26,18 @@ public class HoaDon {
 
 	private ArrayList<ChiTietHoaDon> dsChiTiet;
 
+// Constructor cho việc lấy hóa đơn từ CSDL
 	public HoaDon(String maHoaDon, LocalDate ngayTao, String ghiChu, int trangThai) {
 		setMaHoaDon(maHoaDon);
+		this.ngayTao = ngayTao;
+		this.ghiChu = ghiChu;
+		this.trangThai = trangThai;
+		this.dsChiTiet = new ArrayList<>();
+	}
+
+//Constructor cho việc tạo hóa đơn mới (chưa có mã)
+	public HoaDon(LocalDate ngayTao, String ghiChu, int trangThai) {
+		this.maHoaDon = null; // Chấp nhận null khi TẠO MỚI
 		this.ngayTao = ngayTao;
 		this.ghiChu = ghiChu;
 		this.trangThai = trangThai;

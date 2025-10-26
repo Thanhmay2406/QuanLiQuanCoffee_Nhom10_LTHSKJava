@@ -1,5 +1,5 @@
 /*
- * @ (#) Ban.java   1.0     Oct 25, 2025
+ * @ (#) NhanVien.java   1.0     Oct 25, 2025
  *
  * Copyright (c) 2025 IUH.
  * All rights reserved.
@@ -104,7 +104,7 @@ public class NhanVien {
 	public HoaDon taoHoaDon(String ghiChu) {
 		LocalDate ngayTao = LocalDate.now();
 		int trangThai = 0;
-		HoaDon hd = new HoaDon(null, ngayTao, ghiChu, trangThai);
+		HoaDon hd = new HoaDon(ngayTao, ghiChu, trangThai);// dùng constructor đặc thù cho việc tạo Hóa Đơn
 		return hd;
 	}
 
