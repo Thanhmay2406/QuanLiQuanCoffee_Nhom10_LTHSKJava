@@ -1,6 +1,7 @@
 package Entity;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class KhachHang {
     private String maKhachHang;
@@ -70,16 +71,22 @@ public class KhachHang {
     public void setNgayDangKy(LocalDate ngayDangKy) {
         this.ngayDangKy = ngayDangKy;
     }
-
-    @Override
-    public String toString() {
-        return "KhachHang{" +
-                "maKhachHang='" + maKhachHang + '\'' +
-                ", hoTen='" + hoTen + '\'' +
-                ", email='" + email + '\'' +
-                ", soDienThoai='" + soDienThoai + '\'' +
-                ", diemTichLuy=" + diemTichLuy +
-                ", ngayDangKy=" + ngayDangKy +
-                '}';
+    public void tichDiem() {
+    	
     }
+    @Override
+	public int hashCode() {
+		return Objects.hash(maKhachHang);
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		KhachHang other = (KhachHang) obj;
+		return Objects.equals(maKhachHang, other.maKhachHang) ;
+	}
 }
