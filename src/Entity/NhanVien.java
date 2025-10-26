@@ -1,97 +1,98 @@
 package Entity;
 
+import java.time.LocalDate;
+
 public class NhanVien {
 	private String maNhanVien;
-    private String tenNhanVien;
-    private int tuoi;
-    private String diaChi;
-    private String soDienThoai;
-//    private TaiKhoan taiKhoan;
+	private String hoTen;
+	private String soDienThoai;
+	private String email;
+	private String chucVu;
+	private LocalDate ngayVaoLam;
+	private int trangThai;
 
-    public NhanVien(String maNhanVien, String tenNhanVien, int tuoi, String diaChi, String soDienThoai) {
-        this.maNhanVien = maNhanVien;
-        this.tenNhanVien = tenNhanVien;
-        this.tuoi = tuoi;
-        this.diaChi = diaChi;
-        this.soDienThoai = soDienThoai;
-//        this.taiKhoan = taiKhoan;
-    }
+	public NhanVien(String maNhanVien, String hoTen, String soDienThoai, String email, String chucVu,
+			LocalDate ngayVaoLam, int trangThai) {
+		super();
+		if (maNhanVien == null || maNhanVien.isEmpty())
+			throw new IllegalArgumentException("Mã nhân viên không được rỗng");
+		if (hoTen == null || hoTen.isEmpty())
+			throw new IllegalArgumentException("Tên nhân viên không được rỗng");
 
-    public String getMaNhanVien() {
-        return maNhanVien;
-    }
+		this.maNhanVien = maNhanVien;
+		this.hoTen = hoTen;
+		this.soDienThoai = soDienThoai;
+		this.email = email;
+		this.chucVu = chucVu;
+		this.ngayVaoLam = ngayVaoLam;
+		this.trangThai = trangThai;
+	}
 
-    public void setMaNhanVien(String maNhanVien) {
-        if (maNhanVien == null || maNhanVien.isEmpty()) {
-            throw new IllegalArgumentException("Mã nhân viên không được để trống");
-        }
-        this.maNhanVien = maNhanVien;
-    }
+	public NhanVien() {
+		this("", "", "", "", "", LocalDate.now(), 0);
+	}
 
-    public String getTenNhanVien() {
-        return tenNhanVien;
-    }
+	public String getMaNhanVien() {
+		return maNhanVien;
+	}
 
-    public void setTenNhanVien(String tenNhanVien) {
-        if (tenNhanVien == null || tenNhanVien.isEmpty()) {
-            throw new IllegalArgumentException("Tên nhân viên không được để trống");
-        }
-        this.tenNhanVien = tenNhanVien;
-    }
+	public void setMaNhanVien(String maNhanVien) {
+		this.maNhanVien = maNhanVien;
+	}
 
-    public int getTuoi() {
-        return tuoi;
-    }
+	public String getHoTen() {
+		return hoTen;
+	}
 
-    public void setTuoi(int tuoi) {
-        if ( tuoi < 18 || tuoi > 60) {
-            throw new IllegalArgumentException("Tuổi không hợp lệ. Tuổi phải từ 18 đến 60");
-        }
-        this.tuoi = tuoi;
-    }
+	public void setHoTen(String hoTen) {
+		this.hoTen = hoTen;
+	}
 
-    public String getDiaChi() {
-        return diaChi;
-    }
+	public String getSoDienThoai() {
+		return soDienThoai;
+	}
 
-    public void setDiaChi(String diaChi) {
-        if (diaChi == null || diaChi.isEmpty()) {
-            throw new IllegalArgumentException("Địa chỉ không được để trống");
-        }
-        this.diaChi = diaChi;
-    }
+	public void setSoDienThoai(String soDienThoai) {
+		this.soDienThoai = soDienThoai;
+	}
 
-    public String getSoDienThoai() {
-        return soDienThoai;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public void setSoDienThoai(String soDienThoai) {
-        if (soDienThoai == null || soDienThoai.isEmpty()) {
-            throw new IllegalArgumentException("Số điện thoại không được để trống");
-        }
-        this.soDienThoai = soDienThoai;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-//    public TaiKhoan getTaiKhoan() {
-//        return taiKhoan;
-//    }
+	public String getChucVu() {
+		return chucVu;
+	}
 
-//    public void setTaiKhoan(TaiKhoan taiKhoan) {
-//        if (taiKhoan == null) {
-//            throw new IllegalArgumentException("Tài khoản không được để trống");
-//        }
-////        this.taiKhoan = taiKhoan;
-//    }
+	public void setChucVu(String chucVu) {
+		this.chucVu = chucVu;
+	}
 
+	public LocalDate getNgayVaoLam() {
+		return ngayVaoLam;
+	}
 
-    @Override
-    public String toString() {
-        return "HoaDon{" +
-                "maNhanVien='" + maNhanVien + '\'' +
-                ", tenNhanVien='" + tenNhanVien + '\'' +
-                ", tuoi='" + tuoi + '\'' +
-                ", diaChi='" + diaChi + '\'' +
-                ", soDienThoai='" + soDienThoai + '\'' +
-                '}';
-    }
+	public void setNgayVaoLam(LocalDate ngayVaoLam) {
+		this.ngayVaoLam = ngayVaoLam;
+	}
+
+	public int getTrangThai() {
+		return trangThai;
+	}
+
+	public void setTrangThai(int trangThai) {
+		this.trangThai = trangThai;
+	}
+
+	public HoaDon taoHoaDon(String ghiChu) {
+		LocalDate ngayTao = LocalDate.now();
+		int trangThai = 0;// chưa thanh toán
+		HoaDon hd = new HoaDon(null, ngayTao, ghiChu, trangThai);
+		return hd;
+	}
+
 }
