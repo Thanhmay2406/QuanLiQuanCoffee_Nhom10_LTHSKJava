@@ -34,7 +34,7 @@ public class DanhSachBan {
 
 	public boolean xoaBan(String maBan) {
 		if (maBan == null || maBan.isEmpty()) {
-			throw new IllegalArgumentException("Vui lòng nhập mã nhân viên để xóa");
+			throw new IllegalArgumentException("Vui lòng nhập mã bàn để xóa");
 		}
 		return dsBan.removeIf(ban -> ban.getMaBan().equalsIgnoreCase(maBan));
 	}
