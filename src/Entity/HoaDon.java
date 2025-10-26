@@ -1,4 +1,18 @@
+/*
+ * @ (#) Ban.java   1.0     Oct 25, 2025
+ *
+ * Copyright (c) 2025 IUH.
+ * All rights reserved.
+ */
+
 package Entity;
+
+/*
+* @description
+* @author: Van Long
+* @date: Oct 25, 2025
+* @version: 1.0
+*/
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,14 +24,10 @@ public class HoaDon {
 	private String ghiChu;
 	private int trangThai;
 
-	// Danh sách chi tiết hóa đơn
 	private ArrayList<ChiTietHoaDon> dsChiTiet;
 
 	public HoaDon(String maHoaDon, LocalDate ngayTao, String ghiChu, int trangThai) {
-		if (maHoaDon == null || maHoaDon.isEmpty())
-			throw new IllegalArgumentException("Mã hóa đơn không được rỗng");
-
-		this.maHoaDon = maHoaDon;
+		setMaHoaDon(maHoaDon);
 		this.ngayTao = ngayTao;
 		this.ghiChu = ghiChu;
 		this.trangThai = trangThai;
@@ -33,6 +43,8 @@ public class HoaDon {
 	}
 
 	public void setMaHoaDon(String maHoaDon) {
+		if (maHoaDon == null || maHoaDon.isEmpty())
+			throw new IllegalArgumentException("Mã hóa đơn không được rỗng");
 		this.maHoaDon = maHoaDon;
 	}
 
@@ -90,9 +102,6 @@ public class HoaDon {
 		return sb.toString();
 	}
 
-	/**
-	 * Thêm sản phẩm vào hóa đơn Nếu đã tồn tại sản phẩm đó thì cộng dồn số lượng
-	 */
 	public boolean themChiTiet(SanPham sp, int soLuong) {
 		if (sp == null || soLuong <= 0)
 			return false;

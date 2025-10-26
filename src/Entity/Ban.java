@@ -26,25 +26,15 @@ public class Ban {
 
 	public Ban(String maBan, String tenBan, int soLuongChoNgoi, String khuVuc, int trangThai, String ghiChu) {
 		super();
-		if (maBan == null || maBan.isEmpty())
-			throw new IllegalArgumentException("Mã bàn không được rỗng");
-		if (tenBan == null || tenBan.isEmpty())
-			throw new IllegalArgumentException("Tên bàn không được rỗng");
-		if (soLuongChoNgoi <= 0)
-			throw new IllegalArgumentException("Số lượng chỗ ngồi phải lớn hơn 0");
-		if (khuVuc == null || khuVuc.isEmpty())
-			throw new IllegalArgumentException("Khu vực bàn không được rỗng");
-
-		this.maBan = maBan;
-		this.tenBan = tenBan;
-		this.soLuongChoNgoi = soLuongChoNgoi;
-		this.khuVuc = khuVuc;
+		setMaBan(maBan);
+		setTenBan(tenBan);
+		setSoLuongChoNgoi(soLuongChoNgoi);
+		setKhuVuc(khuVuc);
 		this.trangThai = trangThai;
 		this.ghiChu = ghiChu;
 	}
 
 	public Ban() {
-		// TODO Auto-generated constructor stub
 		this("", "", 1, "", 0, "");
 	}
 
@@ -53,6 +43,8 @@ public class Ban {
 	}
 
 	public void setMaBan(String maBan) {
+		if (maBan == null || maBan.isEmpty())
+			throw new IllegalArgumentException("Mã bàn không được rỗng");
 		this.maBan = maBan;
 	}
 
@@ -61,6 +53,8 @@ public class Ban {
 	}
 
 	public void setTenBan(String tenBan) {
+		if (tenBan == null || tenBan.isEmpty())
+			throw new IllegalArgumentException("Tên bàn không được rỗng");
 		this.tenBan = tenBan;
 	}
 
@@ -69,6 +63,8 @@ public class Ban {
 	}
 
 	public void setSoLuongChoNgoi(int soLuongChoNgoi) {
+		if (soLuongChoNgoi <= 0)
+			throw new IllegalArgumentException("Số lượng chỗ ngồi phải lớn hơn 0");
 		this.soLuongChoNgoi = soLuongChoNgoi;
 	}
 
@@ -77,6 +73,8 @@ public class Ban {
 	}
 
 	public void setKhuVuc(String khuVuc) {
+		if (khuVuc == null || khuVuc.isEmpty())
+			throw new IllegalArgumentException("Khu vực bàn không được rỗng");
 		this.khuVuc = khuVuc;
 	}
 
@@ -117,12 +115,11 @@ public class Ban {
 		if (kh == null) {
 			return false;
 		}
-		// Bàn đã được đặt hoặc đang được sử dụng
 		if (trangThai != 0) {
 			return false;
 		}
 		this.trangThai = 1;
-		this.ghiChu = "Khách" + kh.getHoTen() + "đặt lúc" + thoiGian;
+		this.ghiChu = "Khách " + kh.getHoTen() + " đặt lúc " + thoiGian;
 		return true;
 	}
 

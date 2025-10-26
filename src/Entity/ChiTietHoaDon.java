@@ -1,18 +1,18 @@
 /*
- * @ (#) ChiTietHoaDon.java   1.0     Oct 25, 2025
+ * @ (#) Ban.java   1.0     Oct 25, 2025
  *
  * Copyright (c) 2025 IUH.
  * All rights reserved.
  */
 
 package Entity;
+
 /*
 * @description
 * @author: Van Long
 * @date: Oct 25, 2025
 * @version: 1.0
 */
-
 import java.math.BigDecimal;
 
 public class ChiTietHoaDon {
@@ -23,18 +23,10 @@ public class ChiTietHoaDon {
 
 	public ChiTietHoaDon(HoaDon hoaDon, SanPham sanPham, int soLuong, BigDecimal donGia) {
 		super();
-		if (hoaDon == null || sanPham == null) {
-			throw new IllegalArgumentException("Hóa đơn và Sản phẩm không được null");
-		}
-		if (soLuong <= 0)
-			throw new IllegalArgumentException("Số lượng phải > 0");
-		if (donGia == null || donGia.compareTo(BigDecimal.ZERO) <= 0)
-			throw new IllegalArgumentException("Đơn giá phải > 0");
-
-		this.hoaDon = hoaDon;
-		this.sanPham = sanPham;
-		this.soLuong = soLuong;
-		this.donGia = donGia;
+		setHoaDon(hoaDon);
+		setSanPham(sanPham);
+		setSoLuong(soLuong);
+		setDonGia(donGia);
 	}
 
 	public ChiTietHoaDon() {
@@ -49,6 +41,9 @@ public class ChiTietHoaDon {
 	}
 
 	public void setHoaDon(HoaDon hoaDon) {
+		if (hoaDon == null) {
+			throw new IllegalArgumentException("Hóa đơn không được null");
+		}
 		this.hoaDon = hoaDon;
 	}
 
@@ -57,6 +52,9 @@ public class ChiTietHoaDon {
 	}
 
 	public void setSanPham(SanPham sanPham) {
+		if (sanPham == null) {
+			throw new IllegalArgumentException("Sản phẩm không được null");
+		}
 		this.sanPham = sanPham;
 	}
 
@@ -65,6 +63,8 @@ public class ChiTietHoaDon {
 	}
 
 	public void setSoLuong(int soLuong) {
+		if (soLuong <= 0)
+			throw new IllegalArgumentException("Số lượng phải > 0");
 		this.soLuong = soLuong;
 	}
 
@@ -77,6 +77,8 @@ public class ChiTietHoaDon {
 	}
 
 	public void setDonGia(BigDecimal donGia) {
+		if (donGia == null || donGia.compareTo(BigDecimal.ZERO) <= 0)
+			throw new IllegalArgumentException("Đơn giá phải > 0");
 		this.donGia = donGia;
 	}
 

@@ -1,4 +1,18 @@
+/*
+ * @ (#) Ban.java   1.0     Oct 25, 2025
+ *
+ * Copyright (c) 2025 IUH.
+ * All rights reserved.
+ */
+
 package Entity;
+
+/*
+* @description
+* @author: Van Long
+* @date: Oct 25, 2025
+* @version: 1.0
+*/
 
 import java.time.LocalDate;
 
@@ -14,13 +28,8 @@ public class NhanVien {
 	public NhanVien(String maNhanVien, String hoTen, String soDienThoai, String email, String chucVu,
 			LocalDate ngayVaoLam, int trangThai) {
 		super();
-		if (maNhanVien == null || maNhanVien.isEmpty())
-			throw new IllegalArgumentException("Mã nhân viên không được rỗng");
-		if (hoTen == null || hoTen.isEmpty())
-			throw new IllegalArgumentException("Tên nhân viên không được rỗng");
-
-		this.maNhanVien = maNhanVien;
-		this.hoTen = hoTen;
+		setMaNhanVien(maNhanVien);
+		setHoTen(hoTen);
 		this.soDienThoai = soDienThoai;
 		this.email = email;
 		this.chucVu = chucVu;
@@ -37,6 +46,8 @@ public class NhanVien {
 	}
 
 	public void setMaNhanVien(String maNhanVien) {
+		if (maNhanVien == null || maNhanVien.isEmpty())
+			throw new IllegalArgumentException("Mã nhân viên không được rỗng");
 		this.maNhanVien = maNhanVien;
 	}
 
@@ -45,6 +56,8 @@ public class NhanVien {
 	}
 
 	public void setHoTen(String hoTen) {
+		if (hoTen == null || hoTen.isEmpty())
+			throw new IllegalArgumentException("Tên nhân viên không được rỗng");
 		this.hoTen = hoTen;
 	}
 
@@ -90,7 +103,7 @@ public class NhanVien {
 
 	public HoaDon taoHoaDon(String ghiChu) {
 		LocalDate ngayTao = LocalDate.now();
-		int trangThai = 0;// chưa thanh toán
+		int trangThai = 0;
 		HoaDon hd = new HoaDon(null, ngayTao, ghiChu, trangThai);
 		return hd;
 	}
