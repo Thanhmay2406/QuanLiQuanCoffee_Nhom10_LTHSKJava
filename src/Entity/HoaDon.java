@@ -55,6 +55,10 @@ public class HoaDon {
 	public void setMaHoaDon(String maHoaDon) {
 		if (maHoaDon == null || maHoaDon.isEmpty())
 			throw new IllegalArgumentException("Mã hóa đơn không được rỗng");
+
+		if (!maHoaDon.matches("^HD\\d{3}$"))
+			throw new IllegalArgumentException("Mã bàn phải có dạng Bxxx");
+
 		this.maHoaDon = maHoaDon;
 	}
 

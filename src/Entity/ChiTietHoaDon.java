@@ -94,6 +94,13 @@ public class ChiTietHoaDon {
 		return donGia.multiply(new BigDecimal(soLuong));
 	}
 
+	public void capNhatSoLuong(int soLuong) {
+		if (soLuong <= 0) {
+			throw new IllegalArgumentException("Số lượng phải lớn hơn 0");
+		}
+		this.soLuong = soLuong;
+	}
+
 	@Override
 	public String toString() {
 		return "ChiTietHoaDon [hoaDon=" + hoaDon + ", sanPham=" + sanPham + ", soLuong=" + soLuong + ", donGia="

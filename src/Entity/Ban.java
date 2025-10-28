@@ -45,6 +45,9 @@ public class Ban {
 	public void setMaBan(String maBan) {
 		if (maBan == null || maBan.isEmpty())
 			throw new IllegalArgumentException("Mã bàn không được rỗng");
+		if (!maBan.matches("^B\\d{3}$")) {
+			throw new IllegalArgumentException("Mã bàn phải có dạng Bxxx");
+		}
 		this.maBan = maBan;
 	}
 
