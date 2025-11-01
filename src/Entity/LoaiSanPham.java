@@ -7,11 +7,11 @@ public class LoaiSanPham {
 	private String tenLoai;
 	private String moTa;
 	private int trangThai;
-	
-	// constructor
+
 	public LoaiSanPham() {
 		this("", "", "", 0);
 	}
+
 	public LoaiSanPham(String maLoaiSP, String tenLoai, String moTa, int trangThai) {
 		super();
 		this.maLoaiSP = maLoaiSP;
@@ -19,44 +19,49 @@ public class LoaiSanPham {
 		this.moTa = moTa;
 		this.trangThai = trangThai;
 	}
+
 	public String getMaLoaiSP() {
 		return maLoaiSP;
 	}
+
 	public void setMaLoaiSP(String maLoaiSP) {
+		if (maLoaiSP == null || maLoaiSP.isEmpty())
+			throw new IllegalArgumentException("Mã loại sản phẩm không được bỏ trống");
+		if (!maLoaiSP.matches("^LSP\\d{3}$")) {
+			throw new IllegalArgumentException("Mã loại sản phẩm phải theo dạng LSPxxx");
+		}
 		this.maLoaiSP = maLoaiSP;
 	}
+
 	public String getTenLoai() {
 		return tenLoai;
 	}
+
 	public void setTenLoai(String tenLoai) {
 		this.tenLoai = tenLoai;
 	}
+
 	public String getMoTa() {
 		return moTa;
 	}
+
 	public void setMoTa(String moTa) {
 		this.moTa = moTa;
 	}
+
 	public int getTrangThai() {
 		return trangThai;
 	}
+
 	public void setTrangThai(int trangThai) {
 		this.trangThai = trangThai;
 	}
-	
-	// method
-	public void themSanPham() {
-	}
-	public void suaSanPham() {
-	}
-	public void thayDoiTrangThai() {
-	}
-	
-	// hashcode and equal
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(maLoaiSP);
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -68,4 +73,11 @@ public class LoaiSanPham {
 		LoaiSanPham other = (LoaiSanPham) obj;
 		return Objects.equals(maLoaiSP, other.maLoaiSP);
 	}
+
+	@Override
+	public String toString() {
+		return "LoaiSanPham [maLoaiSP=" + maLoaiSP + ", tenLoai=" + tenLoai + ", moTa=" + moTa + ", trangThai="
+				+ trangThai + "]";
+	}
+
 }

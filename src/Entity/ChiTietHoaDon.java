@@ -1,5 +1,6 @@
 /*
- * @ (#) ChiTietHoaDon.java   1.0     Oct 25, 2025
+
+ *@ (#) ChiTietHoaDon.java   1.0     Oct 25, 2025
  *
  * Copyright (c) 2025 IUH.
  * All rights reserved.
@@ -103,7 +104,8 @@ public class ChiTietHoaDon {
 
 	@Override
 	public String toString() {
-		return "ChiTietHoaDon [hoaDon=" + hoaDon + ", sanPham=" + sanPham + ", soLuong=" + soLuong + ", donGia="
-				+ donGia + "]";
+		return String.format(" %-8s | %-25s | SL: %-3d | ĐG: %,.0f", sanPham.getMaSanPham(), sanPham.getTenSanPham(),
+				soLuong, donGia);
 	}
+
 }
