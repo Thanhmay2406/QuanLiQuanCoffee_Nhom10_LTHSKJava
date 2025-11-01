@@ -22,30 +22,81 @@ public class HoaDon {
 	private String maHoaDon;
 	private LocalDate ngayTao;
 	private String ghiChu;
-	private int trangThai;
+	private int trangThaiThanhToan;
+	private String maKhachHang;
+	private String maNhanVien;
+	private String maKM;
+	private String maPTTT;
 
 	private ArrayList<ChiTietHoaDon> dsChiTiet;
 
 // Constructor cho việc lấy hóa đơn từ CSDL
-	public HoaDon(String maHoaDon, LocalDate ngayTao, String ghiChu, int trangThai) {
-		setMaHoaDon(maHoaDon);
+	public HoaDon(String maHoaDon, LocalDate ngayTao, String ghiChu, int trangThaiThanhToan, String maKhachHang,
+			String maNhanVien, String maKM, String maPTTT) {
+		this.maHoaDon = maHoaDon;
 		this.ngayTao = ngayTao;
 		this.ghiChu = ghiChu;
-		this.trangThai = trangThai;
+		this.trangThaiThanhToan = trangThaiThanhToan;
 		this.dsChiTiet = new ArrayList<>();
+		this.maKhachHang = maKhachHang;
+		this.maNhanVien = maNhanVien;
+		this.maKM = maKM;
+		this.maPTTT = maPTTT;
 	}
 
 //Constructor cho việc tạo hóa đơn mới (chưa có mã)
-	public HoaDon(LocalDate ngayTao, String ghiChu, int trangThai) {
+	public HoaDon(LocalDate ngayTao, String ghiChu, int trangThaiThanhToan, String maKhachHang, String maNhanVien,
+			String maKM, String maPTTT) {
 		this.maHoaDon = null; // Chấp nhận null khi TẠO MỚI
 		this.ngayTao = ngayTao;
 		this.ghiChu = ghiChu;
-		this.trangThai = trangThai;
+		this.trangThaiThanhToan = trangThaiThanhToan;
+		this.maKhachHang = maKhachHang;
+		this.maNhanVien = maNhanVien;
+		this.maKM = maKM;
+		this.maPTTT = maPTTT;
 		this.dsChiTiet = new ArrayList<>();
+
 	}
 
 	public HoaDon() {
-		this("", LocalDate.now(), "", 0);
+		this("", LocalDate.now(), "", 0, "", "", "", "");
+	}
+
+	public String getMaKhachHang() {
+		return maKhachHang;
+	}
+
+	public void setMaKhachHang(String maKhachHang) {
+		this.maKhachHang = maKhachHang;
+	}
+
+	public String getMaNhanVien() {
+		return maNhanVien;
+	}
+
+	public void setMaNhanVien(String maNhanVien) {
+		this.maNhanVien = maNhanVien;
+	}
+
+	public String getMaKM() {
+		return maKM;
+	}
+
+	public void setMaKM(String maKM) {
+		this.maKM = maKM;
+	}
+
+	public String getMaPTTT() {
+		return maPTTT;
+	}
+
+	public void setMaPTTT(String maPTTT) {
+		this.maPTTT = maPTTT;
+	}
+
+	public void setDsChiTiet(ArrayList<ChiTietHoaDon> dsChiTiet) {
+		this.dsChiTiet = dsChiTiet;
 	}
 
 	public String getMaHoaDon() {
@@ -78,12 +129,12 @@ public class HoaDon {
 		this.ghiChu = ghiChu;
 	}
 
-	public int getTrangThai() {
-		return trangThai;
+	public int getTrangThaiThanhToan() {
+		return trangThaiThanhToan;
 	}
 
-	public void setTrangThai(int trangThai) {
-		this.trangThai = trangThai;
+	public void setTrangThaiThanhToan(int trangThaiThanhToan) {
+		this.trangThaiThanhToan = trangThaiThanhToan;
 	}
 
 	public ArrayList<ChiTietHoaDon> getDsChiTiet() {
@@ -95,7 +146,7 @@ public class HoaDon {
 		sb.append("\n====== HÓA ĐƠN THANH TOÁN ======\n");
 		sb.append("Mã hóa đơn: ").append(maHoaDon).append("\n");
 		sb.append("Ngày tạo: ").append(ngayTao).append("\n");
-		sb.append("Trạng thái: ").append(trangThai == 1 ? "Đã thanh toán" : "Chưa thanh toán").append("\n");
+		sb.append("Trạng thái: ").append(trangThaiThanhToan == 1 ? "Đã thanh toán" : "Chưa thanh toán").append("\n");
 		sb.append("--------------------------------\n");
 		sb.append(String.format("%-20s %-8s %-12s %-12s\n", "Sản phẩm", "SL", "Đơn giá", "Thành tiền"));
 		sb.append("--------------------------------\n");
@@ -155,9 +206,20 @@ public class HoaDon {
 		sb.append("===== THÔNG TIN HÓA ĐƠN =====\n");
 		sb.append("Mã hóa đơn: ").append(maHoaDon).append("\n");
 		sb.append("Ngày tạo: ").append(ngayTao).append("\n");
-		sb.append("Trạng thái: ").append(trangThai == 1 ? "Đã thanh toán" : "Chưa thanh toán").append("\n");
-		sb.append("Ghi chú: ").append(ghiChu == null || ghiChu.isEmpty() ? "Không có" : ghiChu).append("\n");
+		sb.append("Trạng thái: ").append(trangThaiThanhToan == 1 ? "Đã thanh toán" : "Chưa thanh toán").append("\n");
+		sb.append("Ghi chú: ").append(ghiChu).append("\n");
+		sb.append("------------------------------\n");
+
+		if (dsChiTiet.isEmpty()) {
+			sb.append("Không có chi tiết hóa đơn.\n");
+		} else {
+			for (ChiTietHoaDon ct : dsChiTiet) {
+				sb.append(ct).append("\n");
+			}
+		}
+
 		sb.append("============================\n");
 		return sb.toString();
 	}
+
 }

@@ -2,32 +2,52 @@ package Entity;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class PhieuDatBan {
 	private String maPhieuDat;
-	private LocalDate ngay;
+	private LocalDate ngayDat;
 	private LocalTime gioBatDau;
 	private LocalTime gioKetThuc;
 	private int soNguoi;
 	private String ghiChu;
 	private int trangThai;
+	private String maKhachHang;
 	private String maNhanVien;
 
+	private List<ChiTietDatBan> dsChiTiet;
+
 	public PhieuDatBan() {
+		this.dsChiTiet = new ArrayList<>();
 	}
 
-	public PhieuDatBan(String maPhieuDat, LocalDate ngay, LocalTime gioBatDau, LocalTime gioKetThuc, 
-			int soNguoi, String ghiChu, int trangThai, String maNhanVien) {
+	public PhieuDatBan(String maPhieuDat, LocalDate ngayDat, LocalTime gioBatDau, LocalTime gioKetThuc, int soNguoi,
+			String ghiChu, int trangThai, String maKhachHang, String maNhanVien) {
 		super();
 		setMaPhieuDat(maPhieuDat);
-		setNgay(ngay);
+		setngayDat(ngayDat);
 		setGioBatDau(gioBatDau);
 		setGioKetThuc(gioKetThuc);
 		setSoNguoi(soNguoi);
 		setGhiChu(ghiChu);
 		setTrangThai(trangThai);
+		setMaKhachHang(maKhachHang);
 		setMaNhanVien(maNhanVien);
+		this.dsChiTiet = new ArrayList<>();
+	}
+
+	public List<ChiTietDatBan> getDsChiTiet() {
+		return dsChiTiet;
+	}
+
+	public void themChiTiet(ChiTietDatBan ct) {
+		this.dsChiTiet.add(ct);
+	}
+
+	public void xoaChiTiet(ChiTietDatBan ct) {
+		this.dsChiTiet.remove(ct);
 	}
 
 	public String getMaPhieuDat() {
@@ -40,14 +60,14 @@ public class PhieuDatBan {
 		this.maPhieuDat = maPhieuDat;
 	}
 
-	public LocalDate getNgay() {
-		return ngay;
+	public LocalDate getngayDat() {
+		return ngayDat;
 	}
 
-	public void setNgay(LocalDate ngay) {
-		if (ngay == null)
+	public void setngayDat(LocalDate ngayDat) {
+		if (ngayDat == null)
 			throw new IllegalArgumentException("Ngày không được để trống");
-		this.ngay = ngay;
+		this.ngayDat = ngayDat;
 	}
 
 	public LocalTime getGioBatDau() {
@@ -93,7 +113,7 @@ public class PhieuDatBan {
 	}
 
 	public void setTrangThai(int trangThai) {
-		if (trangThai < 0 || trangThai > 2) //  0 = đã hủy, 1 = đang chờ, 2 = hoàn thành
+		if (trangThai < 0 || trangThai > 2) // 0 = đã hủy, 1 = đang chờ, 2 = hoàn thành
 			throw new IllegalArgumentException("Trạng thái không hợp lệ");
 		this.trangThai = trangThai;
 	}
@@ -108,14 +128,38 @@ public class PhieuDatBan {
 		this.maNhanVien = maNhanVien;
 	}
 
-	
-
-	public void capNhatThongTin(LocalDate ngayMoi, int soNguoiMoi, LocalTime gioBatDauMoi) {
-		if (ngayMoi != null) setNgay(ngayMoi);
-		if (soNguoiMoi > 0) setSoNguoi(soNguoiMoi);
-		if (gioBatDauMoi != null) setGioBatDau(gioBatDauMoi);
+	public LocalDate getNgayDat() {
+		return ngayDat;
 	}
 
+	public void setNgayDat(LocalDate ngayDat) {
+		if (ngayDat.isAfter(LocalDate.now()))
+			throw new IllegalArgumentException("Ngày đặt phải trước ngày hôm nay");
+		this.ngayDat = ngayDat;
+	}
+
+	public String getMaKhachHang() {
+		return maKhachHang;
+	}
+
+	public void setMaKhachHang(String maKhachHang) {
+		if (maKhachHang == null || !maKhachHang.matches("^NV\\d{3,}$"))
+			throw new IllegalArgumentException("Mã nhân viên không hợp lệ (phải có dạng NVxxx)");
+		this.maKhachHang = maKhachHang;
+	}
+
+	public void setDsChiTiet(List<ChiTietDatBan> dsChiTiet) {
+		this.dsChiTiet = dsChiTiet;
+	}
+
+	public void capNhatThongTin(LocalDate ngayDatMoi, int soNguoiMoi, LocalTime gioBatDauMoi) {
+		if (ngayDatMoi != null)
+			setngayDat(ngayDatMoi);
+		if (soNguoiMoi > 0)
+			setSoNguoi(soNguoiMoi);
+		if (gioBatDauMoi != null)
+			setGioBatDau(gioBatDauMoi);
+	}
 
 	public void huyPhieu() {
 		setTrangThai(0); // 0 = đã hủy
@@ -129,6 +173,7 @@ public class PhieuDatBan {
 	public int hashCode() {
 		return Objects.hash(maPhieuDat);
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -138,7 +183,7 @@ public class PhieuDatBan {
 		if (getClass() != obj.getClass())
 			return false;
 		PhieuDatBan other = (PhieuDatBan) obj;
-		return Objects.equals(maPhieuDat, other.maPhieuDat) ;
+		return Objects.equals(maPhieuDat, other.maPhieuDat);
 	}
 
 }

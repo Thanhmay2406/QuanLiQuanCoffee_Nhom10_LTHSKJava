@@ -101,11 +101,4 @@ public class NhanVien {
 		this.trangThai = trangThai;
 	}
 
-	public HoaDon taoHoaDon(String ghiChu) {
-		LocalDate ngayTao = LocalDate.now();
-		int trangThai = 0;
-		HoaDon hd = new HoaDon(ngayTao, ghiChu, trangThai);// dùng constructor đặc thù cho việc tạo Hóa Đơn
-		return hd;
-	}
-
 }

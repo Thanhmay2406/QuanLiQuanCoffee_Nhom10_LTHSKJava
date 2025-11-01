@@ -8,64 +8,109 @@ public class SanPham {
 	private String tenSanPham;
 	private String donViTinh;
 	private BigDecimal gia;
-	private String moTa;
+	private String hinhAnh;
 	private int trangThai;
-	
+	private String maLoaiSP;
+
 	public SanPham() {
 //		super();
-		this("", "", "", new BigDecimal(0.0), "", 0);
+		this("", "", "", new BigDecimal(0.0), "", 0, "");
 	}
-	public SanPham(String maSanPham, String tenSanPham, String donViTinh, BigDecimal gia, String moTa, int trangThai) {
+
+	public SanPham(String maSanPham, String tenSanPham, String donViTinh, BigDecimal gia, String hinhAnh, int trangThai,
+			String maLoaiSP) {
 		super();
-		this.maSanPham = maSanPham;
-		this.tenSanPham = tenSanPham;
+		setMaSanPham(maSanPham);
+		setmaLoaiSP(maLoaiSP);
+		setTenSanPham(tenSanPham);
 		this.donViTinh = donViTinh;
-		this.gia = gia;
-		this.moTa = moTa;
+		setGia(gia);
+		this.hinhAnh = hinhAnh;
 		this.trangThai = trangThai;
 	}
+
+	public String getmaLoaiSP() {
+		return maLoaiSP;
+	}
+
+	public void setmaLoaiSP(String maLoaiSP) {
+		if (maLoaiSP == null || !maLoaiSP.matches("^LSP\\d{3}$"))
+			throw new IllegalArgumentException("Mã loại sản phẩm không hợp lệ (phải có dạng LSPxxx)");
+
+		this.maLoaiSP = maLoaiSP;
+	}
+
 	public String getMaSanPham() {
 		return maSanPham;
 	}
+
 	public void setMaSanPham(String maSanPham) {
+		if (maSanPham == null || maSanPham.isEmpty())
+			throw new IllegalArgumentException("Mã sản phẩm không được bỏ trống");
+		if (!maSanPham.matches("^SP\\d{3}$")) {
+			throw new IllegalArgumentException("Mã sản phẩm phải theo dạng SPxxx");
+		}
 		this.maSanPham = maSanPham;
 	}
+
 	public String getTenSanPham() {
 		return tenSanPham;
 	}
+
 	public void setTenSanPham(String tenSanPham) {
+		if (tenSanPham == null || tenSanPham.isEmpty())
+			throw new IllegalArgumentException("Tên sản phẩm không được bỏ trống");
+
 		this.tenSanPham = tenSanPham;
 	}
+
 	public String getDonViTinh() {
 		return donViTinh;
 	}
+
 	public void setDonViTinh(String donViTinh) {
 		this.donViTinh = donViTinh;
 	}
+
 	public BigDecimal getGia() {
 		return gia;
 	}
+
 	public void setGia(BigDecimal gia) {
+		if (gia.intValue() < 0)
+			throw new IllegalArgumentException("Giá sản phẩm phải lớn hơn bằng 0");
+
 		this.gia = gia;
 	}
-	public String getMoTa() {
-		return moTa;
+
+	public String gethinhAnh() {
+		return hinhAnh;
 	}
-	public void setMoTa(String moTa) {
-		this.moTa = moTa;
+
+	public void sethinhAnh(String hinhAnh) {
+		this.hinhAnh = hinhAnh;
 	}
+
 	public int getTrangThai() {
 		return trangThai;
 	}
+
 	public void setTrangThai(int trangThai) {
 		this.trangThai = trangThai;
 	}
+
 	public void capNhatGia(BigDecimal newGia) {
+		if (newGia.equals(BigDecimal.ZERO)) {
+			throw new IllegalArgumentException("Giá mới phải lớn hơn hoặc bằng 0");
+		}
+		this.gia = newGia;
 	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(maSanPham);
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -77,5 +122,11 @@ public class SanPham {
 		SanPham other = (SanPham) obj;
 		return Objects.equals(maSanPham, other.maSanPham);
 	}
-	
+
+	@Override
+	public String toString() {
+		return "SanPham [maSanPham=" + maSanPham + ", tenSanPham=" + tenSanPham + ", donViTinh=" + donViTinh + ", gia="
+				+ gia + ", hinhAnh=" + hinhAnh + ", trangThai=" + trangThai + "]";
+	}
+
 }

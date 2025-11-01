@@ -54,7 +54,7 @@ public class ChiTietDatBan {
 	}
 
 	public void capNhatGhiChu(String ghiChu) {
-
+		this.ghiChu = ghiChu;
 	}
 
 }
