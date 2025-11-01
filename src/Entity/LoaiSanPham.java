@@ -7,6 +7,8 @@ public class LoaiSanPham {
 	private String tenLoai;
 	private String moTa;
 	private int trangThai;
+	
+	// constructor
 	public LoaiSanPham() {
 		this("", "", "", 0);
 	}
@@ -41,10 +43,16 @@ public class LoaiSanPham {
 	public void setTrangThai(int trangThai) {
 		this.trangThai = trangThai;
 	}
+	
+	// method
 	public void themSanPham() {
 	}
 	public void suaSanPham() {
 	}
+	public void thayDoiTrangThai() {
+	}
+	
+	// hashcode and equal
 	@Override
 	public int hashCode() {
 		return Objects.hash(maLoaiSP);

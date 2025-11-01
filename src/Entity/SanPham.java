@@ -11,6 +11,7 @@ public class SanPham {
 	private String moTa;
 	private int trangThai;
 	
+	// constructor
 	public SanPham() {
 //		super();
 		this("", "", "", new BigDecimal(0.0), "", 0);
@@ -24,6 +25,8 @@ public class SanPham {
 		this.moTa = moTa;
 		this.trangThai = trangThai;
 	}
+	
+	// geter and seter
 	public String getMaSanPham() {
 		return maSanPham;
 	}
@@ -60,8 +63,16 @@ public class SanPham {
 	public void setTrangThai(int trangThai) {
 		this.trangThai = trangThai;
 	}
+	
+	// method
 	public void capNhatGia(BigDecimal newGia) {
 	}
+	public void capNhatThongTin() {
+	}
+	public void thayDoiTrangThai(int trangThai) {
+	}
+	
+	// hashcode and equal
 	@Override
 	public int hashCode() {
 		return Objects.hash(maSanPham);

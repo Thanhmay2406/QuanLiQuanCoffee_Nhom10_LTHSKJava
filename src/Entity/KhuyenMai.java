@@ -10,6 +10,13 @@ public class KhuyenMai {
 	private Date ngayBatDau;
 	private Date ngayKetThuc;
 	private int trangThai;
+	
+	//constructor
+	
+//	public KhuyenMai() {
+//		this("", "", 0.0, new Date(), new Date(), 0);
+//	}
+	
 	public KhuyenMai(String maKM, String tenKM, double giaTriKM, Date ngayBatDau, Date ngayKetThuc, int trangThai) {
 		super();
 		this.maKM = maKM;
@@ -19,6 +26,8 @@ public class KhuyenMai {
 		this.ngayKetThuc = ngayKetThuc;
 		this.trangThai = trangThai;
 	}
+	
+	// geter and seter
 	public String getMaKM() {
 		return maKM;
 	}
@@ -55,6 +64,17 @@ public class KhuyenMai {
 	public void setTrangThai(int trangThai) {
 		this.trangThai = trangThai;
 	}
+	
+	// method
+	public void capNhatThongTin() {
+	}
+	public void thayDoiTrangThai() {
+	}
+	public boolean kiemTraHopLe() {
+		return true;
+	}
+	
+	// hashcode and equal
 	@Override
 	public int hashCode() {
 		return Objects.hash(maKM);
