@@ -43,7 +43,7 @@ public class PhieuDatBan_DAO {
 				PhieuDatBan pdb = new PhieuDatBan(rs.getString("maPhieuDat"), rs.getDate("ngayDat").toLocalDate(),
 						rs.getTime("gioBatDau").toLocalTime(), rs.getTime("gioKetThuc").toLocalTime(),
 						rs.getInt("soNguoi"), rs.getString("ghiChu"), rs.getInt("trangThai"),
-						rs.getString("maKhachHang"), rs.getString("maNhanVien"));
+						rs.getString("maKhachHang"), rs.getString("maNhanVien"), rs.getString("soDienThoai"));
 
 				ds.add(pdb);
 			}
@@ -53,10 +53,6 @@ public class PhieuDatBan_DAO {
 		return ds;
 	}
 
-	/**
-	 * Thêm một phiếu đặt bàn mới (bao gồm cả chi tiết) Đây là một giao dịch
-	 * (Transaction)
-	 */
 	public boolean themPhieuDatBan(PhieuDatBan pdb) {
 		String sqlPDB = "INSERT INTO PhieuDatBan (maPhieuDat, ngay, gioBatDau, gioKetThuc, soNguoi, ghiChu, trangThai, maNhanVien) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -114,10 +110,10 @@ public class PhieuDatBan_DAO {
 			pstm.setDate(1, java.sql.Date.valueOf(ngayDat));
 			ResultSet rs = pstm.executeQuery();
 			while (rs.next()) {
-				PhieuDatBan pdb = new PhieuDatBan(rs.getString("maPhieuDatBan"), rs.getDate("ngayDat").toLocalDate(),
+				PhieuDatBan pdb = new PhieuDatBan(rs.getString("maPhieuDat"), rs.getDate("ngayDat").toLocalDate(),
 						rs.getTime("gioBatDau").toLocalTime(), rs.getTime("gioKetThuc").toLocalTime(),
 						rs.getInt("soNguoi"), rs.getString("ghiChu"), rs.getInt("trangThai"),
-						rs.getString("maKhachHang"), rs.getString("maNhanVien"));
+						rs.getString("maKhachHang"), rs.getString("maNhanVien"), rs.getString("soDienThoai"));
 				dsPDB.add(pdb);
 			}
 		} catch (Exception e) {
@@ -134,10 +130,10 @@ public class PhieuDatBan_DAO {
 			pstm.setString(1, soDienThoai.trim());
 			ResultSet rs = pstm.executeQuery();
 			while (rs.next()) {
-				PhieuDatBan pdb = new PhieuDatBan(rs.getString("maPhieuDatBan"), rs.getDate("ngayDat").toLocalDate(),
+				PhieuDatBan pdb = new PhieuDatBan(rs.getString("maPhieuDat"), rs.getDate("ngayDat").toLocalDate(),
 						rs.getTime("gioBatDau").toLocalTime(), rs.getTime("gioKetThuc").toLocalTime(),
 						rs.getInt("soNguoi"), rs.getString("ghiChu"), rs.getInt("trangThai"),
-						rs.getString("maKhachHang"), rs.getString("maNhanVien"));
+						rs.getString("maKhachHang"), rs.getString("maNhanVien"), rs.getString("soDienThoai"));
 				dsPDB.add(pdb);
 			}
 		} catch (Exception e) {
@@ -147,10 +143,10 @@ public class PhieuDatBan_DAO {
 		return dsPDB;
 	}
 
-	public boolean xoaPhieuDatBan(String maPhieuDatBan) {
-		String sql = "delete from PhieuDatBan where maPhieuDatBan = ?";
+	public boolean xoaPhieuDatBan(String maPhieuDat) {
+		String sql = "delete from PhieuDatBan where maPhieuDat = ?";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
-			pstm.setString(1, maPhieuDatBan);
+			pstm.setString(1, maPhieuDat);
 			return pstm.executeUpdate() > 0;
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -168,15 +164,16 @@ public class PhieuDatBan_DAO {
 		if (trangThai < -1 || trangThai > 2) {
 			return false;
 		}
-		String sql = "update PhieuDatBan set trangThai = ? where maPhieuDatBan = ?";
+		String sql = "update PhieuDatBan set trangThai = ? where maPhieuDat = ?";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
 			pstm.setInt(1, trangThai);
-			pstm.setString(1, maPhieu);
+			pstm.setString(2, maPhieu);
+			return pstm.executeUpdate() > 0;
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return true;
+		return false;
 	}
 
 	// ... Thêm các hàm capNhatTrangThaiPhieu, xoaPhieu (hủy phiếu)...

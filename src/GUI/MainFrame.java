@@ -102,14 +102,13 @@ public class MainFrame extends JFrame {
 		contentPanel.add(panelSanPham, KEY_SAN_PHAM);
 
 		// Trang giam giá
-		JPanel panelGiamGia = new JPanel();
-		panelGiamGia.setBackground(Color.WHITE);
-		panelGiamGia.add(new JLabel("Đây là trang Quản lý khách hàng"));
-		contentPanel.add(panelGiamGia, KEY_GIAM_GIA);
+		KhuyenMai_GUI panelKhuyenMai = new KhuyenMai_GUI(this);
+		panelKhuyenMai.add(new JLabel("Đây là trang Quản lý Khuyến mãi"));
+		contentPanel.add(panelKhuyenMai, KEY_GIAM_GIA);
 
 		// Trang Khách Hàng
-		JPanel panelKhachHang = new JPanel();
-		panelKhachHang.add(new JLabel("Đây là trang Quản lý Mã Giảm Giá"));
+		KhachHang_GUI panelKhachHang = new KhachHang_GUI(this);
+		panelKhachHang.add(new JLabel("Đây là trang Quản lý Khách hàng"));
 		contentPanel.add(panelKhachHang, KEY_KHACH_HANG);
 		// Trang thống kê
 		JPanel panelThongKe = new JPanel();

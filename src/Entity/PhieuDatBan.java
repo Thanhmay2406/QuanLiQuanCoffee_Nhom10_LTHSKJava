@@ -16,7 +16,7 @@ public class PhieuDatBan {
 	private int trangThai;
 	private String maKhachHang;
 	private String maNhanVien;
-
+	private String soDienThoai;
 	private List<ChiTietDatBan> dsChiTiet;
 
 	public PhieuDatBan() {
@@ -24,7 +24,7 @@ public class PhieuDatBan {
 	}
 
 	public PhieuDatBan(String maPhieuDat, LocalDate ngayDat, LocalTime gioBatDau, LocalTime gioKetThuc, int soNguoi,
-			String ghiChu, int trangThai, String maKhachHang, String maNhanVien) {
+			String ghiChu, int trangThai, String maKhachHang, String maNhanVien, String soDienThoai) {
 		super();
 		setMaPhieuDat(maPhieuDat);
 		setngayDat(ngayDat);
@@ -35,6 +35,7 @@ public class PhieuDatBan {
 		setTrangThai(trangThai);
 		setMaKhachHang(maKhachHang);
 		setMaNhanVien(maNhanVien);
+		setSoDienThoai(soDienThoai);
 		this.dsChiTiet = new ArrayList<>();
 	}
 
@@ -184,6 +185,17 @@ public class PhieuDatBan {
 			return false;
 		PhieuDatBan other = (PhieuDatBan) obj;
 		return Objects.equals(maPhieuDat, other.maPhieuDat);
+	}
+
+	public String getSoDienThoai() {
+		return soDienThoai;
+	}
+
+	public void setSoDienThoai(String soDienThoai) {
+		if (!soDienThoai.matches("^0\\d{9}$")) {
+			throw new IllegalArgumentException("Số điện thoại phải bắt đầu là 0 và có 10 chữ số");
+		}
+		this.soDienThoai = soDienThoai;
 	}
 
 }

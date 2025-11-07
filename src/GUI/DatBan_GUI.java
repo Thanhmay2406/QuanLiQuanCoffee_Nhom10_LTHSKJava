@@ -70,11 +70,11 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 		JPanel tableData = new JPanel();
 		tableData.setLayout(new BorderLayout());
 		String[] cols = { "Mã phiếu đặt bàn", "Ngày đặt bàn", "Giờ băt đầu", "Giờ kết thúc", "Số người", "Ghi chú",
-				"Trạng thái", "Mã khách hàng", "Mã nhân viên" };
+				"Trạng thái", "Mã khách hàng", "Mã nhân viên", "Số điện thoại" };
 		modelTabel = new DefaultTableModel(cols, 0) {
 			@Override
 			public boolean isCellEditable(int row, int col) {
-				return row != 0;
+				return col != 0;
 			}
 		};
 		table = new JTable(modelTabel);
@@ -147,7 +147,7 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 		// TODO Auto-generated method stub
 		String sdt = txtSearch.getText().trim();
 		if (sdt == null || sdt.isEmpty()) {
-			JOptionPane.showInternalMessageDialog(this, "Vui lòng nhập số điện thoại");
+			JOptionPane.showMessageDialog(this, "Vui lòng nhập số điện thoại");
 			return;
 		}
 
@@ -168,24 +168,28 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 
 	private void chonMon() {
 		// TODO Auto-generated method stub
-		int selectedRow = modelTabel.getColumnCount();
+		int selectedRow = table.getSelectedRow();
 		if (selectedRow != -1) {
-			JOptionPane.showMessageDialog(this, "Chưa có bàn. Hãy nhấn nút 'Chọn bàn'");
-			return;
-		}
-		String maPhieu = modelTabel.getValueAt(selectedRow, 0).toString();
-		String trangThai = modelTabel.getValueAt(selectedRow, 6).toString();
+			String maPhieu = modelTabel.getValueAt(selectedRow, 0).toString();
+			String trangThai = modelTabel.getValueAt(selectedRow, 6).toString();
 
-		if (trangThai.equals("Chưa sử dụng")) {
-			try {
-				pdb_dao.capNhatTrangThaiPhieu(maPhieu, 1);
-				mainFrame.swicthToPanel(mainFrame.KEY_BAN_HANG);
-				modelTabel.setValueAt("Đang sử dụng", selectedRow, 6); // set "Đã sử dụng" khi nhấn thanh toán
-
-			} catch (Exception e) {
-				// TODO: handle exception
-				e.printStackTrace();
+			if (trangThai.equals("Chưa sử dụng")) {
+				try {
+					pdb_dao.capNhatTrangThaiPhieu(maPhieu, 1);
+					mainFrame.swicthToPanel(mainFrame.KEY_BAN_HANG);
+					modelTabel.setValueAt("Đang sử dụng", selectedRow, 6); // set "Đã sử dụng" khi nhấn thanh toán
+				} catch (Exception e) {
+					// TODO: handle exception
+					System.out.println(selectedRow);
+					e.printStackTrace();
+				}
+			} else {
+				JOptionPane.showMessageDialog(this, "Phiếu này đã được hoặc đang được sử dụng");
+				return;
 			}
+		} else {
+			JOptionPane.showMessageDialog(this, "Vui lòng chọn phiếu đặt bàn");
+			return;
 		}
 
 	}
@@ -218,7 +222,7 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 				}
 				modelTabel.addRow(new Object[] { pdb.getMaPhieuDat(), pdb.getngayDat(), pdb.getGioBatDau(),
 						pdb.getGioKetThuc(), pdb.getSoNguoi(), pdb.getGhiChu(), trangThai, pdb.getMaKhachHang(),
-						pdb.getMaNhanVien() });
+						pdb.getMaNhanVien(), pdb.getSoDienThoai() });
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
