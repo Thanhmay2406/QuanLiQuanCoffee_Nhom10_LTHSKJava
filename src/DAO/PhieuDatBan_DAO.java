@@ -41,7 +41,7 @@ public class PhieuDatBan_DAO {
 		try (Statement stm = con.createStatement(); ResultSet rs = stm.executeQuery(sql)) {
 
 			while (rs.next()) {
-				PhieuDatBan pdb = new PhieuDatBan(rs.getString("maPhieuDat"), rs.getDate("ngay").toLocalDate(),
+				PhieuDatBan pdb = new PhieuDatBan(rs.getString("maPhieuDat"), rs.getDate("ngayDat").toLocalDate(),
 						rs.getTime("gioBatDau").toLocalTime(), rs.getTime("gioKetThuc").toLocalTime(),
 						rs.getInt("soNguoi"), rs.getString("ghiChu"), rs.getInt("trangThai"),
 						rs.getString("maKhachHang"), rs.getString("maNhanVien"));

@@ -18,6 +18,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -36,7 +38,7 @@ import javax.swing.table.DefaultTableModel;
 import DAO.PhieuDatBan_DAO;
 import Entity.PhieuDatBan;
 
-public class DatBan_GUI extends JPanel implements ActionListener, MouseListener {
+public class DatBan_GUI extends JPanel implements ActionListener, MouseListener, ComponentListener {
 
 	private JLabel title;
 	private JButton btnSearch, btnChonBan, btnChonMon;
@@ -86,27 +88,8 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener 
 		add(pnNorth, BorderLayout.NORTH);
 		add(pnCenter, BorderLayout.CENTER);
 		add(pnSouth, BorderLayout.SOUTH);
-
-		// Hiển thị danh sách Phiếu đặt bàn
-		ArrayList<PhieuDatBan> dsPDB = new ArrayList<PhieuDatBan>();
-		pdb_dao = new PhieuDatBan_DAO();
-		try {
-			dsPDB = (ArrayList<PhieuDatBan>) pdb_dao.layTatCa();
-			for (PhieuDatBan pdb : dsPDB) {
-				String trangThai;
-				int trangThai_pdb = pdb.getTrangThai();
-				if (trangThai_pdb == 0) {
-					trangThai = "Chưa thanh toán";
-				} else if (trangThai_pdb == 1) {
-					trangThai = "Đã thanh toán";
-				}
-				modelTabel.addRow(new Object[] { pdb.getMaPhieuDat(), pdb.getGioBatDau(), pdb.getGioKetThuc(),
-						pdb.getSoNguoi(), pdb.getGhiChu(), });
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-		}
+		loadPhieuDatBan();
+		this.addComponentListener(this);
 	}
 
 	@Override
@@ -141,6 +124,70 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener 
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		Object o = e.getSource();
+		if (o == btnChonBan) {
+			chonBan();
+		}
+	}
+
+	private void chonBan() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void loadPhieuDatBan() {
+		modelTabel.setRowCount(0);
+		try {
+			ArrayList<PhieuDatBan> dsPDB = new ArrayList<PhieuDatBan>();
+			pdb_dao = new PhieuDatBan_DAO();
+			try {
+				dsPDB = (ArrayList<PhieuDatBan>) pdb_dao.layTatCa();
+				for (PhieuDatBan pdb : dsPDB) {
+					String trangThai = "";
+					int trangThai_pdb = pdb.getTrangThai();
+					if (trangThai_pdb == 0) {
+						trangThai = "Chưa sử dụng";
+					} else if (trangThai_pdb == 1) {
+						trangThai = "Đang sử dụng";
+					} else if (trangThai_pdb == -1) {
+						trangThai = "Đã hủy";
+					} else if (trangThai_pdb == 2) {
+						trangThai = "Hoàn tất";
+					}
+					modelTabel.addRow(new Object[] { pdb.getMaPhieuDat(), pdb.getngayDat(), pdb.getGioBatDau(),
+							pdb.getGioKetThuc(), pdb.getSoNguoi(), pdb.getGhiChu(), trangThai, pdb.getMaKhachHang(),
+							pdb.getMaNhanVien() });
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+
+	@Override
+	public void componentResized(ComponentEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void componentMoved(ComponentEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void componentShown(ComponentEvent e) {
+		// TODO Auto-generated method stub
+		loadPhieuDatBan();
+	}
+
+	@Override
+	public void componentHidden(ComponentEvent e) {
 		// TODO Auto-generated method stub
 
 	}
