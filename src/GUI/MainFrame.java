@@ -40,13 +40,14 @@ import javax.swing.SwingUtilities;
 public class MainFrame extends JFrame {
 
 	// Key là tên file
-	private static final String KEY_DAT_BAN = "DatBan_GUI.java";
+	public static final String KEY_DAT_BAN = "DatBan_GUI.java";
 
-	private static final String KEY_BAN_HANG = "BAN_HANG";
-	private static final String KEY_SAN_PHAM = "SAN_PHAM";
-	private static final String KEY_GIAM_GIA = "GIAM_GIA";
-	private static final String KEY_KHACH_HANG = "KHACH_HANG";
-	private static final String KEY_THONG_KE = "THONG_KE";
+	public static final String KEY_BAN_HANG = "Menu_GUI.java";
+	public static final String KEY_SAN_PHAM = "SAN_PHAM";
+	public static final String KEY_GIAM_GIA = "GIAM_GIA";
+	public static final String KEY_KHACH_HANG = "KHACH_HANG";
+	public static final String KEY_THONG_KE = "THONG_KE";
+	public static final String KEY_CHON_BAN = "ChonBan_GUI.java";
 
 	private CardLayout cardLayout;
 	private JPanel contentPanel;
@@ -84,9 +85,12 @@ public class MainFrame extends JFrame {
 		// Thêm các panel con (các trang) vào CardLayout với "Key" tương ứng
 
 		// Trang đặt bàn
-		DatBan_GUI panelDatBan = new DatBan_GUI();
+		DatBan_GUI panelDatBan = new DatBan_GUI(this);
 		contentPanel.add(panelDatBan, KEY_DAT_BAN);
 
+		// Chọn bàn
+		ChonBan_GUI panelChonBan = new ChonBan_GUI(this);
+		contentPanel.add(panelChonBan, KEY_CHON_BAN);
 		// Trang Bán Hàng
 		JPanel panelBanHang = new JPanel();
 		panelBanHang.add(new JLabel("Đây là trang bán hàng"));
@@ -178,6 +182,17 @@ public class MainFrame extends JFrame {
 
 				button.setFont(new Font("Arial", Font.PLAIN, 14));
 				button.setForeground(Color.BLACK);
+			}
+		}
+	}
+
+	public void swicthToPanel(String key) {
+		cardLayout.show(contentPanel, key);
+
+		for (JButton btn : navButtons) {
+			if (btn.getActionCommand().equals(key)) {
+				updateNavButtonStyles(btn);
+				break;
 			}
 		}
 	}

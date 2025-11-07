@@ -46,11 +46,12 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 	private DefaultTableModel modelTabel;
 	private JTable table;
 	private PhieuDatBan_DAO pdb_dao;
+	private MainFrame mainFrame;
 
-	public DatBan_GUI() {
+	public DatBan_GUI(MainFrame mainFrame) {
 		// TODO Auto-generated constructor stub
-
-		setLayout(new BorderLayout());
+		this.mainFrame = mainFrame;
+		this.setLayout(new BorderLayout());
 		// -------North--------
 		JPanel pnNorth = new JPanel();
 		pnNorth.add(title = new JLabel("Quản lý Đặt bàn"));
@@ -90,6 +91,9 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 		add(pnSouth, BorderLayout.SOUTH);
 		loadPhieuDatBan();
 		this.addComponentListener(this);
+		btnChonBan.addActionListener(this);
+		btnChonMon.addActionListener(this);
+		btnSearch.addActionListener(this);
 	}
 
 	@Override
@@ -126,6 +130,9 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		Object o = e.getSource();
+		if (o == btnChonMon) {
+			chonMon();
+		}
 		if (o == btnChonBan) {
 			chonBan();
 		}
@@ -133,7 +140,12 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 
 	private void chonBan() {
 		// TODO Auto-generated method stub
+		mainFrame.swicthToPanel(mainFrame.KEY_CHON_BAN);
+	}
 
+	private void chonMon() {
+		// TODO Auto-generated method stub
+		mainFrame.swicthToPanel(mainFrame.KEY_BAN_HANG);
 	}
 
 	public void loadPhieuDatBan() {
