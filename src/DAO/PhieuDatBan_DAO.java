@@ -17,7 +17,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +37,8 @@ public class PhieuDatBan_DAO {
 	public List<PhieuDatBan> layTatCa() {
 		List<PhieuDatBan> ds = new ArrayList<>();
 		String sql = "SELECT * FROM PhieuDatBan";
-		try (Statement stm = con.createStatement(); ResultSet rs = stm.executeQuery(sql)) {
-
+		try (PreparedStatement pstm = con.prepareStatement(sql)) {
+			ResultSet rs = pstm.executeQuery();
 			while (rs.next()) {
 				PhieuDatBan pdb = new PhieuDatBan(rs.getString("maPhieuDat"), rs.getDate("ngayDat").toLocalDate(),
 						rs.getTime("gioBatDau").toLocalTime(), rs.getTime("gioKetThuc").toLocalTime(),
@@ -108,11 +107,31 @@ public class PhieuDatBan_DAO {
 		}
 	}
 
-	public ArrayList<PhieuDatBan> layPhieuDatBanTheoNgay(LocalDate ngay) {
-		String sql = "select * from PhieuDatBan where maKhachHang = ?";
+	public ArrayList<PhieuDatBan> layPhieuDatBanTheoNgayDat(LocalDate ngayDat) {
+		String sql = "select * from PhieuDatBan where ngayDat = ?";
 		ArrayList<PhieuDatBan> dsPDB = new ArrayList<PhieuDatBan>();
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
-			pstm.setDate(1, java.sql.Date.valueOf(ngay));
+			pstm.setDate(1, java.sql.Date.valueOf(ngayDat));
+			ResultSet rs = pstm.executeQuery();
+			while (rs.next()) {
+				PhieuDatBan pdb = new PhieuDatBan(rs.getString("maPhieuDatBan"), rs.getDate("ngayDat").toLocalDate(),
+						rs.getTime("gioBatDau").toLocalTime(), rs.getTime("gioKetThuc").toLocalTime(),
+						rs.getInt("soNguoi"), rs.getString("ghiChu"), rs.getInt("trangThai"),
+						rs.getString("maKhachHang"), rs.getString("maNhanVien"));
+				dsPDB.add(pdb);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return dsPDB;
+	}
+
+	public ArrayList<PhieuDatBan> layPhieuDatBanTheoSoDienThoai(String soDienThoai) {
+		String sql = "select * from PhieuDatBan where soDienThoai = ?";
+		ArrayList<PhieuDatBan> dsPDB = new ArrayList<PhieuDatBan>();
+		try (PreparedStatement pstm = con.prepareStatement(sql)) {
+			pstm.setString(1, soDienThoai.trim());
 			ResultSet rs = pstm.executeQuery();
 			while (rs.next()) {
 				PhieuDatBan pdb = new PhieuDatBan(rs.getString("maPhieuDatBan"), rs.getDate("ngayDat").toLocalDate(),
@@ -138,6 +157,26 @@ public class PhieuDatBan_DAO {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	public boolean capNhatTrangThaiPhieu(String maPhieu, int trangThai) {
+		// TODO Auto-generated method stub
+		maPhieu = maPhieu.trim();
+		if (maPhieu == null || maPhieu.isEmpty()) {
+			return false;
+		}
+		if (trangThai < -1 || trangThai > 2) {
+			return false;
+		}
+		String sql = "update PhieuDatBan set trangThai = ? where maPhieuDatBan = ?";
+		try (PreparedStatement pstm = con.prepareStatement(sql)) {
+			pstm.setInt(1, trangThai);
+			pstm.setString(1, maPhieu);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return true;
 	}
 
 	// ... Thêm các hàm capNhatTrangThaiPhieu, xoaPhieu (hủy phiếu)...

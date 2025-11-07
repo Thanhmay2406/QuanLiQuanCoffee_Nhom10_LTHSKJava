@@ -13,6 +13,23 @@ package GUI;
 * @version: 1.0
 */
 
-public class Menu_GUI {
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JPanel;
+
+public class Menu_GUI extends JPanel implements ActionListener {
+	private MainFrame mainFrame;
+
+	public Menu_GUI(MainFrame mainFrame) {
+		// TODO Auto-generated constructor stub
+		this.mainFrame = mainFrame;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+
+	}
 
 }

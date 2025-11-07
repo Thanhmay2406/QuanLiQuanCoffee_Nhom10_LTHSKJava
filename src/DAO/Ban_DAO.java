@@ -147,7 +147,7 @@ public class Ban_DAO {
 		String sql = "update Ban set trangThai = ? where maBan = ?";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
 			pstm.setInt(1, trangThai);
-			pstm.setString(2, sql);
+			pstm.setString(2, maBan.trim());
 			return pstm.executeUpdate() > 0;
 		} catch (Exception e) {
 			// TODO: handle exception

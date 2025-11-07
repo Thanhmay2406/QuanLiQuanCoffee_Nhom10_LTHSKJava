@@ -6,6 +6,12 @@
  */
 
 package GUI;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JPanel;
+
 /*
 * @description
 * @author: Van Long
@@ -13,6 +19,18 @@ package GUI;
 * @version: 1.0
 */
 
-public class ThongKe_GUI {
+public class ThongKe_GUI extends JPanel implements ActionListener {
+	private MainFrame mainFrame;
+
+	public ThongKe_GUI(MainFrame mainFrame) {
+		// TODO Auto-generated constructor stub
+		this.mainFrame = mainFrame;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+
+	}
 
 }

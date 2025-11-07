@@ -29,6 +29,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -51,6 +52,7 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 	public DatBan_GUI(MainFrame mainFrame) {
 		// TODO Auto-generated constructor stub
 		this.mainFrame = mainFrame;
+		this.pdb_dao = new PhieuDatBan_DAO();
 		this.setLayout(new BorderLayout());
 		// -------North--------
 		JPanel pnNorth = new JPanel();
@@ -136,6 +138,27 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 		if (o == btnChonBan) {
 			chonBan();
 		}
+		if (o == btnSearch) {
+			timKiemPhieuDatBan();
+		}
+	}
+
+	private void timKiemPhieuDatBan() {
+		// TODO Auto-generated method stub
+		String sdt = txtSearch.getText().trim();
+		if (sdt == null || sdt.isEmpty()) {
+			JOptionPane.showInternalMessageDialog(this, "Vui lòng nhập số điện thoại");
+			return;
+		}
+
+		try {
+			ArrayList<PhieuDatBan> dsPDB = pdb_dao.layPhieuDatBanTheoSoDienThoai(sdt);
+			updateTableData(dsPDB);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
 	}
 
 	private void chonBan() {
@@ -145,35 +168,57 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 
 	private void chonMon() {
 		// TODO Auto-generated method stub
-		mainFrame.swicthToPanel(mainFrame.KEY_BAN_HANG);
+		int selectedRow = modelTabel.getColumnCount();
+		if (selectedRow != -1) {
+			JOptionPane.showMessageDialog(this, "Chưa có bàn. Hãy nhấn nút 'Chọn bàn'");
+			return;
+		}
+		String maPhieu = modelTabel.getValueAt(selectedRow, 0).toString();
+		String trangThai = modelTabel.getValueAt(selectedRow, 6).toString();
+
+		if (trangThai.equals("Chưa sử dụng")) {
+			try {
+				pdb_dao.capNhatTrangThaiPhieu(maPhieu, 1);
+				mainFrame.swicthToPanel(mainFrame.KEY_BAN_HANG);
+				modelTabel.setValueAt("Đang sử dụng", selectedRow, 6); // set "Đã sử dụng" khi nhấn thanh toán
+
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 	public void loadPhieuDatBan() {
 		modelTabel.setRowCount(0);
 		try {
-			ArrayList<PhieuDatBan> dsPDB = new ArrayList<PhieuDatBan>();
-			pdb_dao = new PhieuDatBan_DAO();
-			try {
-				dsPDB = (ArrayList<PhieuDatBan>) pdb_dao.layTatCa();
-				for (PhieuDatBan pdb : dsPDB) {
-					String trangThai = "";
-					int trangThai_pdb = pdb.getTrangThai();
-					if (trangThai_pdb == 0) {
-						trangThai = "Chưa sử dụng";
-					} else if (trangThai_pdb == 1) {
-						trangThai = "Đang sử dụng";
-					} else if (trangThai_pdb == -1) {
-						trangThai = "Đã hủy";
-					} else if (trangThai_pdb == 2) {
-						trangThai = "Hoàn tất";
-					}
-					modelTabel.addRow(new Object[] { pdb.getMaPhieuDat(), pdb.getngayDat(), pdb.getGioBatDau(),
-							pdb.getGioKetThuc(), pdb.getSoNguoi(), pdb.getGhiChu(), trangThai, pdb.getMaKhachHang(),
-							pdb.getMaNhanVien() });
+			ArrayList<PhieuDatBan> dsPDB = (ArrayList<PhieuDatBan>) pdb_dao.layTatCa();
+			updateTableData(dsPDB);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+	}
+
+	public void updateTableData(ArrayList<PhieuDatBan> dsPDB) {
+		modelTabel.setRowCount(0);
+		try {
+			for (PhieuDatBan pdb : dsPDB) {
+				String trangThai = "";
+				int trangThai_pdb = pdb.getTrangThai();
+				if (trangThai_pdb == 0) {
+					trangThai = "Chưa sử dụng";
+				} else if (trangThai_pdb == 1) {
+					trangThai = "Đang sử dụng";
+				} else if (trangThai_pdb == -1) {
+					trangThai = "Đã hủy";
+				} else if (trangThai_pdb == 2) {
+					trangThai = "Đã sử dụng";
 				}
-			} catch (Exception e) {
-				// TODO: handle exception
-				e.printStackTrace();
+				modelTabel.addRow(new Object[] { pdb.getMaPhieuDat(), pdb.getngayDat(), pdb.getGioBatDau(),
+						pdb.getGioKetThuc(), pdb.getSoNguoi(), pdb.getGhiChu(), trangThai, pdb.getMaKhachHang(),
+						pdb.getMaNhanVien() });
 			}
 		} catch (Exception e) {
 			// TODO: handle exception

@@ -92,12 +92,12 @@ public class MainFrame extends JFrame {
 		ChonBan_GUI panelChonBan = new ChonBan_GUI(this);
 		contentPanel.add(panelChonBan, KEY_CHON_BAN);
 		// Trang Bán Hàng
-		JPanel panelBanHang = new JPanel();
+		Menu_GUI panelBanHang = new Menu_GUI(this);
 		panelBanHang.add(new JLabel("Đây là trang bán hàng"));
 		contentPanel.add(panelBanHang, KEY_BAN_HANG);
 
 		// Trang Sản Phẩm
-		JPanel panelSanPham = new JPanel();
+		SanPham_GUI panelSanPham = new SanPham_GUI(this);
 		panelSanPham.add(new JLabel("Đây là trang Sản Phẩm"));
 		contentPanel.add(panelSanPham, KEY_SAN_PHAM);
 
