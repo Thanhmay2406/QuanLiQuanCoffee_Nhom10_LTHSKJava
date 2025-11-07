@@ -40,7 +40,7 @@ import javax.swing.SwingUtilities;
 public class MainFrame extends JFrame {
 
 	// Key là tên file
-	private static final String KEY_DAT_BAN = "DAT_BAN";
+	private static final String KEY_DAT_BAN = "DatBan_GUI.java";
 
 	private static final String KEY_BAN_HANG = "BAN_HANG";
 	private static final String KEY_SAN_PHAM = "SAN_PHAM";
@@ -84,8 +84,7 @@ public class MainFrame extends JFrame {
 		// Thêm các panel con (các trang) vào CardLayout với "Key" tương ứng
 
 		// Trang đặt bàn
-		JPanel panelDatBan = new JPanel();
-		panelDatBan.add(new JLabel("Đây là Đặt bàn"));
+		DatBan_GUI panelDatBan = new DatBan_GUI();
 		contentPanel.add(panelDatBan, KEY_DAT_BAN);
 
 		// Trang Bán Hàng
