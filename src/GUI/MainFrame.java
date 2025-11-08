@@ -93,7 +93,6 @@ public class MainFrame extends JFrame {
 		contentPanel.add(panelChonBan, KEY_CHON_BAN);
 		// Trang Bán Hàng
 		Menu_GUI panelBanHang = new Menu_GUI(this);
-		panelBanHang.add(new JLabel("Đây là trang bán hàng"));
 		contentPanel.add(panelBanHang, KEY_BAN_HANG);
 
 		// Trang Sản Phẩm
@@ -111,7 +110,7 @@ public class MainFrame extends JFrame {
 		panelKhachHang.add(new JLabel("Đây là trang Quản lý Khách hàng"));
 		contentPanel.add(panelKhachHang, KEY_KHACH_HANG);
 		// Trang thống kê
-		JPanel panelThongKe = new JPanel();
+		ThongKe_GUI panelThongKe = new ThongKe_GUI(this);
 		panelThongKe.add(new JLabel("Đây là trang Thống kê"));
 		contentPanel.add(panelThongKe, KEY_THONG_KE);
 
@@ -185,7 +184,7 @@ public class MainFrame extends JFrame {
 		}
 	}
 
-	public void swicthToPanel(String key) {
+	public void switchToPanel(String key) {
 		cardLayout.show(contentPanel, key);
 
 		for (JButton btn : navButtons) {
