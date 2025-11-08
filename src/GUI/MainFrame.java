@@ -43,10 +43,10 @@ public class MainFrame extends JFrame {
 	public static final String KEY_DAT_BAN = "DatBan_GUI.java";
 
 	public static final String KEY_BAN_HANG = "Menu_GUI.java";
-	public static final String KEY_SAN_PHAM = "SAN_PHAM";
-	public static final String KEY_GIAM_GIA = "GIAM_GIA";
-	public static final String KEY_KHACH_HANG = "KHACH_HANG";
-	public static final String KEY_THONG_KE = "THONG_KE";
+	public static final String KEY_SAN_PHAM = "SanPham_GUI.java";
+	public static final String KEY_GIAM_GIA = "KhuyenMai_GUI.java";
+	public static final String KEY_KHACH_HANG = "KhachHang_GUI.java";
+	public static final String KEY_THONG_KE = "ThongKe_GUI.java";
 	public static final String KEY_CHON_BAN = "ChonBan_GUI.java";
 
 	private CardLayout cardLayout;
