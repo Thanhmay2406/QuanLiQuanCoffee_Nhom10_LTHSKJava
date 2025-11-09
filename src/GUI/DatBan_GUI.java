@@ -163,7 +163,7 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 
 	private void chonBan() {
 		// TODO Auto-generated method stub
-		mainFrame.swicthToPanel(mainFrame.KEY_CHON_BAN);
+		mainFrame.switchToPanel(mainFrame.KEY_CHON_BAN);
 	}
 
 	private void chonMon() {
@@ -176,7 +176,7 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 			if (trangThai.equals("Chưa sử dụng")) {
 				try {
 					pdb_dao.capNhatTrangThaiPhieu(maPhieu, 1);
-					mainFrame.swicthToPanel(mainFrame.KEY_BAN_HANG);
+					mainFrame.switchToPanel(mainFrame.KEY_BAN_HANG);
 					modelTabel.setValueAt("Đang sử dụng", selectedRow, 6); // set "Đã sử dụng" khi nhấn thanh toán
 				} catch (Exception e) {
 					// TODO: handle exception
