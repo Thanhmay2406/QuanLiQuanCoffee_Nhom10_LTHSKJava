@@ -164,7 +164,7 @@ public class Menu_GUI extends JPanel implements ActionListener {
 		for (LoaiSanPham lsp : dsLSP) {
 			loaiSP += lsp.getTenLoai() + ",";
 		}
-		loaiSP = (String) loaiSP.subSequence(0, loaiSP.length());
+		loaiSP = (String) loaiSP.substring(0, loaiSP.length());
 		String[] cbLoai = loaiSP.split(",");
 		cbFilter = new JComboBox<>(cbLoai);
 		txtSearch = new JTextField(15);
@@ -281,9 +281,10 @@ public class Menu_GUI extends JPanel implements ActionListener {
 				JOptionPane.showMessageDialog(this, "Vui lòng chọn một món trong Menu trước.");
 				return;
 			}
+			int selectedRowInModel = menuTable.convertRowIndexToModel(selectedRow);
 
-			String tenSP = menuModel.getValueAt(selectedRow, 1).toString();
-			double donGia = Double.parseDouble(menuModel.getValueAt(selectedRow, 4).toString());
+			String tenSP = menuModel.getValueAt(selectedRowInModel, 1).toString();
+			double donGia = Double.parseDouble(menuModel.getValueAt(selectedRowInModel, 4).toString());
 
 			// Kiểm tra xem món đã có trong order chưa
 			for (int i = 0; i < orderModel.getRowCount(); i++) {
@@ -295,9 +296,6 @@ public class Menu_GUI extends JPanel implements ActionListener {
 
 			// Thêm món mới vào order với số lượng 1
 			orderModel.addRow(new Object[] { tenSP, 1, donGia, donGia });
-		} else if (o == btnTaoHoaDon) {
-			// Xử lý tạo hóa đơn (Bạn sẽ code logic này)
-			JOptionPane.showMessageDialog(this, "Chức năng Tạo Hóa Đơn!");
 		} else if (o == btnTrangChu) {
 			// Quay về trang chủ (nếu có)
 			mainFrame.switchToPanel(MainFrame.KEY_DAT_BAN); // Ví dụ quay về Đặt Bàn
@@ -315,7 +313,30 @@ public class Menu_GUI extends JPanel implements ActionListener {
 			}
 		} else if (o == cbFilter) {
 			actionFilter();
+		} else if (o == btnTaoHoaDon) {
+			taoHoaDon();
 		}
+	}
+
+	private void taoHoaDon() {
+		// TODO Auto-generated method stub
+		if (menuModel.getRowCount() == 0) {
+			JOptionPane.showMessageDialog(this, "Chưa chọn sản phẩm nào");
+			return;
+		}
+
+		ArrayList<Object[]> orderData = new ArrayList<Object[]>();
+		for (int i = 0; i < orderModel.getRowCount(); i++) {
+			String tenSP = orderModel.getValueAt(i, COL_TEN_SP).toString();
+			int soLuong = (int) orderTable.getValueAt(i, COL_SO_LUONG);
+			double donGia = (double) orderTable.getValueAt(i, COL_TONG_TIEN);
+
+			orderData.add(new Object[] { tenSP, soLuong, donGia });
+
+		}
+		mainFrame.chuyenDanhSachOrderSangHoaDon(orderData);
+		orderModel.setRowCount(0);
+		mainFrame.switchToPanel(mainFrame.KEY_HOA_DON);
 	}
 
 	private void actionFilter() {
