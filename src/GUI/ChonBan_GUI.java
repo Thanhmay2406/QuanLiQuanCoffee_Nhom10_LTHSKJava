@@ -98,7 +98,7 @@ public class ChonBan_GUI extends JPanel implements ActionListener {
 			xuLyChonBan();
 
 		else if (o == btnQuayLai)
-			mainFrame.swicthToPanel(mainFrame.KEY_DAT_BAN);
+			mainFrame.switchToPanel(mainFrame.KEY_DAT_BAN);
 	}
 
 	private void xuLyChonBan() {
@@ -113,7 +113,7 @@ public class ChonBan_GUI extends JPanel implements ActionListener {
 			if (hoiNhac == JOptionPane.YES_OPTION) {
 				ban_dao.capNhatTrangThaiBan(ban_selected.getMaBan(), 1);
 				loadBanData();
-				mainFrame.swicthToPanel(mainFrame.KEY_BAN_HANG);
+				mainFrame.switchToPanel(mainFrame.KEY_BAN_HANG);
 			}
 		} else {
 			JOptionPane.showMessageDialog(this, "Bàn này không thể chọn vì đang bận!");
