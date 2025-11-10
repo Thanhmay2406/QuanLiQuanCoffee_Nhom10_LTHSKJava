@@ -20,8 +20,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -39,7 +37,7 @@ import javax.swing.table.DefaultTableModel;
 import DAO.PhieuDatBan_DAO;
 import Entity.PhieuDatBan;
 
-public class DatBan_GUI extends JPanel implements ActionListener, MouseListener, ComponentListener {
+public class DatBan_GUI extends JPanel implements ActionListener, ComponentListener {
 
 	private JLabel title;
 	private JButton btnSearch, btnChonBan, btnChonMon;
@@ -96,36 +94,6 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 		btnChonBan.addActionListener(this);
 		btnChonMon.addActionListener(this);
 		btnSearch.addActionListener(this);
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
