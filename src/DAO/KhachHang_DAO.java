@@ -31,9 +31,6 @@ public class KhachHang_DAO {
 		con = ConnectDB.getInstance().getConnection();
 	}
 
-	/**
-	 * Lấy tất cả khách hàng từ CSDL
-	 */
 	public List<KhachHang> layTatCa() {
 		List<KhachHang> ds = new ArrayList<>();
 		try {
@@ -53,9 +50,6 @@ public class KhachHang_DAO {
 		return ds;
 	}
 
-	/**
-	 * Thêm một khách hàng mới vào CSDL
-	 */
 	public boolean themKhachHang(KhachHang kh) {
 		String sql = "INSERT INTO KhachHang (maKhachHang, hoTen, soDienThoai, email, diemTichLuy, ngayDangKy) VALUES (?, ?, ?, ?, ?, ?)";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
@@ -74,9 +68,6 @@ public class KhachHang_DAO {
 		}
 	}
 
-	/**
-	 * Xóa một khách hàng khỏi CSDL
-	 */
 	public boolean xoaKhachHang(String maKH) {
 		String sql = "DELETE FROM KhachHang WHERE maKhachHang = ?";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
@@ -88,9 +79,6 @@ public class KhachHang_DAO {
 		}
 	}
 
-	/**
-	 * Cập nhật thông tin một khách hàng
-	 */
 	public boolean capNhatKhachHang(KhachHang kh) {
 		String sql = "UPDATE KhachHang SET hoTen = ?, soDienThoai = ?, email = ?, diemTichLuy = ? WHERE maKhachHang = ?";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
@@ -108,9 +96,6 @@ public class KhachHang_DAO {
 		}
 	}
 
-	/**
-	 * Tìm khách hàng theo mã
-	 */
 	public KhachHang timKhachHangTheoMaKH(String maKH) {
 		String sql = "SELECT * FROM KhachHang WHERE maKhachHang = ?";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
@@ -143,5 +128,33 @@ public class KhachHang_DAO {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public int getDiemTichLuyTheoMa(String soDienThoai) {
+		String sql = "select diemTichLuy from KhachHang where soDienThoai = ?";
+		try (PreparedStatement pstm = con.prepareStatement(sql)) {
+			pstm.setString(1, soDienThoai);
+			ResultSet rs = pstm.executeQuery();
+			if (rs.next()) {
+				return rs.getInt("diemTichLuy");
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	public boolean capNhatDiemTichLuy(String maKhachHang, int diemTichLuy) {
+		String sql = "update KhachHang set diemTichLuy = ?  where maKhachHang = ?";
+		try (PreparedStatement pstm = con.prepareStatement(sql)) {
+			pstm.setInt(1, diemTichLuy);
+			pstm.setString(2, maKhachHang);
+			return pstm.executeUpdate() > 0;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return false;
 	}
 }

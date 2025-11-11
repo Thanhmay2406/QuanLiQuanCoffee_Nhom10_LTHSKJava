@@ -84,8 +84,6 @@ public class MainFrame extends JFrame {
 			}
 		};
 
-		// Thêm các panel con (các trang) vào CardLayout với "Key" tương ứng
-
 		// Trang đặt bàn
 		DatBan_GUI panelDatBan = new DatBan_GUI(this);
 		contentPanel.add(panelDatBan, KEY_DAT_BAN);

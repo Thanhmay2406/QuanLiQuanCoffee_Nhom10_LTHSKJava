@@ -66,12 +66,7 @@ public class KhuyenMai_DAO {
 		}
 	}
 
-	/**
-	 * Cập nhật toàn bộ thông tin của một khuyến mãi dựa trên maKM.
-	 * 
-	 * @param khuyenMaiMoi Đối tượng KhuyenMai chứa thông tin mới.
-	 * @return true nếu cập nhật thành công, false nếu thất bại.
-	 */
+
 	public boolean capNhatKhuyenMai(KhuyenMai khuyenMaiMoi) {
 		String sql = "UPDATE KhuyenMai SET tenKM = ?, phanTramGiam = ?, loaiKM = ?, ngayBatDau = ?, ngayKetThuc = ?, trangThai = ? WHERE maKM = ?";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {

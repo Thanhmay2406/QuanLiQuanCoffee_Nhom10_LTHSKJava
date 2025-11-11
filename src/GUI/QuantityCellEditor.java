@@ -13,7 +13,6 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 
-// Lớp này là trình *CHỈNH SỬA* (Editor), xử lý khi click
 public class QuantityCellEditor extends AbstractCellEditor implements TableCellEditor {
 
 	private JPanel panel;
@@ -32,7 +31,6 @@ public class QuantityCellEditor extends AbstractCellEditor implements TableCellE
 		panel.add(lblQuantity);
 		panel.add(btnPlus);
 
-		// Xử lý sự kiện cho nút +
 		btnPlus.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -46,7 +44,6 @@ public class QuantityCellEditor extends AbstractCellEditor implements TableCellE
 			}
 		});
 
-		// Xử lý sự kiện cho nút -
 		btnMinus.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -54,7 +51,6 @@ public class QuantityCellEditor extends AbstractCellEditor implements TableCellE
 					currentQuantity--;
 					lblQuantity.setText(String.valueOf(currentQuantity));
 
-					// ===== THAY ĐỔI QUAN TRỌNG Ở ĐÂY =====
 					fireEditingStopped();
 				}
 			}
@@ -74,7 +70,7 @@ public class QuantityCellEditor extends AbstractCellEditor implements TableCellE
 			panel.setBackground(table.getBackground());
 		}
 
-		return panel; // Trả về panel có các nút bấm được
+		return panel;
 	}
 
 	@Override
@@ -82,8 +78,6 @@ public class QuantityCellEditor extends AbstractCellEditor implements TableCellE
 		// Khi edit xong, trả về giá trị số lượng mới
 		return currentQuantity;
 	}
-
-	// --- CÁC PHƯƠNG THỨC CÒN LẠI GIỮ NGUYÊN ---
 
 	@Override
 	public boolean stopCellEditing() {

@@ -28,6 +28,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import DAO.LoaiSanPham_DAO;
@@ -35,7 +36,6 @@ import DAO.SanPham_DAO;
 import Entity.LoaiSanPham;
 import Entity.SanPham;
 
-// Đảm bảo bạn đã extends JPanel và có hàm khởi tạo nhận MainFrame
 public class Menu_GUI extends JPanel implements ActionListener {
 
 	private MainFrame mainFrame;
@@ -46,14 +46,16 @@ public class Menu_GUI extends JPanel implements ActionListener {
 	private JComboBox<String> cbFilter;
 	private JTextField txtSearch;
 
-	// Định nghĩa chỉ số cột để dễ quản lý
 	private final int COL_TEN_SP = 0;
 	private final int COL_SO_LUONG = 1;
-	private final int COL_GIA = 2; // Cột ẩn chứa đơn giá
-	private final int COL_TONG_TIEN = 3; // Cột hiển thị tổng tiền
+	private final int COL_GIA = 2;
+	private final int COL_TONG_TIEN = 3;
 	private JButton btnXoa;
 	private SanPham_DAO sp_dao;
 	private LoaiSanPham_DAO loaiSP_dao;
+	private JButton btnSearch;
+	private JPanel pnFilterRight;
+	private JPanel pnFilterLelf;
 
 	public Menu_GUI(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
@@ -87,7 +89,7 @@ public class Menu_GUI extends JPanel implements ActionListener {
 		cbFilter.addActionListener(this);
 	}
 
-	// Panel "Order" bên trái
+	// Panel "Order"
 	private JPanel createOrderPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(new JLabel("Order", SwingConstants.CENTER), BorderLayout.NORTH);
@@ -96,23 +98,19 @@ public class Menu_GUI extends JPanel implements ActionListener {
 		orderModel = new DefaultTableModel(orderCols, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				// Chỉ cho phép sửa cột "Số lượng"
 				return column == COL_SO_LUONG;
 			}
 
 			@Override
 			public void setValueAt(Object aValue, int row, int column) {
-				// Khi số lượng thay đổi
 				if (column == COL_SO_LUONG) {
 					int quantity = (Integer) aValue;
 					if (quantity < 0)
-						quantity = 0; // Không cho số lượng âm
+						quantity = 1;
 
 					super.setValueAt(quantity, row, column);
 
-					// Lấy đơn giá từ cột ẩn
 					double price = (Double) getValueAt(row, COL_GIA);
-					// Cập nhật cột tổng tiền
 					super.setValueAt(quantity * price, row, COL_TONG_TIEN);
 				} else {
 					super.setValueAt(aValue, row, column);
@@ -122,11 +120,10 @@ public class Menu_GUI extends JPanel implements ActionListener {
 
 		orderTable = new JTable(orderModel);
 
-		// ----- ĐÂY LÀ PHẦN QUAN TRỌNG NHẤT -----
 		// Gắn Renderer và Editor tùy chỉnh vào cột "Số lượng"
 		orderTable.getColumnModel().getColumn(COL_SO_LUONG).setCellRenderer(new QuantityCellRenderer());
 		orderTable.getColumnModel().getColumn(COL_SO_LUONG).setCellEditor(new QuantityCellEditor());
-		orderTable.setRowHeight(35); // Tăng chiều cao hàng để vừa các nút
+		orderTable.setRowHeight(35);
 
 		// Ẩn cột "Đơn Giá" (dùng để tính toán)
 		orderTable.getColumnModel().removeColumn(orderTable.getColumn("Đơn Giá"));
@@ -158,7 +155,7 @@ public class Menu_GUI extends JPanel implements ActionListener {
 		JPanel panel = new JPanel(new BorderLayout());
 
 		// Panel lọc và tìm kiếm
-		JPanel pnFilter = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		JPanel pnFilter = new JPanel(new BorderLayout());
 		ArrayList<LoaiSanPham> dsLSP = (ArrayList<LoaiSanPham>) loaiSP_dao.layTatCa();
 		String loaiSP = "Tất cả,";
 		for (LoaiSanPham lsp : dsLSP) {
@@ -167,12 +164,20 @@ public class Menu_GUI extends JPanel implements ActionListener {
 		loaiSP = (String) loaiSP.substring(0, loaiSP.length());
 		String[] cbLoai = loaiSP.split(",");
 		cbFilter = new JComboBox<>(cbLoai);
+		pnFilterLelf = new JPanel();
+		pnFilterLelf.add(cbFilter);
+		pnFilter.add(pnFilterLelf, BorderLayout.WEST);
+
+		pnFilterRight = new JPanel();
+		pnFilterRight.add(new JLabel("Tìm kiếm:"));
 		txtSearch = new JTextField(15);
-		pnFilter.add(cbFilter);
-		pnFilter.add(new JLabel("Tìm kiếm:"));
-		pnFilter.add(txtSearch);
+		pnFilterRight.add(txtSearch);
+		pnFilterRight.add(btnSearch = new JButton("Tìm"));
+		pnFilter.add(pnFilterRight, BorderLayout.EAST);
+
 		panel.add(pnFilter, BorderLayout.NORTH);
 
+		btnSearch.addActionListener(this);
 		// Bảng danh sách menu
 		String[] menuCols = { "Hình ảnh", "Tên sản phẩm", "Đơn vị tính", "Loại", "Giá" };
 		menuModel = new DefaultTableModel(menuCols, 0) {
@@ -187,7 +192,7 @@ public class Menu_GUI extends JPanel implements ActionListener {
 
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				return false; // Không cho sửa bảng menu
+				return false;
 			}
 
 		};
@@ -203,13 +208,11 @@ public class Menu_GUI extends JPanel implements ActionListener {
 		menuTable.setRowSorter(sorter);
 		panel.add(new JScrollPane(menuTable), BorderLayout.CENTER);
 
-		// Nút "Đặt"
 		JPanel pnSouth = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		btnDat = new JButton("Đặt");
 		pnSouth.add(btnDat);
 		panel.add(pnSouth, BorderLayout.SOUTH);
 
-		// Thêm dữ liệu giả lập
 		loadMenuData();
 		return panel;
 	}
@@ -275,7 +278,6 @@ public class Menu_GUI extends JPanel implements ActionListener {
 		Object o = e.getSource();
 
 		if (o == btnDat) {
-			// Xử lý nút "Đặt"
 			int selectedRow = menuTable.getSelectedRow();
 			if (selectedRow == -1) {
 				JOptionPane.showMessageDialog(this, "Vui lòng chọn một món trong Menu trước.");
@@ -297,15 +299,12 @@ public class Menu_GUI extends JPanel implements ActionListener {
 			// Thêm món mới vào order với số lượng 1
 			orderModel.addRow(new Object[] { tenSP, 1, donGia, donGia });
 		} else if (o == btnTrangChu) {
-			// Quay về trang chủ (nếu có)
-			mainFrame.switchToPanel(MainFrame.KEY_DAT_BAN); // Ví dụ quay về Đặt Bàn
+			mainFrame.switchToPanel(MainFrame.KEY_DAT_BAN);
 		} else if (o == btnXoa) {
 			int[] selected_rows = orderTable.getSelectedRows();
 			if (selected_rows.length != 0) {
 				for (int i = selected_rows.length - 1; i >= 0; i--) {
 					int row_index = selected_rows[i];
-					// nếu có chức năng lọc, sắp xếp
-					// int row_index = orderTabel.covertRowIndexToModel(row_index);
 					orderModel.removeRow(row_index);
 				}
 			} else {
@@ -315,21 +314,63 @@ public class Menu_GUI extends JPanel implements ActionListener {
 			actionFilter();
 		} else if (o == btnTaoHoaDon) {
 			taoHoaDon();
+		} else if (o == btnSearch) {
+			actionSearch();
+		}
+	}
+
+	private void actionSearch() {
+		String strSearch = txtSearch.getText().trim();
+		if (strSearch.isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Chưa nhập tên sản phẩm");
+			return;
+		}
+
+		@SuppressWarnings("unchecked")
+		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>) menuTable.getRowSorter();
+
+		if (sorter == null) {
+			sorter = new TableRowSorter<>(menuModel);
+			menuTable.setRowSorter(sorter);
+		}
+
+		// Lọc theo tên sản phẩm (giả sử tên ở cột 1)
+		sorter.setRowFilter(new RowFilter<TableModel, Integer>() {
+			@Override
+			public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
+				String tenSP = entry.getStringValue(1);
+				return tenSP.toLowerCase().contains(strSearch.toLowerCase());
+			}
+		});
+
+		// Nếu muốn lấy row đầu tiên match → convert sang model index
+		if (menuTable.getRowCount() > 0) {
+			int viewIndex = 0; // row đầu tiên sau khi lọc
+			int modelIndex = menuTable.convertRowIndexToModel(viewIndex);
+
+//			System.out.println("View index = " + viewIndex);
+//			System.out.println("Model index = " + modelIndex);
+
+			// scroll đến dòng đó
+			menuTable.setRowSelectionInterval(viewIndex, viewIndex);
+			menuTable.scrollRectToVisible(menuTable.getCellRect(viewIndex, 0, true));
+		} else {
+			JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm");
 		}
 	}
 
 	private void taoHoaDon() {
 		// TODO Auto-generated method stub
-		if (menuModel.getRowCount() == 0) {
+		if (orderModel.getRowCount() == 0) {
 			JOptionPane.showMessageDialog(this, "Chưa chọn sản phẩm nào");
 			return;
 		}
 
 		ArrayList<Object[]> orderData = new ArrayList<Object[]>();
 		for (int i = 0; i < orderModel.getRowCount(); i++) {
-			String tenSP = orderModel.getValueAt(i, COL_TEN_SP).toString();
-			int soLuong = (int) orderTable.getValueAt(i, COL_SO_LUONG);
-			double donGia = (double) orderTable.getValueAt(i, COL_TONG_TIEN);
+			String tenSP = orderModel.getValueAt(i, 0).toString();
+			int soLuong = (int) orderModel.getValueAt(i, 1);
+			double donGia = (double) orderModel.getValueAt(i, 2);
 
 			orderData.add(new Object[] { tenSP, soLuong, donGia });
 
@@ -341,6 +382,7 @@ public class Menu_GUI extends JPanel implements ActionListener {
 
 	private void actionFilter() {
 		menuTable.clearSelection(); // làm mới dòng được chọn
+		@SuppressWarnings("unchecked")
 		TableRowSorter<DefaultTableModel> sorter = (TableRowSorter<DefaultTableModel>) menuTable.getRowSorter();
 		RowFilter<DefaultTableModel, Object> rf = null;
 		String filter = (String) cbFilter.getSelectedItem();

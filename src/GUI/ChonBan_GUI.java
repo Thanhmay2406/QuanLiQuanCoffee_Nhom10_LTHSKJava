@@ -46,17 +46,17 @@ public class ChonBan_GUI extends JPanel implements ActionListener, ComponentList
 
 		setLayout(new BorderLayout(10, 10));
 
-		// ---------------- NORTH ----------------
+		// north
 		JPanel pnNorth = new JPanel(new BorderLayout());
 		title = new JLabel("CHỌN BÀN", SwingConstants.CENTER);
 		title.setFont(new Font("Arial", Font.BOLD, 20));
 		pnNorth.add(title, BorderLayout.CENTER);
 		add(pnNorth, BorderLayout.NORTH);
 
-		// ---------------- CENTER ----------------
+		// center
 		JPanel pnCenter = new JPanel(new BorderLayout(10, 10));
 
-		// Bộ lọc
+		// filter
 		JPanel pnFilter = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
 		String[] trangThai_cb = { "Tất cả", "Trống", "Đã đặt", "Đang phục vụ" };
 		cbTrangThaiBan = new JComboBox<>(trangThai_cb);
@@ -64,14 +64,13 @@ public class ChonBan_GUI extends JPanel implements ActionListener, ComponentList
 		pnFilter.add(cbTrangThaiBan);
 		pnCenter.add(pnFilter, BorderLayout.NORTH);
 
-		// Danh sách bàn
 		pnTableDisplay = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 20));
 		JScrollPane spTables = new JScrollPane(pnTableDisplay);
 		spTables.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 		pnCenter.add(spTables, BorderLayout.CENTER);
 		add(pnCenter, BorderLayout.CENTER);
 
-		// ---------------- SOUTH ----------------
+		// south
 		JPanel pnSouth = new JPanel(new BorderLayout());
 		btnQuayLai = new JButton("Quay lại");
 		btnChonBan = new JButton("Chọn bàn");
@@ -79,7 +78,6 @@ public class ChonBan_GUI extends JPanel implements ActionListener, ComponentList
 		pnSouth.add(btnChonBan, BorderLayout.EAST);
 		add(pnSouth, BorderLayout.SOUTH);
 
-		// Sự kiện
 		cbTrangThaiBan.addActionListener(this);
 		btnChonBan.addActionListener(this);
 		btnQuayLai.addActionListener(this);
@@ -88,7 +86,7 @@ public class ChonBan_GUI extends JPanel implements ActionListener, ComponentList
 		loadBanData();
 	}
 
-	// ---------------- ACTION ----------------
+	// action
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object o = e.getSource();
@@ -122,7 +120,6 @@ public class ChonBan_GUI extends JPanel implements ActionListener, ComponentList
 		}
 	}
 
-	// ---------------- LOAD + FILTER ----------------
 	private void loadBanData() {
 		pnTableDisplay.removeAll();
 		tableButtons.clear();
