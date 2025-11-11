@@ -99,19 +99,20 @@ public class MainFrame extends JFrame {
 		SanPham_GUI panelSanPham = new SanPham_GUI(this);
 		panelSanPham.add(new JLabel("Đây là trang Sản Phẩm"));
 		contentPanel.add(panelSanPham, KEY_SAN_PHAM);
+		
+		// Trang Khách Hàng
+		KhachHang_GUI panelKhachHang = new KhachHang_GUI(this);
+//		panelKhachHang.add(new JLabel("Đây là trang Quản lý Khách hàng"));
+		contentPanel.add(panelKhachHang, KEY_KHACH_HANG);
 
 		// Trang giam giá
 		KhuyenMai_GUI panelKhuyenMai = new KhuyenMai_GUI(this);
 		panelKhuyenMai.add(new JLabel("Đây là trang Quản lý Khuyến mãi"));
 		contentPanel.add(panelKhuyenMai, KEY_GIAM_GIA);
 
-		// Trang Khách Hàng
-		KhachHang_GUI panelKhachHang = new KhachHang_GUI(this);
-		panelKhachHang.add(new JLabel("Đây là trang Quản lý Khách hàng"));
-		contentPanel.add(panelKhachHang, KEY_KHACH_HANG);
 		// Trang thống kê
 		ThongKe_GUI panelThongKe = new ThongKe_GUI(this);
-		panelThongKe.add(new JLabel("Đây là trang Thống kê"));
+//		panelThongKe.add(new JLabel("Đây là trang Thống kê"));
 		contentPanel.add(panelThongKe, KEY_THONG_KE);
 
 		// gán key
@@ -120,8 +121,8 @@ public class MainFrame extends JFrame {
 		addNavButton("Đặt bàn", "/img/icon-home.png", KEY_DAT_BAN, navListener);
 		addNavButton("Menu", "/img/icon-menu.png", KEY_BAN_HANG, navListener);
 		addNavButton("Sản phẩm", "/img/icon-product.png", KEY_SAN_PHAM, navListener);
-		addNavButton("Khách hàng", "/img/icon-user.png", KEY_GIAM_GIA, navListener);
-		addNavButton("Khuyến mãi", "/img/icon-discount.png", KEY_KHACH_HANG, navListener);
+		addNavButton("Khách hàng", "/img/icon-user.png", KEY_KHACH_HANG, navListener);
+		addNavButton("Khuyến mãi", "/img/icon-discount.png", KEY_GIAM_GIA, navListener);
 		addNavButton("Thống kê", "/img/icon-statistic.png", KEY_THONG_KE, navListener);
 
 		add(navPanel, BorderLayout.WEST);

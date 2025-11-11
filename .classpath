@@ -7,5 +7,6 @@
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="lib/sqljdbc42.jar"/>
+	<classpathentry kind="lib" path="lib/xchart-3.8.8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
