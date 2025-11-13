@@ -26,7 +26,6 @@ public class ChiTietDatBan {
 	}
 
 	public ChiTietDatBan() {
-		this(null, null, "");
 	}
 
 	public PhieuDatBan getPhieuDatBan() {

@@ -54,6 +54,7 @@ public class MainFrame extends JFrame {
 	private JPanel navPanel;
 	private List<JButton> navButtons;
 	private HoaDon_GUI hoadon_gui;
+	private JButton btnNavHoaDon;
 
 	public MainFrame() {
 		this.hoadon_gui = new HoaDon_GUI(this);
@@ -110,17 +111,18 @@ public class MainFrame extends JFrame {
 		ThongKe_GUI panelThongKe = new ThongKe_GUI(this);
 		contentPanel.add(panelThongKe, KEY_THONG_KE);
 
-		HoaDon_GUI panelHoaDon = new HoaDon_GUI(this);
-		contentPanel.add(panelHoaDon, KEY_HOA_DON);
+		contentPanel.add(this.hoadon_gui, KEY_HOA_DON);
 		// gán key
 		// Thêm các nút vào navPanel
 
 		addNavButton("Đặt bàn", "/img/icon-home.png", KEY_DAT_BAN, navListener);
 		addNavButton("Menu", "/img/icon-menu.png", KEY_BAN_HANG, navListener);
 		addNavButton("Sản phẩm", "/img/icon-product.png", KEY_SAN_PHAM, navListener);
-		addNavButton("Khách hàng", "/img/icon-user.png", KEY_GIAM_GIA, navListener);
-		addNavButton("Khuyến mãi", "/img/icon-discount.png", KEY_KHACH_HANG, navListener);
+		addNavButton("Khách hàng", "/img/icon-user.png", KEY_KHACH_HANG, navListener);
+		addNavButton("Khuyến mãi", "/img/icon-discount.png", KEY_GIAM_GIA, navListener);
 		addNavButton("Thống kê", "/img/icon-statistic.png", KEY_THONG_KE, navListener);
+		btnNavHoaDon = addNavButton("Hóa đơn", "/img/icon-bill.png", KEY_HOA_DON, navListener);
+		btnNavHoaDon.setVisible(false); // ẩn nav hóa đơn
 
 		add(navPanel, BorderLayout.WEST);
 		add(contentPanel, BorderLayout.CENTER);
@@ -131,7 +133,7 @@ public class MainFrame extends JFrame {
 		}
 	}
 
-	private void addNavButton(String text, String iconPath, String actionCommand, ActionListener listener) {
+	private JButton addNavButton(String text, String iconPath, String actionCommand, ActionListener listener) {
 		ImageIcon icon = null;
 		try {
 			java.net.URL imgURL = getClass().getResource(iconPath);
@@ -160,6 +162,12 @@ public class MainFrame extends JFrame {
 		navPanel.add(button);
 		navButtons.add(button);
 		navPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+		return button;
+	}
+
+	// hàm hiển thị nav hóa đơn nếu hóa đã tạo
+	public void setTrangThaiHoaDon(boolean trangThai) {
+		btnNavHoaDon.setVisible(trangThai);
 	}
 
 	private void updateNavButtonStyles(JButton selectedButton) {

@@ -47,7 +47,7 @@ public class HoaDon {
 //Constructor cho việc tạo hóa đơn mới (chưa có mã)
 	public HoaDon(LocalDate ngayTao, String ghiChu, int trangThaiThanhToan, String maKhachHang, String maNhanVien,
 			String maKM, String maPTTT) {
-		this.maHoaDon = null; // Chấp nhận null khi TẠO MỚI
+		this.maHoaDon = null;
 		this.ngayTao = ngayTao;
 		this.ghiChu = ghiChu;
 		this.trangThaiThanhToan = trangThaiThanhToan;
@@ -60,7 +60,6 @@ public class HoaDon {
 	}
 
 	public HoaDon() {
-		this("", LocalDate.now(), "", 0, "", "", "", "");
 	}
 
 	public String getMaKhachHang() {
@@ -108,7 +107,7 @@ public class HoaDon {
 			throw new IllegalArgumentException("Mã hóa đơn không được rỗng");
 
 		if (!maHoaDon.matches("^HD\\d{3}$"))
-			throw new IllegalArgumentException("Mã bàn phải có dạng Bxxx");
+			throw new IllegalArgumentException("Mã hóa đơn phải có dạng HDxxx");
 
 		this.maHoaDon = maHoaDon;
 	}
@@ -139,32 +138,6 @@ public class HoaDon {
 
 	public ArrayList<ChiTietHoaDon> getDsChiTiet() {
 		return dsChiTiet;
-	}
-
-	public String xuatHoaDon() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("\n====== HÓA ĐƠN THANH TOÁN ======\n");
-		sb.append("Mã hóa đơn: ").append(maHoaDon).append("\n");
-		sb.append("Ngày tạo: ").append(ngayTao).append("\n");
-		sb.append("Trạng thái: ").append(trangThaiThanhToan == 1 ? "Đã thanh toán" : "Chưa thanh toán").append("\n");
-		sb.append("--------------------------------\n");
-		sb.append(String.format("%-20s %-8s %-12s %-12s\n", "Sản phẩm", "SL", "Đơn giá", "Thành tiền"));
-		sb.append("--------------------------------\n");
-
-		BigDecimal tongTien = BigDecimal.ZERO;
-
-		for (ChiTietHoaDon ct : dsChiTiet) {
-			sb.append(String.format("%-20s %-8d %-12s %-12s\n", ct.getTenSanPham(), ct.getSoLuong(),
-					ct.getDonGia().toString(), ct.tinhThanhTien().toString()));
-
-			tongTien = tongTien.add(ct.tinhThanhTien());
-		}
-
-		sb.append("--------------------------------\n");
-		sb.append("TỔNG TIỀN: ").append(tongTien.toString()).append(" VND\n");
-		sb.append("================================\n");
-
-		return sb.toString();
 	}
 
 	public boolean themChiTiet(SanPham sp, int soLuong) {

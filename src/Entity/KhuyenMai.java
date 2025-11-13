@@ -25,7 +25,6 @@ public class KhuyenMai {
 
 	public KhuyenMai() {
 		// TODO Auto-generated constructor stub
-		this("", "", 0.0, "", LocalDate.now(), LocalDate.now(), 0);
 	}
 
 	public double getPhanTramGiam() {

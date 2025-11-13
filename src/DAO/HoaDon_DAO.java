@@ -187,4 +187,20 @@ public class HoaDon_DAO {
 		}
 		return null;
 	}
+
+	// hàm giúp cho việc sinh mã hóa đơn
+	public String getMaHoaDonCuoiCung() {
+		String sql = "select top 1 maHoaDon from HoaDon order by maHoaDon DESC";
+		try (PreparedStatement pstm = con.prepareStatement(sql)) {
+			ResultSet rs = pstm.executeQuery();
+			if (rs.next()) {
+				return rs.getString("maHoaDon");
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 }

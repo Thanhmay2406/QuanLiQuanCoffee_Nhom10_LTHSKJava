@@ -31,10 +31,6 @@ public class ChiTietHoaDon {
 	}
 
 	public ChiTietHoaDon() {
-		this.hoaDon = null;
-		this.sanPham = null;
-		this.soLuong = 1;
-		this.donGia = BigDecimal.ZERO;
 	}
 
 	public HoaDon getHoaDon() {

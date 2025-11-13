@@ -22,13 +22,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ConnectDB.ConnectDB;
+import Entity.LoaiSanPham;
 import Entity.SanPham;
 
 public class SanPham_DAO {
 	private Connection con;
+	private LoaiSanPham_DAO lsp_dao;
 
 	public SanPham_DAO() {
 		con = ConnectDB.getInstance().getConnection();
+		this.lsp_dao = new LoaiSanPham_DAO();
 	}
 
 	public List<SanPham> layTatCa() {
@@ -37,9 +40,11 @@ public class SanPham_DAO {
 		try (Statement stm = con.createStatement(); ResultSet rs = stm.executeQuery(sql)) {
 
 			while (rs.next()) {
+				LoaiSanPham lsp = lsp_dao.layTheoMaLoai(rs.getString("maLoaiSP"));
+
 				SanPham sp = new SanPham(rs.getString("maSanPham"), rs.getString("tenSanPham"),
 						rs.getString("donViTinh"), rs.getBigDecimal("gia"), rs.getString("hinhAnh"),
-						rs.getInt("trangThai"), rs.getString("maLoaiSP"));
+						rs.getInt("trangThai"), lsp);
 				ds.add(sp);
 			}
 		} catch (SQLException e) {
@@ -89,9 +94,10 @@ public class SanPham_DAO {
 			ResultSet rs = pstm.executeQuery();
 
 			if (rs.next()) {
+				LoaiSanPham lsp = lsp_dao.layTheoMaLoai(rs.getString("maLoaiSP"));
+
 				return new SanPham(rs.getString("maSanPham"), rs.getString("tenSanPham"), rs.getString("donViTinh"),
-						rs.getBigDecimal("gia"), rs.getString("hinhAnh"), rs.getInt("trangThai"),
-						rs.getString("maLoaiSP"));
+						rs.getBigDecimal("gia"), rs.getString("hinhAnh"), rs.getInt("trangThai"), lsp);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -118,6 +124,7 @@ public class SanPham_DAO {
 			pstm.setString(1, maLoaiSP);
 			ResultSet rs = pstm.executeQuery();
 			while (rs.next()) {
+				LoaiSanPham lsp = lsp_dao.layTheoMaLoai(rs.getString("maLoaiSP"));
 				SanPham sp = new SanPham();
 				sp.setMaSanPham(rs.getString("maSanPham"));
 				sp.setTenSanPham(rs.getString("tenSanPham"));
@@ -125,7 +132,7 @@ public class SanPham_DAO {
 				sp.setGia(rs.getBigDecimal("gia"));
 				sp.sethinhAnh("hinhAnh");
 				sp.setTrangThai(rs.getInt("trangThai"));
-				sp.setmaLoaiSP("maLoaiSP");
+				sp.setLoaiSP(lsp);
 				dsSP.add(sp);
 			}
 		} catch (Exception e) {
@@ -138,25 +145,26 @@ public class SanPham_DAO {
 	}
 
 	public SanPham timSanPhamTheoTen(String tenSanPham) {
-		ArrayList<SanPham> dsSP = new ArrayList<SanPham>();
 		String sql = "select * from SanPham where tenSanPham = ?";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
 			pstm.setString(1, tenSanPham);
 			ResultSet rs = pstm.executeQuery();
-			while (rs.next()) {
+			if (rs.next()) {
 				SanPham sp = new SanPham();
+				LoaiSanPham lsp = lsp_dao.layTheoMaLoai(rs.getString("maLoaiSP"));
+
 				sp.setMaSanPham(rs.getString("maSanPham"));
 				sp.setTenSanPham(rs.getString("tenSanPham"));
-				sp.setDonViTinh("donViTinh");
+				sp.setDonViTinh(rs.getString("donViTinh"));
 				sp.setGia(rs.getBigDecimal("gia"));
-				sp.sethinhAnh("hinhAnh");
+				sp.sethinhAnh(rs.getString("hinhAnh"));
 				sp.setTrangThai(rs.getInt("trangThai"));
-				sp.setmaLoaiSP("maLoaiSP");
-				dsSP.add(sp);
+				sp.setLoaiSP(lsp);
+				return sp;
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.println("Không tìm theo loại được");
+			System.out.println("Không tìm theo tên được");
 			e.printStackTrace();
 		}
 		return null;

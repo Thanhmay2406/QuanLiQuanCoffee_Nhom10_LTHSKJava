@@ -145,10 +145,10 @@ public class KhachHang_DAO {
 		return 0;
 	}
 
-	public boolean capNhatDiemTichLuy(String maKhachHang, int diemTichLuy) {
+	public boolean capNhatDiemTichLuy(String maKhachHang, double diemTichLuyMoi) {
 		String sql = "update KhachHang set diemTichLuy = ?  where maKhachHang = ?";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
-			pstm.setInt(1, diemTichLuy);
+			pstm.setDouble(1, diemTichLuyMoi);
 			pstm.setString(2, maKhachHang);
 			return pstm.executeUpdate() > 0;
 		} catch (Exception e) {

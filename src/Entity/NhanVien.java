@@ -38,7 +38,6 @@ public class NhanVien {
 	}
 
 	public NhanVien() {
-		this("", "", "", "", "", LocalDate.now(), 0);
 	}
 
 	public String getMaNhanVien() {
@@ -48,6 +47,9 @@ public class NhanVien {
 	public void setMaNhanVien(String maNhanVien) {
 		if (maNhanVien == null || maNhanVien.isEmpty())
 			throw new IllegalArgumentException("Mã nhân viên không được rỗng");
+		if (maNhanVien.matches("^NV\\d{3}$"))
+			throw new IllegalArgumentException("Mã nhân viên phải có dạng NVxxx");
+
 		this.maNhanVien = maNhanVien;
 	}
 

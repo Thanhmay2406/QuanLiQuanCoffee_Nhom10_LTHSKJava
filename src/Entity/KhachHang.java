@@ -13,7 +13,6 @@ public class KhachHang {
 	private LocalDate ngayDangKy;
 
 	public KhachHang() {
-		this("", "", "", "", "", 0.0, LocalDate.now());
 	}
 
 	public KhachHang(String maKhachHang, String hoTen, String soDienThoai, String email, String diaChi,

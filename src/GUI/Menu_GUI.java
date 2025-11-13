@@ -1,6 +1,8 @@
 package GUI;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -11,6 +13,8 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -21,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.RowFilter;
 import javax.swing.SwingConstants;
@@ -56,6 +61,8 @@ public class Menu_GUI extends JPanel implements ActionListener {
 	private JButton btnSearch;
 	private JPanel pnFilterRight;
 	private JPanel pnFilterLelf;
+	private JTextArea txtGhiChu;
+	private JLabel lblGhiChu;
 
 	public Menu_GUI(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
@@ -137,8 +144,25 @@ public class Menu_GUI extends JPanel implements ActionListener {
 			}
 		});
 
-		panel.add(new JScrollPane(orderTable), BorderLayout.CENTER);
+		JPanel pnCenter = new JPanel(new BorderLayout());
+		pnCenter.add(new JScrollPane(orderTable), BorderLayout.CENTER);
 
+		lblGhiChu = new JLabel("Ghi chú: ");
+		lblGhiChu.setAlignmentX(Component.LEFT_ALIGNMENT);
+		JPanel pnGhiChu = new JPanel();
+		pnGhiChu.setLayout(new BoxLayout(pnGhiChu, BoxLayout.Y_AXIS));
+		pnGhiChu.add(lblGhiChu);
+		pnGhiChu.add(Box.createVerticalStrut(5));
+		txtGhiChu = new JTextArea();
+		txtGhiChu.setRows(5);
+		txtGhiChu.setLineWrap(true);
+		txtGhiChu.setWrapStyleWord(true);
+		JScrollPane scrollGhiChu = new JScrollPane(txtGhiChu);
+		scrollGhiChu.setPreferredSize(new Dimension(300, 150));
+		scrollGhiChu.setAlignmentX(Component.LEFT_ALIGNMENT);
+		pnGhiChu.add(scrollGhiChu);
+		pnCenter.add(pnGhiChu, BorderLayout.SOUTH);
+		panel.add(pnCenter, BorderLayout.CENTER);
 		btnXoa = new JButton("Xóa");
 		lblTotalOrder = new JLabel("Tổng tiền: 0 VND", SwingConstants.RIGHT);
 		lblTotalOrder.setFont(new Font("Arial", Font.BOLD, 16));
@@ -252,7 +276,7 @@ public class Menu_GUI extends JPanel implements ActionListener {
 		for (SanPham sp : dsSP) {
 			String imgPath = "/img/" + sp.gethinhAnh().trim();
 			ImageIcon icon = editAnhSanPham(imgPath, 50, 45);
-			LoaiSanPham lsp = loaiSP_dao.layTheoMaLoai(sp.getmaLoaiSP());
+			LoaiSanPham lsp = sp.getLoaiSP();
 			String tenlsp;
 			if (lsp == null)
 				tenlsp = "";
@@ -313,6 +337,7 @@ public class Menu_GUI extends JPanel implements ActionListener {
 		} else if (o == cbFilter) {
 			actionFilter();
 		} else if (o == btnTaoHoaDon) {
+			mainFrame.setTrangThaiHoaDon(true);
 			taoHoaDon();
 		} else if (o == btnSearch) {
 			actionSearch();
@@ -334,7 +359,6 @@ public class Menu_GUI extends JPanel implements ActionListener {
 			menuTable.setRowSorter(sorter);
 		}
 
-		// Lọc theo tên sản phẩm (giả sử tên ở cột 1)
 		sorter.setRowFilter(new RowFilter<TableModel, Integer>() {
 			@Override
 			public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
@@ -343,10 +367,8 @@ public class Menu_GUI extends JPanel implements ActionListener {
 			}
 		});
 
-		// Nếu muốn lấy row đầu tiên match → convert sang model index
 		if (menuTable.getRowCount() > 0) {
 			int viewIndex = 0; // row đầu tiên sau khi lọc
-			int modelIndex = menuTable.convertRowIndexToModel(viewIndex);
 
 //			System.out.println("View index = " + viewIndex);
 //			System.out.println("Model index = " + modelIndex);
@@ -371,16 +393,19 @@ public class Menu_GUI extends JPanel implements ActionListener {
 			String tenSP = orderModel.getValueAt(i, 0).toString();
 			int soLuong = (int) orderModel.getValueAt(i, 1);
 			double donGia = (double) orderModel.getValueAt(i, 2);
-
-			orderData.add(new Object[] { tenSP, soLuong, donGia });
+			String ghiChu = txtGhiChu.getText().trim();
+			orderData.add(new Object[] { tenSP, soLuong, donGia, ghiChu });
 
 		}
+		mainFrame.switchToPanel(mainFrame.KEY_HOA_DON);
 		mainFrame.chuyenDanhSachOrderSangHoaDon(orderData);
 		orderModel.setRowCount(0);
-		mainFrame.switchToPanel(mainFrame.KEY_HOA_DON);
+		txtGhiChu.setText("");
+
 	}
 
 	private void actionFilter() {
+		// TODO Auto-generated method stub
 		menuTable.clearSelection(); // làm mới dòng được chọn
 		@SuppressWarnings("unchecked")
 		TableRowSorter<DefaultTableModel> sorter = (TableRowSorter<DefaultTableModel>) menuTable.getRowSorter();
