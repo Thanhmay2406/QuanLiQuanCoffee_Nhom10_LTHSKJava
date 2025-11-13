@@ -133,7 +133,6 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 		// TODO Auto-generated method stub
 		mainFrame.switchToPanel(mainFrame.KEY_CHON_BAN);
 	}
-
 	private void chonMon() {
 		// TODO Auto-generated method stub
 		int selectedRow = table.getSelectedRow();

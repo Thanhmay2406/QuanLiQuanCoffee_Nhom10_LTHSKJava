@@ -10,18 +10,18 @@ public class SanPham {
 	private BigDecimal gia;
 	private String hinhAnh;
 	private int trangThai;
-	private String maLoaiSP;
+	private LoaiSanPham LoaiSP;
 
 	public SanPham() {
 //		super();
-		this("", "", "", new BigDecimal(0.0), "", 0, "");
+		this("", "", "", new BigDecimal(0.0), "", 0, new LoaiSanPham());
 	}
 
 	public SanPham(String maSanPham, String tenSanPham, String donViTinh, BigDecimal gia, String hinhAnh, int trangThai,
-			String maLoaiSP) {
+			LoaiSanPham LoaiSP) {
 		super();
 		setMaSanPham(maSanPham);
-		setmaLoaiSP(maLoaiSP);
+		setLoaiSP(LoaiSP);
 		setTenSanPham(tenSanPham);
 		this.donViTinh = donViTinh;
 		setGia(gia);
@@ -29,15 +29,12 @@ public class SanPham {
 		this.trangThai = trangThai;
 	}
 
-	public String getmaLoaiSP() {
-		return maLoaiSP;
+	public LoaiSanPham getLoaiSP() {
+		return LoaiSP;
 	}
 
-	public void setmaLoaiSP(String maLoaiSP) {
-		if (maLoaiSP == null || !maLoaiSP.matches("^LSP\\d{3}$"))
-			throw new IllegalArgumentException("Mã loại sản phẩm không hợp lệ (phải có dạng LSPxxx)");
-
-		this.maLoaiSP = maLoaiSP;
+	public void setLoaiSP(LoaiSanPham LoaiSP) {
+		this.LoaiSP = LoaiSP;
 	}
 
 	public String getMaSanPham() {

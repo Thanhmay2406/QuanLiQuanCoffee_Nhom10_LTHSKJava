@@ -120,8 +120,8 @@ public class MainFrame extends JFrame {
 		addNavButton("Đặt bàn", "/img/icon-home.png", KEY_DAT_BAN, navListener);
 		addNavButton("Menu", "/img/icon-menu.png", KEY_BAN_HANG, navListener);
 		addNavButton("Sản phẩm", "/img/icon-product.png", KEY_SAN_PHAM, navListener);
-		addNavButton("Khách hàng", "/img/icon-user.png", KEY_GIAM_GIA, navListener);
-		addNavButton("Khuyến mãi", "/img/icon-discount.png", KEY_KHACH_HANG, navListener);
+		addNavButton("Khách hàng", "/img/icon-user.png", KEY_KHACH_HANG, navListener);
+		addNavButton("Khuyến mãi", "/img/icon-discount.png", KEY_GIAM_GIA, navListener);
 		addNavButton("Thống kê", "/img/icon-statistic.png", KEY_THONG_KE, navListener);
 
 		add(navPanel, BorderLayout.WEST);

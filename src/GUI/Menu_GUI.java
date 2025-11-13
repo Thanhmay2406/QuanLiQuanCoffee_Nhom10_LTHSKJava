@@ -99,7 +99,6 @@ public class Menu_GUI extends JPanel implements ActionListener {
 				// Chỉ cho phép sửa cột "Số lượng"
 				return column == COL_SO_LUONG;
 			}
-
 			@Override
 			public void setValueAt(Object aValue, int row, int column) {
 				// Khi số lượng thay đổi
@@ -249,7 +248,7 @@ public class Menu_GUI extends JPanel implements ActionListener {
 		for (SanPham sp : dsSP) {
 			String imgPath = "/img/" + sp.gethinhAnh().trim();
 			ImageIcon icon = editAnhSanPham(imgPath, 50, 45);
-			LoaiSanPham lsp = loaiSP_dao.layTheoMaLoai(sp.getmaLoaiSP());
+			LoaiSanPham lsp = loaiSP_dao.layTheoMaLoai(sp.getLoaiSP().getMaLoaiSP());
 			String tenlsp;
 			if (lsp == null)
 				tenlsp = "";

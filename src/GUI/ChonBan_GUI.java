@@ -121,7 +121,6 @@ public class ChonBan_GUI extends JPanel implements ActionListener, ComponentList
 			JOptionPane.showMessageDialog(this, "Bàn này không thể chọn vì đang bận!");
 		}
 	}
-
 	// ---------------- LOAD + FILTER ----------------
 	private void loadBanData() {
 		pnTableDisplay.removeAll();
