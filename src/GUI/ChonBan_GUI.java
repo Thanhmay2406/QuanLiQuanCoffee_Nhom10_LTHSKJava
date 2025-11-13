@@ -7,6 +7,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -21,7 +23,7 @@ import javax.swing.SwingConstants;
 import DAO.Ban_DAO;
 import Entity.Ban;
 
-public class ChonBan_GUI extends JPanel implements ActionListener {
+public class ChonBan_GUI extends JPanel implements ActionListener, ComponentListener {
 	private MainFrame mainFrame;
 	private JLabel title;
 	private JComboBox<String> cbTrangThaiBan;
@@ -81,7 +83,7 @@ public class ChonBan_GUI extends JPanel implements ActionListener {
 		cbTrangThaiBan.addActionListener(this);
 		btnChonBan.addActionListener(this);
 		btnQuayLai.addActionListener(this);
-
+		addComponentListener(this);
 		// Load dữ liệu
 		loadBanData();
 	}
@@ -98,7 +100,7 @@ public class ChonBan_GUI extends JPanel implements ActionListener {
 			xuLyChonBan();
 
 		else if (o == btnQuayLai)
-			mainFrame.swicthToPanel(mainFrame.KEY_DAT_BAN);
+			mainFrame.switchToPanel(mainFrame.KEY_DAT_BAN);
 	}
 
 	private void xuLyChonBan() {
@@ -113,13 +115,12 @@ public class ChonBan_GUI extends JPanel implements ActionListener {
 			if (hoiNhac == JOptionPane.YES_OPTION) {
 				ban_dao.capNhatTrangThaiBan(ban_selected.getMaBan(), 1);
 				loadBanData();
-				mainFrame.swicthToPanel(mainFrame.KEY_BAN_HANG);
+				mainFrame.switchToPanel(mainFrame.KEY_BAN_HANG);
 			}
 		} else {
 			JOptionPane.showMessageDialog(this, "Bàn này không thể chọn vì đang bận!");
 		}
 	}
-
 	// ---------------- LOAD + FILTER ----------------
 	private void loadBanData() {
 		pnTableDisplay.removeAll();
@@ -174,6 +175,7 @@ public class ChonBan_GUI extends JPanel implements ActionListener {
 			case "Đang phục vụ" -> ban.getTrangThai() == 2;
 			default -> true;
 			};
+			setBanStyle(btn, ban.getTrangThai());
 			btn.setVisible(visible);
 		}
 		pnTableDisplay.revalidate();
@@ -188,5 +190,29 @@ public class ChonBan_GUI extends JPanel implements ActionListener {
 		case 2 -> COLOR_DANG_PHUC_VU;
 		default -> Color.GRAY;
 		});
+	}
+
+	@Override
+	public void componentResized(ComponentEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void componentMoved(ComponentEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void componentShown(ComponentEvent e) {
+		// TODO Auto-generated method stub
+		loadBanData();
+	}
+
+	@Override
+	public void componentHidden(ComponentEvent e) {
+		// TODO Auto-generated method stub
+
 	}
 }

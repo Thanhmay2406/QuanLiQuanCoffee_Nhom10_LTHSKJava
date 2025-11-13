@@ -20,8 +20,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -39,7 +37,7 @@ import javax.swing.table.DefaultTableModel;
 import DAO.PhieuDatBan_DAO;
 import Entity.PhieuDatBan;
 
-public class DatBan_GUI extends JPanel implements ActionListener, MouseListener, ComponentListener {
+public class DatBan_GUI extends JPanel implements ActionListener, ComponentListener {
 
 	private JLabel title;
 	private JButton btnSearch, btnChonBan, btnChonMon;
@@ -99,36 +97,6 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		Object o = e.getSource();
@@ -163,9 +131,8 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 
 	private void chonBan() {
 		// TODO Auto-generated method stub
-		mainFrame.swicthToPanel(mainFrame.KEY_CHON_BAN);
+		mainFrame.switchToPanel(mainFrame.KEY_CHON_BAN);
 	}
-
 	private void chonMon() {
 		// TODO Auto-generated method stub
 		int selectedRow = table.getSelectedRow();
@@ -176,7 +143,7 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 			if (trangThai.equals("Chưa sử dụng")) {
 				try {
 					pdb_dao.capNhatTrangThaiPhieu(maPhieu, 1);
-					mainFrame.swicthToPanel(mainFrame.KEY_BAN_HANG);
+					mainFrame.switchToPanel(mainFrame.KEY_BAN_HANG);
 					modelTabel.setValueAt("Đang sử dụng", selectedRow, 6); // set "Đã sử dụng" khi nhấn thanh toán
 				} catch (Exception e) {
 					// TODO: handle exception
