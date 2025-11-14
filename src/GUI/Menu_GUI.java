@@ -11,7 +11,10 @@ import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -38,6 +41,8 @@ import javax.swing.table.TableRowSorter;
 
 import DAO.LoaiSanPham_DAO;
 import DAO.SanPham_DAO;
+import Entity.ChiTietHoaDon;
+import Entity.HoaDon;
 import Entity.LoaiSanPham;
 import Entity.SanPham;
 
@@ -64,23 +69,30 @@ public class Menu_GUI extends JPanel implements ActionListener {
 	private JTextArea txtGhiChu;
 	private JLabel lblGhiChu;
 
+	private HoaDon hoaDonHienTai;
+
 	public Menu_GUI(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
 		this.sp_dao = new SanPham_DAO();
 		this.loaiSP_dao = new LoaiSanPham_DAO();
+
+		this.hoaDonHienTai = new HoaDon();
+		this.hoaDonHienTai.setNgayTao(LocalDate.now());
+		this.hoaDonHienTai.setTrangThaiThanhToan(0); // chưa thanh toán
+
 		setLayout(new BorderLayout());
 
-		// ----- NORTH: Tiêu đề "Menu" -----
+		// pnNorth
 		JLabel title = new JLabel("Menu", SwingConstants.CENTER);
 		title.setFont(new Font("Arial", Font.BOLD, 20));
 		add(title, BorderLayout.NORTH);
 
-		// ----- CENTER: Hai panel chính -----
+		// pnCenter
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, createOrderPanel(), createMenuPanel());
 		splitPane.setResizeWeight(0.4); // Panel Order chiếm 40%
 		add(splitPane, BorderLayout.CENTER);
 
-		// ----- SOUTH: Các nút footer -----
+		// pnSouth
 		JPanel pnSouth = new JPanel(new BorderLayout());
 		btnTrangChu = new JButton("Trang chủ");
 		btnTaoHoaDon = new JButton("Tạo hóa đơn");
@@ -88,7 +100,6 @@ public class Menu_GUI extends JPanel implements ActionListener {
 		pnSouth.add(btnTaoHoaDon, BorderLayout.EAST);
 		add(pnSouth, BorderLayout.SOUTH);
 
-		// ----- Thêm sự kiện -----
 		btnDat.addActionListener(this);
 		btnTaoHoaDon.addActionListener(this);
 		btnTrangChu.addActionListener(this);
@@ -111,14 +122,25 @@ public class Menu_GUI extends JPanel implements ActionListener {
 			@Override
 			public void setValueAt(Object aValue, int row, int column) {
 				if (column == COL_SO_LUONG) {
-					int quantity = (Integer) aValue;
-					if (quantity < 0)
+					int quantity = 1;
+					try {
+						quantity = Integer.parseInt(aValue.toString());
+					} catch (NumberFormatException e) {
+						quantity = 1;
+					}
+					if (quantity <= 0)
 						quantity = 1;
 
-					super.setValueAt(quantity, row, column);
+					String tenSP = (String) getValueAt(row, COL_TEN_SP);
 
-					double price = (Double) getValueAt(row, COL_GIA);
-					super.setValueAt(quantity * price, row, COL_TONG_TIEN);
+					for (ChiTietHoaDon ct : hoaDonHienTai.getDsChiTiet()) {
+						if (ct.getSanPham().getTenSanPham().equalsIgnoreCase(tenSP)) {
+							ct.setSoLuong(quantity);
+							break;
+						}
+					}
+					refreshOrderTable();
+
 				} else {
 					super.setValueAt(aValue, row, column);
 				}
@@ -127,20 +149,19 @@ public class Menu_GUI extends JPanel implements ActionListener {
 
 		orderTable = new JTable(orderModel);
 
-		// Gắn Renderer và Editor tùy chỉnh vào cột "Số lượng"
 		orderTable.getColumnModel().getColumn(COL_SO_LUONG).setCellRenderer(new QuantityCellRenderer());
 		orderTable.getColumnModel().getColumn(COL_SO_LUONG).setCellEditor(new QuantityCellEditor());
 		orderTable.setRowHeight(35);
 
-		// Ẩn cột "Đơn Giá" (dùng để tính toán)
 		orderTable.getColumnModel().removeColumn(orderTable.getColumn("Đơn Giá"));
-		// ------------------------------------
 
-		// Thêm listener để cập nhật tổng tiền ở footer
 		orderModel.addTableModelListener(new TableModelListener() {
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				updateTotalOrder();
+				if (e.getType() == TableModelEvent.UPDATE || e.getType() == TableModelEvent.INSERT
+						|| e.getType() == TableModelEvent.DELETE) {
+					updateTotalOrder();
+				}
 			}
 		});
 
@@ -174,11 +195,10 @@ public class Menu_GUI extends JPanel implements ActionListener {
 		return panel;
 	}
 
-	// Panel "Menu" bên phải
+	// menu
 	private JPanel createMenuPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 
-		// Panel lọc và tìm kiếm
 		JPanel pnFilter = new JPanel(new BorderLayout());
 		ArrayList<LoaiSanPham> dsLSP = (ArrayList<LoaiSanPham>) loaiSP_dao.layTatCa();
 		String loaiSP = "Tất cả,";
@@ -202,7 +222,6 @@ public class Menu_GUI extends JPanel implements ActionListener {
 		panel.add(pnFilter, BorderLayout.NORTH);
 
 		btnSearch.addActionListener(this);
-		// Bảng danh sách menu
 		String[] menuCols = { "Hình ảnh", "Tên sản phẩm", "Đơn vị tính", "Loại", "Giá" };
 		menuModel = new DefaultTableModel(menuCols, 0) {
 			@Override
@@ -227,7 +246,7 @@ public class Menu_GUI extends JPanel implements ActionListener {
 		DefaultTableCellRenderer contenntRender = new DefaultTableCellRenderer();
 		contenntRender.setHorizontalAlignment(JLabel.CENTER);
 		menuTable.setDefaultRenderer(Object.class, contenntRender);
-		// Tạo filter cho Jtable
+		// tạo filter cho Jtable
 		TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<DefaultTableModel>(menuModel);
 		menuTable.setRowSorter(sorter);
 		panel.add(new JScrollPane(menuTable), BorderLayout.CENTER);
@@ -252,14 +271,11 @@ public class Menu_GUI extends JPanel implements ActionListener {
 			ImageIcon anhGoc = new ImageIcon(imgURL);
 			Image img = anhGoc.getImage();
 
-			// Tạo ảnh mới với kênh alpha (để giữ độ trong suốt)
 			BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g2d = bi.createGraphics();
 
-			// Bật chế độ scaling mượt
 			g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-			// Vẽ ảnh cũ vào ảnh mới
 			g2d.drawImage(img, 0, 0, width, height, null);
 			g2d.dispose();
 			return new ImageIcon(bi);
@@ -270,7 +286,6 @@ public class Menu_GUI extends JPanel implements ActionListener {
 		}
 	}
 
-	// Tải dữ liệu giả lập cho bảng menu
 	private void loadMenuData() {
 		ArrayList<SanPham> dsSP = (ArrayList<SanPham>) sp_dao.layTatCa();
 		for (SanPham sp : dsSP) {
@@ -288,13 +303,32 @@ public class Menu_GUI extends JPanel implements ActionListener {
 		}
 	}
 
-	// Cập nhật tổng tiền ở footer của panel Order
-	private void updateTotalOrder() {
-		double total = 0;
-		for (int i = 0; i < orderModel.getRowCount(); i++) {
-			total += (Double) orderModel.getValueAt(i, COL_TONG_TIEN);
+	private void refreshOrderTable() {
+		TableModelListener[] listeners = orderModel.getTableModelListeners();
+		for (TableModelListener l : listeners) {
+			orderModel.removeTableModelListener(l);
 		}
-		lblTotalOrder.setText(String.format("Tổng tiền: %,.0f VND", total));
+
+		orderModel.setRowCount(0);
+
+		List<ChiTietHoaDon> dsChiTiet = hoaDonHienTai.getDsChiTiet();
+		for (ChiTietHoaDon ct : dsChiTiet) {
+			SanPham sp = ct.getSanPham();
+			orderModel.addRow(new Object[] { sp.getTenSanPham(), ct.getSoLuong(), ct.getDonGia().doubleValue(),
+					ct.tinhThanhTien().doubleValue() });
+		}
+
+		for (TableModelListener l : listeners) {
+			orderModel.addTableModelListener(l);
+			orderTable.revalidate(); // Báo cho layout manager tính toán lại
+			orderTable.repaint(); // Yêu cầu vẽ lại JTable ngay lập tức
+		}
+		updateTotalOrder();
+	}
+
+	private void updateTotalOrder() {
+		BigDecimal total = hoaDonHienTai.tinhTongTien();
+		lblTotalOrder.setText(String.format("Tổng tiền: %,.0f VND", total.doubleValue()));
 	}
 
 	@Override
@@ -309,41 +343,62 @@ public class Menu_GUI extends JPanel implements ActionListener {
 			}
 			int selectedRowInModel = menuTable.convertRowIndexToModel(selectedRow);
 
-			String tenSP = menuModel.getValueAt(selectedRowInModel, 1).toString();
-			double donGia = Double.parseDouble(menuModel.getValueAt(selectedRowInModel, 4).toString());
+			String tenSP = menuModel.getValueAt(selectedRowInModel, 1).toString().trim();
 
-			// Kiểm tra xem món đã có trong order chưa
-			for (int i = 0; i < orderModel.getRowCount(); i++) {
-				if (orderModel.getValueAt(i, COL_TEN_SP).equals(tenSP)) {
-					JOptionPane.showMessageDialog(this, "Món này đã có trong Order.");
-					return;
-				}
+			SanPham sp = sp_dao.timSanPhamTheoTen(tenSP);
+
+			if (sp == null) {
+				JOptionPane.showMessageDialog(this, "Lỗi: Không tìm thấy sản phẩm '" + tenSP + "' trong CSDL.");
+				return;
 			}
 
-			// Thêm món mới vào order với số lượng 1
-			orderModel.addRow(new Object[] { tenSP, 1, donGia, donGia });
+			hoaDonHienTai.themChiTiet(sp, 1);
+			refreshOrderTable();
+
 		} else if (o == btnTrangChu) {
 			mainFrame.switchToPanel(MainFrame.KEY_DAT_BAN);
+
 		} else if (o == btnXoa) {
 			int[] selected_rows = orderTable.getSelectedRows();
-			if (selected_rows.length != 0) {
-				for (int i = selected_rows.length - 1; i >= 0; i--) {
-					int row_index = selected_rows[i];
-					orderModel.removeRow(row_index);
-				}
-			} else {
+			if (selected_rows.length == 0) {
 				JOptionPane.showMessageDialog(this, "Vui lòng chọn chi tiết để xóa");
+				return;
 			}
+
+			ArrayList<String> tenSanPhamCanXoa = new ArrayList<>();
+			for (int i = selected_rows.length - 1; i >= 0; i--) {
+				int row_index = selected_rows[i];
+				String tenSP = orderModel.getValueAt(row_index, COL_TEN_SP).toString();
+				tenSanPhamCanXoa.add(tenSP);
+			}
+
+			// Xóa khỏi Entity
+			for (String tenSP : tenSanPhamCanXoa) {
+				// Lại phải gọi DAO để tìm mã SP từ tên
+				// TODO: Cần tạo hàm `timTheoTen` trong SanPham_DAO
+				SanPham sp = sp_dao.timSanPhamTheoTen(tenSP);
+				if (sp != null) {
+					// GỌI PHƯƠNG THỨC ENTITY
+					// TODO: Cần tạo hàm `xoaChiTiet(String maSanPham)` trong HoaDon
+					hoaDonHienTai.xoaChiTiet(sp.getMaSanPham());
+				}
+			}
+
+			// Cập nhật GUI
+			refreshOrderTable();
+
 		} else if (o == cbFilter) {
 			actionFilter();
 		} else if (o == btnTaoHoaDon) {
 			mainFrame.setTrangThaiHoaDon(true);
+			// === THAY ĐỔI 8: Gọi hàm `taoHoaDon` đã được sửa ===
 			taoHoaDon();
 		} else if (o == btnSearch) {
 			actionSearch();
 		}
 	}
 
+	// (Giữ nguyên, không thay đổi)
 	private void actionSearch() {
 		String strSearch = txtSearch.getText().trim();
 		if (strSearch.isEmpty()) {
@@ -369,11 +424,6 @@ public class Menu_GUI extends JPanel implements ActionListener {
 
 		if (menuTable.getRowCount() > 0) {
 			int viewIndex = 0; // row đầu tiên sau khi lọc
-
-//			System.out.println("View index = " + viewIndex);
-//			System.out.println("Model index = " + modelIndex);
-
-			// scroll đến dòng đó
 			menuTable.setRowSelectionInterval(viewIndex, viewIndex);
 			menuTable.scrollRectToVisible(menuTable.getCellRect(viewIndex, 0, true));
 		} else {
@@ -381,29 +431,34 @@ public class Menu_GUI extends JPanel implements ActionListener {
 		}
 	}
 
+	// === THAY ĐỔI 9: Sửa hàm `taoHoaDon` ===
 	private void taoHoaDon() {
-		// TODO Auto-generated method stub
-		if (orderModel.getRowCount() == 0) {
+		// Kiểm tra bằng Entity
+		if (hoaDonHienTai.getDsChiTiet().isEmpty()) {
 			JOptionPane.showMessageDialog(this, "Chưa chọn sản phẩm nào");
 			return;
 		}
 
-		ArrayList<Object[]> orderData = new ArrayList<Object[]>();
-		for (int i = 0; i < orderModel.getRowCount(); i++) {
-			String tenSP = orderModel.getValueAt(i, 0).toString();
-			int soLuong = (int) orderModel.getValueAt(i, 1);
-			double donGia = (double) orderModel.getValueAt(i, 2);
-			String ghiChu = txtGhiChu.getText().trim();
-			orderData.add(new Object[] { tenSP, soLuong, donGia, ghiChu });
+		// Cập nhật ghi chú từ GUI vào Entity
+		hoaDonHienTai.setGhiChu(txtGhiChu.getText().trim());
 
-		}
+		// Chuyển đối tượng HoaDon (Entity) sang màn hình Hóa Đơn
+		// TODO: Bạn cần sửa/thêm hàm này trong MainFrame
+		mainFrame.chuyenHoaDonSangManHinhThanhToan(hoaDonHienTai);
+
 		mainFrame.switchToPanel(mainFrame.KEY_HOA_DON);
-		mainFrame.chuyenDanhSachOrderSangHoaDon(orderData);
-		orderModel.setRowCount(0);
-		txtGhiChu.setText("");
 
+		// Reset giỏ hàng (tạo hóa đơn mới) cho phiên làm việc tiếp theo
+		this.hoaDonHienTai = new HoaDon();
+		this.hoaDonHienTai.setNgayTao(LocalDate.now());
+		this.hoaDonHienTai.setTrangThaiThanhToan(0);
+
+		// Dọn dẹp GUI
+		refreshOrderTable(); // JTable sẽ tự động bị xóa
+		txtGhiChu.setText("");
 	}
 
+	// (Giữ nguyên, không thay đổi)
 	private void actionFilter() {
 		// TODO Auto-generated method stub
 		menuTable.clearSelection(); // làm mới dòng được chọn

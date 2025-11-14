@@ -17,85 +17,88 @@ package Entity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 public class HoaDon {
 	private String maHoaDon;
 	private LocalDate ngayTao;
 	private String ghiChu;
 	private int trangThaiThanhToan;
-	private String maKhachHang;
-	private String maNhanVien;
-	private String maKM;
-	private String maPTTT;
+	private KhachHang khachHang;
+	private NhanVien nhanVien;
+	private KhuyenMai khuyenMai;
+	private PhuongThucThanhToan phuongThucThanhToan;
+	private List<ChiTietHoaDon> dsChiTiet;
+	private BigDecimal tienGiamTuDiem;
 
-	private ArrayList<ChiTietHoaDon> dsChiTiet;
+	public HoaDon() {
+		this.dsChiTiet = new ArrayList<>();
+		this.ngayTao = LocalDate.now();
+		this.trangThaiThanhToan = 0;
+		this.tienGiamTuDiem = BigDecimal.ZERO;
+		this.ghiChu = "";
+		this.nhanVien = null;
+	}
 
-// Constructor cho việc lấy hóa đơn từ CSDL
-	public HoaDon(String maHoaDon, LocalDate ngayTao, String ghiChu, int trangThaiThanhToan, String maKhachHang,
-			String maNhanVien, String maKM, String maPTTT) {
+	public HoaDon(String maHoaDon, LocalDate ngayTao, String ghiChu, int trangThaiThanhToan, KhachHang khachHang,
+			NhanVien nhanVien, KhuyenMai khuyenMai, PhuongThucThanhToan phuongThucThanhToan) {
+		this();
 		this.maHoaDon = maHoaDon;
 		this.ngayTao = ngayTao;
 		this.ghiChu = ghiChu;
 		this.trangThaiThanhToan = trangThaiThanhToan;
-		this.dsChiTiet = new ArrayList<>();
-		this.maKhachHang = maKhachHang;
-		this.maNhanVien = maNhanVien;
-		this.maKM = maKM;
-		this.maPTTT = maPTTT;
+		this.khachHang = khachHang;
+		this.nhanVien = nhanVien;
+		this.khuyenMai = khuyenMai;
+		this.phuongThucThanhToan = phuongThucThanhToan;
 	}
 
-//Constructor cho việc tạo hóa đơn mới (chưa có mã)
-	public HoaDon(LocalDate ngayTao, String ghiChu, int trangThaiThanhToan, String maKhachHang, String maNhanVien,
-			String maKM, String maPTTT) {
-		this.maHoaDon = null;
-		this.ngayTao = ngayTao;
-		this.ghiChu = ghiChu;
-		this.trangThaiThanhToan = trangThaiThanhToan;
-		this.maKhachHang = maKhachHang;
-		this.maNhanVien = maNhanVien;
-		this.maKM = maKM;
-		this.maPTTT = maPTTT;
-		this.dsChiTiet = new ArrayList<>();
-
+	public KhachHang getKhachHang() {
+		return khachHang;
 	}
 
-	public HoaDon() {
+	public void setKhachHang(KhachHang khachHang) {
+		this.khachHang = khachHang;
 	}
 
-	public String getMaKhachHang() {
-		return maKhachHang;
+	public NhanVien getNhanVien() {
+		return nhanVien;
 	}
 
-	public void setMaKhachHang(String maKhachHang) {
-		this.maKhachHang = maKhachHang;
+	public void setNhanVien(NhanVien nhanVien) {
+		this.nhanVien = nhanVien;
 	}
 
-	public String getMaNhanVien() {
-		return maNhanVien;
+	public KhuyenMai getKhuyenMai() {
+		return khuyenMai;
 	}
 
-	public void setMaNhanVien(String maNhanVien) {
-		this.maNhanVien = maNhanVien;
+	public void setKhuyenMai(KhuyenMai khuyenMai) {
+		this.khuyenMai = khuyenMai;
 	}
 
-	public String getMaKM() {
-		return maKM;
+	public PhuongThucThanhToan getPhuongThucThanhToan() {
+		return phuongThucThanhToan;
 	}
 
-	public void setMaKM(String maKM) {
-		this.maKM = maKM;
+	public void setPhuongThucThanhToan(PhuongThucThanhToan pttt) {
+		this.phuongThucThanhToan = pttt;
 	}
 
-	public String getMaPTTT() {
-		return maPTTT;
+	public List<ChiTietHoaDon> getDsChiTiet() {
+		return dsChiTiet;
 	}
 
-	public void setMaPTTT(String maPTTT) {
-		this.maPTTT = maPTTT;
-	}
-
-	public void setDsChiTiet(ArrayList<ChiTietHoaDon> dsChiTiet) {
+	public void setDsChiTiet(List<ChiTietHoaDon> dsChiTiet) {
 		this.dsChiTiet = dsChiTiet;
+	}
+
+	public int getTrangThaiThanhToan() {
+		return trangThaiThanhToan;
+	}
+
+	public void setTrangThaiThanhToan(int trangThai) {
+		this.trangThaiThanhToan = trangThai;
 	}
 
 	public String getMaHoaDon() {
@@ -103,12 +106,6 @@ public class HoaDon {
 	}
 
 	public void setMaHoaDon(String maHoaDon) {
-		if (maHoaDon == null || maHoaDon.isEmpty())
-			throw new IllegalArgumentException("Mã hóa đơn không được rỗng");
-
-		if (!maHoaDon.matches("^HD\\d{3}$"))
-			throw new IllegalArgumentException("Mã hóa đơn phải có dạng HDxxx");
-
 		this.maHoaDon = maHoaDon;
 	}
 
@@ -128,16 +125,12 @@ public class HoaDon {
 		this.ghiChu = ghiChu;
 	}
 
-	public int getTrangThaiThanhToan() {
-		return trangThaiThanhToan;
+	public BigDecimal getTienGiamTuDiem() {
+		return tienGiamTuDiem;
 	}
 
-	public void setTrangThaiThanhToan(int trangThaiThanhToan) {
-		this.trangThaiThanhToan = trangThaiThanhToan;
-	}
-
-	public ArrayList<ChiTietHoaDon> getDsChiTiet() {
-		return dsChiTiet;
+	public void setTienGiamTuDiem(BigDecimal tienGiamTuDiem) {
+		this.tienGiamTuDiem = tienGiamTuDiem;
 	}
 
 	public boolean themChiTiet(SanPham sp, int soLuong) {
@@ -145,54 +138,51 @@ public class HoaDon {
 			return false;
 
 		for (ChiTietHoaDon ct : dsChiTiet) {
-			if (ct.getMaSanPham().equalsIgnoreCase(sp.getMaSanPham())) {
+			if (ct.getSanPham().getMaSanPham().equalsIgnoreCase(sp.getMaSanPham())) {
 				ct.setSoLuong(ct.getSoLuong() + soLuong);
 				return true;
 			}
 		}
 
-		BigDecimal donGia = sp.getGia();
-		ChiTietHoaDon ctHD = new ChiTietHoaDon(this, sp, soLuong, donGia);
+		BigDecimal donGiaLucMua = sp.getGia();
+		ChiTietHoaDon ctHD = new ChiTietHoaDon(this, sp, soLuong, donGiaLucMua);
 		dsChiTiet.add(ctHD);
 		return true;
 	}
 
-	public boolean xoaChiTiet(ChiTietHoaDon ctHD) {
-		if (ctHD == null)
+	public boolean xoaChiTiet(String maSanPham) {
+		if (maSanPham == null || maSanPham.isEmpty()) {
 			return false;
-		return dsChiTiet.remove(ctHD);
+		}
+		return dsChiTiet.removeIf(ct -> ct.getSanPham().getMaSanPham().equalsIgnoreCase(maSanPham));
 	}
 
 	public BigDecimal tinhTongTien() {
 		BigDecimal tong = BigDecimal.ZERO;
-
 		for (ChiTietHoaDon ct : dsChiTiet) {
 			tong = tong.add(ct.tinhThanhTien());
 		}
-
 		return tong;
 	}
 
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("===== THÔNG TIN HÓA ĐƠN =====\n");
-		sb.append("Mã hóa đơn: ").append(maHoaDon).append("\n");
-		sb.append("Ngày tạo: ").append(ngayTao).append("\n");
-		sb.append("Trạng thái: ").append(trangThaiThanhToan == 1 ? "Đã thanh toán" : "Chưa thanh toán").append("\n");
-		sb.append("Ghi chú: ").append(ghiChu).append("\n");
-		sb.append("------------------------------\n");
-
-		if (dsChiTiet.isEmpty()) {
-			sb.append("Không có chi tiết hóa đơn.\n");
-		} else {
-			for (ChiTietHoaDon ct : dsChiTiet) {
-				sb.append(ct).append("\n");
-			}
+	public BigDecimal tinhTongGiamTuKM() {
+		if (this.khuyenMai == null) {
+			return BigDecimal.ZERO;
 		}
-
-		sb.append("============================\n");
-		return sb.toString();
+		BigDecimal tongTien = tinhTongTien();
+		BigDecimal phanTramGiam = BigDecimal.valueOf(this.khuyenMai.getphanTramGiam());
+		return tongTien.multiply(phanTramGiam);
 	}
 
+	public BigDecimal tinhTongThanhToan() {
+		BigDecimal tongTien = tinhTongTien();
+		BigDecimal giamKM = tinhTongGiamTuKM();
+		BigDecimal giamDiem = getTienGiamTuDiem();
+		BigDecimal thanhTien = tongTien.subtract(giamKM).subtract(giamDiem);
+
+		if (thanhTien.compareTo(BigDecimal.ZERO) < 0) {
+			return BigDecimal.ZERO;
+		}
+		return thanhTien;
+	}
 }

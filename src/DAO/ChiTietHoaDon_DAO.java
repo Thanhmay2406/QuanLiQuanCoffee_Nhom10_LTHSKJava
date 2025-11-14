@@ -22,72 +22,80 @@ import java.util.List;
 
 import ConnectDB.ConnectDB;
 import Entity.ChiTietHoaDon;
-import Entity.HoaDon; // Cần để tạo đối tượng
-import Entity.SanPham; // Cần để tạo đối tượng
+import Entity.SanPham;
 
+/**
+ * @description DAO cho ChiTietHoaDon, đã được refactor
+ * @author: Van Long
+ * @date: Nov 13, 2025
+ * @version: 2.0
+ */
 public class ChiTietHoaDon_DAO {
 
-	private Connection con;
+	// DAO phụ
 	private SanPham_DAO sanPham_DAO;
+	// Lưu ý: Không nên khởi tạo HoaDon_DAO ở đây để tránh lỗi lặp vô hạn
 
 	public ChiTietHoaDon_DAO() {
-		con = ConnectDB.getInstance().getConnection();
 		sanPham_DAO = new SanPham_DAO();
 	}
 
 	/**
-	 * Lấy tất cả chi tiết của 1 hóa đơn
+	 * === THAY ĐỔI: Thêm Chi Tiết (dùng cho Transaction) === Hàm này nhận
+	 * Connection từ HoaDon_DAO để đảm bảo Giao dịch
 	 */
-	public List<ChiTietHoaDon> layChiTietTheoMaHD(String maHD) {
-		List<ChiTietHoaDon> dsChiTietHoaDon = new ArrayList<>();
-		String sql = "SELECT * FROM ChiTietHoaDon WHERE maHoaDon = ?";
-		try (PreparedStatement pstm = con.prepareStatement(sql)) {
-			pstm.setString(1, maHD);
-			ResultSet rs = pstm.executeQuery();
-
-			while (rs.next()) {
-				HoaDon hd = new HoaDon();
-				hd.setMaHoaDon(maHD);
-				SanPham sp = sanPham_DAO.timTheoMa(rs.getString("maSanPham"));
-				sp.setMaSanPham(rs.getString("maSanPham"));
-
-				ChiTietHoaDon ct = new ChiTietHoaDon(hd, sp, rs.getInt("soLuong"), rs.getBigDecimal("donGia"));
-				dsChiTietHoaDon.add(ct);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return dsChiTietHoaDon;
-	}
-
-	/**
-	 * Thêm một chi tiết hóa đơn (dùng cho Transaction của HoaDon_DAO)
-	 */
-	public boolean themChiTiet(ChiTietHoaDon ct, Connection transCon) {
+	public boolean themChiTiet(ChiTietHoaDon ct, Connection con) throws SQLException {
 		String sql = "INSERT INTO ChiTietHoaDon (maHoaDon, maSanPham, soLuong, donGia) VALUES (?, ?, ?, ?)";
-		try (PreparedStatement pstm = transCon.prepareStatement(sql)) {
-			pstm.setString(1, ct.getMaHoaDon());
-			pstm.setString(2, ct.getMaSanPham());
+
+		// Không tạo connection mới, dùng connection được truyền vào
+		try (PreparedStatement pstm = con.prepareStatement(sql)) {
+			pstm.setString(1, ct.getHoaDon().getMaHoaDon());
+			pstm.setString(2, ct.getSanPham().getMaSanPham());
 			pstm.setInt(3, ct.getSoLuong());
 			pstm.setBigDecimal(4, ct.getDonGia());
 
 			return pstm.executeUpdate() > 0;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return false;
 		}
+		// Không catch, để `finally` của HoaDon_DAO xử lý rollback
 	}
 
-	public boolean xoaChiTietHoaDon(String maHoaDon, String maSanPham) {
-		String sql = "delete from ChiTietHoaDon where maHoaDon = ? and maSanPham = ?";
+	/**
+	 * === THAY ĐỔI: Lấy chi tiết theo mã Hóa Đơn === Hàm này phải "lắp ráp"
+	 * (hydrate) các đối tượng
+	 */
+	public List<ChiTietHoaDon> layChiTietTheoMaHoaDon(String maHoaDon) {
+		List<ChiTietHoaDon> ds = new ArrayList<>();
+		String sql = "SELECT * FROM ChiTietHoaDon WHERE maHoaDon = ?";
+
+		// Cần có HoaDon_DAO để lấy đối tượng HoaDon (nếu cần)
+		// Nhưng chúng ta có thể truyền đối tượng HoaDon vào
+		// Tuy nhiên, để đơn giản, ta chỉ cần set `null` và `maHoaDon`
+
+		// Lấy connection mới vì đây là 1 truy vấn độc lập
+		Connection con = ConnectDB.getInstance().getConnection();
+
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
 			pstm.setString(1, maHoaDon);
-			pstm.setString(2, maSanPham);
-			return pstm.executeUpdate() > 0;
-		} catch (Exception e) {
-			// TODO: handle exception
+			ResultSet rs = pstm.executeQuery();
+
+			while (rs.next()) {
+				// 1. Lấy mã SanPham (String) từ CSDL
+				String maSP = rs.getString("maSanPham");
+				// 2. Dùng DAO phụ để lấy đối tượng SanPham đầy đủ
+				SanPham sp = sanPham_DAO.timTheoMa(maSP); // Giả định bạn có hàm `timTheoMa`
+
+				int soLuong = rs.getInt("soLuong");
+				java.math.BigDecimal donGia = rs.getBigDecimal("donGia");
+
+				// 3. Tạo đối tượng ChiTietHoaDon
+				// Chúng ta không cần đối tượng HoaDon ở đây (để tránh lặp)
+				// nên ta truyền `null`
+				ChiTietHoaDon ct = new ChiTietHoaDon(null, sp, soLuong, donGia);
+				ds.add(ct);
+			}
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return false;
+		return ds;
 	}
 }

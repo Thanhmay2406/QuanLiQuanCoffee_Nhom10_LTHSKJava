@@ -63,5 +63,21 @@ public class PhuongThucThanhToan_DAO {
 		return null;
 	}
 
+	public PhuongThucThanhToan layPTTTTheoMa(String maPTTT) {
+		String sql = "select * from PhuongThucThanhToan where maPTTT = ?";
+		try (PreparedStatement pstm = con.prepareStatement(sql)) {
+			pstm.setString(1, maPTTT);
+			ResultSet rs = pstm.executeQuery();
+			if (rs.next()) {
+				PhuongThucThanhToan pttt = new PhuongThucThanhToan(rs.getString("maPTTT"), rs.getString("tenPTTT"),
+						rs.getInt("trangThai"), rs.getString("moTa"));
+				return pttt;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	// ... Thêm các hàm them, capNhat nếu dự án của bạn cho phép quản lý PTTT
 }

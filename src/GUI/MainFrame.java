@@ -1,9 +1,217 @@
-/*
- * @ (#) Interface.java   1.0     Oct 31, 2025
- *
- * Copyright (c) 2025 IUH.
- * All rights reserved.
- */
+///*
+// * @ (#) Interface.java   1.0     Oct 31, 2025
+// *
+// * Copyright (c) 2025 IUH.
+// * All rights reserved.
+// */
+//
+//package GUI;
+//
+//import java.awt.BorderLayout;
+//import java.awt.CardLayout;
+//import java.awt.Color;
+//import java.awt.Component;
+//import java.awt.Cursor;
+//import java.awt.Dimension;
+//import java.awt.Font;
+//import java.awt.Image;
+//import java.awt.event.ActionEvent;
+//import java.awt.event.ActionListener;
+//import java.util.ArrayList;
+//import java.util.List;
+//
+///*
+//* @description
+//* @author: Van Long
+//* @date: Oct 31, 2025
+//* @version: 1.0
+//*/
+//import javax.swing.BorderFactory;
+//import javax.swing.Box;
+//import javax.swing.BoxLayout;
+//import javax.swing.ImageIcon;
+//import javax.swing.JButton;
+//import javax.swing.JFrame;
+//import javax.swing.JPanel;
+//import javax.swing.SwingConstants;
+//import javax.swing.SwingUtilities;
+//
+//public class MainFrame extends JFrame {
+//
+//	// Key là tên file
+//	public static final String KEY_DAT_BAN = "DatBan_GUI.java";
+//
+//	public static final String KEY_BAN_HANG = "Menu_GUI.java";
+//	public static final String KEY_SAN_PHAM = "SanPham_GUI.java";
+//	public static final String KEY_GIAM_GIA = "KhuyenMai_GUI.java";
+//	public static final String KEY_KHACH_HANG = "KhachHang_GUI.java";
+//	public static final String KEY_THONG_KE = "ThongKe_GUI.java";
+//	public static final String KEY_CHON_BAN = "ChonBan_GUI.java";
+//	public static final String KEY_HOA_DON = "HoaDon_GUI.java";
+//
+//	private CardLayout cardLayout;
+//	private JPanel contentPanel;
+//	private JPanel navPanel;
+//	private List<JButton> navButtons;
+//	private HoaDon_GUI hoadon_gui;
+//	private JButton btnNavHoaDon;
+//
+//	public MainFrame() {
+//		this.hoadon_gui = new HoaDon_GUI(this);
+//		setTitle("Quản Lý Quán Coffee");
+//		setSize(1000, 750);
+//		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//		setLocationRelativeTo(null);
+//		setLayout(new BorderLayout());
+//
+//		// ----------Thanh điều hướng------------
+//		navPanel = new JPanel();
+//		navPanel.setLayout(new BoxLayout(navPanel, BoxLayout.Y_AXIS));
+//		navPanel.setBackground(new Color(230, 240, 255));
+//		navPanel.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
+//		navButtons = new ArrayList<>();
+//
+//		// ---------Nội dung---------
+//		cardLayout = new CardLayout();
+//		contentPanel = new JPanel(cardLayout);
+//
+//		// ---------gắn sự kiện------------
+//		ActionListener navListener = new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				String key = e.getActionCommand();
+//				cardLayout.show(contentPanel, key);
+//				updateNavButtonStyles((JButton) e.getSource());
+//			}
+//		};
+//
+//		// Trang đặt bàn
+//		DatBan_GUI panelDatBan = new DatBan_GUI(this);
+//		contentPanel.add(panelDatBan, KEY_DAT_BAN);
+//
+//		// Chọn bàn
+//		ChonBan_GUI panelChonBan = new ChonBan_GUI(this);
+//		contentPanel.add(panelChonBan, KEY_CHON_BAN);
+//		// Trang Bán Hàng
+//		Menu_GUI panelBanHang = new Menu_GUI(this);
+//		contentPanel.add(panelBanHang, KEY_BAN_HANG);
+//
+//		// Trang Sản Phẩm
+//		SanPham_GUI panelSanPham = new SanPham_GUI(this);
+//		contentPanel.add(panelSanPham, KEY_SAN_PHAM);
+//
+//		// Trang giam giá
+//		KhuyenMai_GUI panelKhuyenMai = new KhuyenMai_GUI(this);
+//		contentPanel.add(panelKhuyenMai, KEY_GIAM_GIA);
+//
+//		// Trang Khách Hàng
+//		KhachHang_GUI panelKhachHang = new KhachHang_GUI(this);
+//		contentPanel.add(panelKhachHang, KEY_KHACH_HANG);
+//		// Trang thống kê
+//		ThongKe_GUI panelThongKe = new ThongKe_GUI(this);
+//		contentPanel.add(panelThongKe, KEY_THONG_KE);
+//
+//		contentPanel.add(this.hoadon_gui, KEY_HOA_DON);
+//		// gán key
+//		// Thêm các nút vào navPanel
+//
+//		addNavButton("Đặt bàn", "/img/icon-home.png", KEY_DAT_BAN, navListener);
+//		addNavButton("Menu", "/img/icon-menu.png", KEY_BAN_HANG, navListener);
+//		addNavButton("Sản phẩm", "/img/icon-product.png", KEY_SAN_PHAM, navListener);
+//		addNavButton("Khách hàng", "/img/icon-user.png", KEY_KHACH_HANG, navListener);
+//		addNavButton("Khuyến mãi", "/img/icon-discount.png", KEY_GIAM_GIA, navListener);
+//		addNavButton("Thống kê", "/img/icon-statistic.png", KEY_THONG_KE, navListener);
+//		btnNavHoaDon = addNavButton("Hóa đơn", "/img/icon-bill.png", KEY_HOA_DON, navListener);
+//		btnNavHoaDon.setVisible(false); // ẩn nav hóa đơn
+//
+//		add(navPanel, BorderLayout.WEST);
+//		add(contentPanel, BorderLayout.CENTER);
+//
+//		cardLayout.show(contentPanel, KEY_DAT_BAN);
+//		if (!navButtons.isEmpty()) {
+//			updateNavButtonStyles(navButtons.get(0));
+//		}
+//	}
+//
+//	private JButton addNavButton(String text, String iconPath, String actionCommand, ActionListener listener) {
+//		ImageIcon icon = null;
+//		try {
+//			java.net.URL imgURL = getClass().getResource(iconPath);
+//			if (imgURL != null) {
+//				icon = new ImageIcon(new ImageIcon(imgURL).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+//			} else {
+//				System.err.println("Không tìm thấy file icon: " + iconPath);
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//
+//		JButton button = new JButton(text, icon);
+//		button.setActionCommand(actionCommand);
+//		button.addActionListener(listener);
+//		button.setBorderPainted(false);
+//		button.setContentAreaFilled(false);
+//		button.setOpaque(false);
+//		button.setAlignmentX(Component.LEFT_ALIGNMENT);
+//		button.setHorizontalAlignment(SwingConstants.LEFT);
+//		button.setFocusPainted(false);
+//		button.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
+//		button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+//		button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+//
+//		navPanel.add(button);
+//		navButtons.add(button);
+//		navPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+//		return button;
+//	}
+//
+//	// hàm hiển thị nav hóa đơn nếu hóa đã tạo
+//	public void setTrangThaiHoaDon(boolean trangThai) {
+//		btnNavHoaDon.setVisible(trangThai);
+//	}
+//
+//	private void updateNavButtonStyles(JButton selectedButton) {
+//		for (JButton button : navButtons) {
+//			if (button == selectedButton) {
+//				button.setContentAreaFilled(true);
+//				button.setOpaque(true);
+//
+//				button.setBackground(new Color(190, 215, 240));
+//
+//				button.setFont(new Font("Arial", Font.BOLD, 14));
+//				button.setForeground(Color.BLACK);
+//			} else {
+//				button.setContentAreaFilled(false);
+//				button.setOpaque(false);
+//
+//				button.setFont(new Font("Arial", Font.PLAIN, 14));
+//				button.setForeground(Color.BLACK);
+//			}
+//		}
+//	}
+//
+//	public void switchToPanel(String key) {
+//		cardLayout.show(contentPanel, key);
+//
+//		for (JButton btn : navButtons) {
+//			if (btn.getActionCommand().equals(key)) {
+//				updateNavButtonStyles(btn);
+//				break;
+//			}
+//		}
+//	}
+//
+//	public static void main(String[] args) {
+//		SwingUtilities.invokeLater(() -> {
+//			new MainFrame().setVisible(true);
+//		});
+//	}
+//
+//	public void chuyenDanhSachOrderSangHoaDon(ArrayList<Object[]> orderData) {
+//		// TODO Auto-generated method stub
+//		hoadon_gui.nhanDanhSachSanPham(orderData);
+//	}
+//}
 
 package GUI;
 
@@ -20,12 +228,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
-* @description
-* @author: Van Long
-* @date: Oct 31, 2025
-* @version: 1.0
-*/
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -35,6 +237,16 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+
+import Entity.HoaDon; // === THÊM IMPORT ===
+import Entity.NhanVien; // === THÊM IMPORT ===
+
+/*
+* @description
+* @author: Van Long
+* @date: Oct 31, 2025
+* @version: 1.0
+*/
 
 public class MainFrame extends JFrame {
 
@@ -55,6 +267,9 @@ public class MainFrame extends JFrame {
 	private List<JButton> navButtons;
 	private HoaDon_GUI hoadon_gui;
 	private JButton btnNavHoaDon;
+
+	// === THAY ĐỔI 2: Thêm thuộc tính nhân viên (cho logic nghiệp vụ) ===
+	private NhanVien nhanVienHienTai;
 
 	public MainFrame() {
 		this.hoadon_gui = new HoaDon_GUI(this);
@@ -92,6 +307,7 @@ public class MainFrame extends JFrame {
 		// Chọn bàn
 		ChonBan_GUI panelChonBan = new ChonBan_GUI(this);
 		contentPanel.add(panelChonBan, KEY_CHON_BAN);
+
 		// Trang Bán Hàng
 		Menu_GUI panelBanHang = new Menu_GUI(this);
 		contentPanel.add(panelBanHang, KEY_BAN_HANG);
@@ -107,14 +323,16 @@ public class MainFrame extends JFrame {
 		// Trang Khách Hàng
 		KhachHang_GUI panelKhachHang = new KhachHang_GUI(this);
 		contentPanel.add(panelKhachHang, KEY_KHACH_HANG);
+
 		// Trang thống kê
 		ThongKe_GUI panelThongKe = new ThongKe_GUI(this);
 		contentPanel.add(panelThongKe, KEY_THONG_KE);
 
+		// Thêm HoaDon_GUI vào CardLayout
 		contentPanel.add(this.hoadon_gui, KEY_HOA_DON);
+
 		// gán key
 		// Thêm các nút vào navPanel
-
 		addNavButton("Đặt bàn", "/img/icon-home.png", KEY_DAT_BAN, navListener);
 		addNavButton("Menu", "/img/icon-menu.png", KEY_BAN_HANG, navListener);
 		addNavButton("Sản phẩm", "/img/icon-product.png", KEY_SAN_PHAM, navListener);
@@ -175,15 +393,12 @@ public class MainFrame extends JFrame {
 			if (button == selectedButton) {
 				button.setContentAreaFilled(true);
 				button.setOpaque(true);
-
 				button.setBackground(new Color(190, 215, 240));
-
 				button.setFont(new Font("Arial", Font.BOLD, 14));
 				button.setForeground(Color.BLACK);
 			} else {
 				button.setContentAreaFilled(false);
 				button.setOpaque(false);
-
 				button.setFont(new Font("Arial", Font.PLAIN, 14));
 				button.setForeground(Color.BLACK);
 			}
@@ -207,8 +422,40 @@ public class MainFrame extends JFrame {
 		});
 	}
 
-	public void chuyenDanhSachOrderSangHoaDon(ArrayList<Object[]> orderData) {
-		// TODO Auto-generated method stub
-		hoadon_gui.nhanDanhSachSanPham(orderData);
+	// === THAY ĐỔI 3: Xóa phương thức cũ ===
+	/*
+	 * public void chuyenDanhSachOrderSangHoaDon(ArrayList<Object[]> orderData) {
+	 * hoadon_gui.nhanDanhSachSanPham(orderData); }
+	 */
+
+	// === THAY ĐỔI 4: Thêm phương thức mới mà Menu_GUI gọi ===
+	/**
+	 * Nhận đối tượng HoaDon từ Menu_GUI và chuyển tiếp đến HoaDon_GUI. * @param
+	 * hoaDon Đối tượng hóa đơn (giỏ hàng)
+	 */
+	public void chuyenHoaDonSangManHinhThanhToan(HoaDon hoaDon) {
+		// Gọi phương thức đã refactor của HoaDon_GUI
+		hoadon_gui.setHoaDonHienTai(hoaDon);
+	}
+
+	// === THAY ĐỔI 5: Thêm phương thức giả lập để HoaDon_GUI gọi ===
+	/**
+	 * Lấy thông tin nhân viên đang đăng nhập. (Hiện tại đang giả lập, sau này sẽ
+	 * thay bằng logic đăng nhập). * @return Đối tượng NhanVien
+	 */
+	public NhanVien getNhanVienHienTai() {
+		// TODO: Thay thế bằng logic đăng nhập thật sự
+		if (this.nhanVienHienTai == null) {
+			// Giả lập một nhân viên để test
+			System.out.println("MainFrame: Đang giả lập Nhân viên NV001");
+
+			// TODO: Bạn cần đảm bảo Entity NhanVien có constructor này
+			// Ví dụ: NhanVien(maNV, tenNV, sdt, email, chucVu, ngayVaoLam, trangThai)
+			// (Tôi tạm thời dùng constructor rỗng và set)
+			this.nhanVienHienTai = new NhanVien();
+			this.nhanVienHienTai.setMaNhanVien("NV001");
+			this.nhanVienHienTai.setHoTen("Trần Văn Long");
+		}
+		return this.nhanVienHienTai;
 	}
 }

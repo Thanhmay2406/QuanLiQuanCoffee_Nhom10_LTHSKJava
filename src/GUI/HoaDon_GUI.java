@@ -5,6 +5,13 @@
  * All rights reserved.
  */
 
+/*
+* @description
+* @author: Van Long 
+* @date: Nov 10, 2025
+* @version: 1.1
+*/
+
 package GUI;
 
 import java.awt.BorderLayout;
@@ -52,22 +59,17 @@ import Entity.HoaDon;
 import Entity.KhachHang;
 import Entity.KhuyenMai;
 import Entity.PhuongThucThanhToan;
-import Entity.SanPham;
-
-/*
-* @description
-* @author: Van Long 
-* @date: Nov 10, 2025
-* @version: 1.1
-*/
 
 public class HoaDon_GUI extends JPanel implements ActionListener {
 
 	private KhuyenMai_DAO khuyenmai_dao;
 	private PhuongThucThanhToan_DAO pttt_dao;
+	private KhachHang_DAO kh_dao;
+	private HoaDon_DAO hd_dao;
+	private ChiTietHoaDon_DAO ct_dao;
+	private SanPham_DAO sp_dao;
 
 	private MainFrame mainFrame;
-
 	private JTextField txtTichDiemSearch;
 	private JButton btnTichDiemSearch;
 	private JButton btnTaoTaiKhoan;
@@ -75,38 +77,25 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 	private JTable tichDiemTable;
 	private JButton btnDungDiem;
 
-	private JTextField txtMaHoaDon;
-	private JTextField txtNgayTao;
-	private JTextField txtNhanVien;
 	private DefaultTableModel hoadon_model;
 	private JTable hoadon_table;
 	private JComboBox<String> cbPTTT, cbKhuyenMai;
-	private JLabel lblTongTienValue;
+	private JLabel lblTongTienValue, lblTienGiamValue, lblThanhTienValue;
 	private JButton btnThanhToan;
-	private Menu_GUI menu_gui;
-	private JLabel lblHoaDon;
-	private JLabel lblNgayTao;
-	private KhachHang_DAO kh_dao;
 	private JLabel lblHoaDonText;
 	private JLabel lblNgayTaoText;
-	private JLabel lblGhiChu;
 	private JLabel lblGhiChuValue;
-	private double tongTienHienTai;
-	private boolean isDungDiem = false;
-	private HoaDon_DAO hd_dao;
-	private String maKhachHang_; // lưu để dùng cho lưu file HoaDon
-	private String maHoaDon_; // lấy mã hóa đơn từ hàm tạo
-	private ChiTietHoaDon_DAO ct_dao;
-	private SanPham_DAO sp_dao;
+
+	private HoaDon hoaDonHienTai;
 
 	public HoaDon_GUI(MainFrame mainFrame) {
 		this.khuyenmai_dao = new KhuyenMai_DAO();
 		this.pttt_dao = new PhuongThucThanhToan_DAO();
-		this.menu_gui = new Menu_GUI(mainFrame);
 		this.kh_dao = new KhachHang_DAO();
 		this.hd_dao = new HoaDon_DAO();
 		this.ct_dao = new ChiTietHoaDon_DAO();
 		this.sp_dao = new SanPham_DAO();
+
 		this.mainFrame = mainFrame;
 		setLayout(new BorderLayout());
 
@@ -120,11 +109,8 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 		// Nội dung chính
 		JSplitPane pnCenter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		pnCenter.setResizeWeight(0.4);
-		// Panel Tích Điểm
 		JPanel pnTichDiem = buildTichDiemPanel();
 		pnCenter.setLeftComponent(pnTichDiem);
-
-		// Panel Hóa Đơn
 		JPanel pnHoaDon = buildHoaDonPanel();
 		pnCenter.setRightComponent(pnHoaDon);
 
@@ -134,24 +120,99 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 		loadDataToComboBox();
 		loadDataToComboBoxKhuyenMai();
 
+		setTrangThaiMacDinh();
 	}
 
-	// Panel Tích điểm
+	public void setHoaDonHienTai(HoaDon hoaDon) {
+		if (hoaDon == null) {
+			this.hoaDonHienTai = new HoaDon(); // Tạo mới nếu có lỗi
+		} else {
+			this.hoaDonHienTai = hoaDon;
+		}
+
+		String maHDMoi = taoMaHoaDon();
+		this.hoaDonHienTai.setMaHoaDon(maHDMoi);
+
+		refreshUIFromEntity();
+	}
+
+	private void refreshUIFromEntity() {
+		if (this.hoaDonHienTai == null) {
+			setTrangThaiMacDinh();
+			return;
+		}
+
+		System.out.println(
+				"refreshUIFromEntity(): " + hoaDonHienTai + " | tienGiamTuDiem=" + hoaDonHienTai.getTienGiamTuDiem());
+
+		lblHoaDonText.setText(this.hoaDonHienTai.getMaHoaDon());
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+		lblNgayTaoText.setText(dtf.format(LocalDateTime.now()));
+		lblGhiChuValue.setText(this.hoaDonHienTai.getGhiChu());
+
+		hoadon_model.setRowCount(0);
+		for (ChiTietHoaDon ct : this.hoaDonHienTai.getDsChiTiet()) {
+			hoadon_model.addRow(new Object[] { ct.getSanPham().getTenSanPham(), ct.getSoLuong(),
+					ct.getDonGia().doubleValue(), ct.tinhThanhTien().doubleValue() // Thành tiền
+			});
+		}
+
+		tichDiemModel.setRowCount(0);
+		KhachHang kh = this.hoaDonHienTai.getKhachHang();
+		if (kh != null) {
+			tichDiemModel.addRow(new Object[] { kh.getMaKhachHang(), kh.getHoTen(), kh.getDiemTichLuy() });
+			txtTichDiemSearch.setText(kh.getSoDienThoai());
+
+			boolean chuaDungDiem = (hoaDonHienTai.getTienGiamTuDiem().compareTo(BigDecimal.ZERO) == 0);
+			btnDungDiem.setEnabled(kh.getDiemTichLuy() > 0 && chuaDungDiem);
+		} else {
+			btnDungDiem.setEnabled(false);
+		}
+
+		KhuyenMai km = this.hoaDonHienTai.getKhuyenMai();
+		if (km != null) {
+			cbKhuyenMai.setSelectedItem(km.getTenKM());
+		} else {
+			cbKhuyenMai.setSelectedIndex(0);
+		}
+
+		PhuongThucThanhToan pttt = this.hoaDonHienTai.getPhuongThucThanhToan();
+		if (pttt != null) {
+			cbPTTT.setSelectedItem(pttt.getTenPTTT());
+		} else {
+			cbPTTT.setSelectedIndex(0);
+		}
+
+		double tongTien = hoaDonHienTai.tinhTongTien().doubleValue();
+		double tienGiamKM = hoaDonHienTai.tinhTongGiamTuKM().doubleValue();
+		double tienGiamDiem = hoaDonHienTai.getTienGiamTuDiem().doubleValue();
+		double thanhTien = hoaDonHienTai.tinhTongThanhToan().doubleValue(); // Gọi hàm tự tính toán
+
+		System.out.println("=========================resetUI====================");
+		System.out.println("\n Tổng tiền: " + tongTien);
+		System.out.println("\n Số tiền giảm từ KM: " + tienGiamKM);
+		System.out.println("\n Số tiền giảm từ điểm: " + tienGiamDiem);
+		System.out.println("====================================");
+
+		lblTongTienValue.setText(String.format("%,.0f VND", tongTien));
+		lblTienGiamValue.setText(String.format("%,.0f VND", (tienGiamKM + tienGiamDiem))); // Tổng giảm
+		lblThanhTienValue.setText(String.format("%,.0f VND", thanhTien)); // Tổng cuối
+
+		btnThanhToan.setEnabled(tongTien > 0);
+	}
+
+	// pnTichDiem
 	private JPanel buildTichDiemPanel() {
 		JPanel pnTichDiem = new JPanel(new BorderLayout(10, 10));
 		pnTichDiem.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-		// Tiêu đề
 		JLabel td_title = new JLabel("Tích điểm khách hàng");
 		td_title.setFont(new Font("Arial", Font.BOLD, 16));
 		JPanel tichdiem_title = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		tichdiem_title.add(td_title);
 		pnTichDiem.add(tichdiem_title, BorderLayout.NORTH);
 
-		// content
 		JPanel tichdiem_content = new JPanel(new BorderLayout(5, 5));
-
-		// Tìm kiếm
 		JPanel tichdiem_Search = new JPanel();
 		tichdiem_Search.setLayout(new BoxLayout(tichdiem_Search, BoxLayout.X_AXIS));
 		tichdiem_Search.add(new JLabel("Nhập SĐT:"));
@@ -170,7 +231,6 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 		JScrollPane scrollTichDiem = new JScrollPane(tichDiemTable);
 		scrollTichDiem.setPreferredSize(new Dimension(300, 200));
 		tichdiem_content.add(scrollTichDiem, BorderLayout.CENTER);
-
 		pnTichDiem.add(tichdiem_content, BorderLayout.CENTER);
 
 		JPanel tichdiem_buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -181,55 +241,48 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 		return pnTichDiem;
 	}
 
-	// Panel Hóa đơn
+	// pnHoaDon
 	private JPanel buildHoaDonPanel() {
 		JPanel pnHoaDon = new JPanel(new BorderLayout(10, 10));
 		pnHoaDon.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-		// Tiêu đề
 		JLabel hd_title = new JLabel("Hóa Đơn");
 		hd_title.setFont(new Font("Arial", Font.BOLD, 16));
 		JPanel hoadon_title = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		hoadon_title.add(hd_title);
 		pnHoaDon.add(hoadon_title, BorderLayout.NORTH);
 
-		// Nội dung
 		JPanel hoadon_content = new JPanel(new BorderLayout(10, 10));
-		// Thông tin chung
 		JPanel hoadon_info = new JPanel(new BorderLayout());
 
 		Box boxInfoLeft = Box.createVerticalBox();
-
 		Box row0 = Box.createHorizontalBox();
-		row0.add(lblHoaDon = new JLabel("Mã hóa đơn: "));
-		row0.add(lblHoaDonText = new JLabel("HD-xx"));
+		row0.add(new JLabel("Mã hóa đơn: "));
+		row0.add(lblHoaDonText = new JLabel("HD-Chưa-Tạo"));
 		row0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		boxInfoLeft.add(row0);
 		boxInfoLeft.add(Box.createVerticalStrut(10));
 
 		Box row1 = Box.createHorizontalBox();
-		row1.add(lblNgayTao = new JLabel("Ngày tạo: "));
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-		row1.add(lblNgayTaoText = new JLabel(dtf.format(LocalDateTime.now())));
+		row1.add(new JLabel("Ngày tạo: "));
+		row1.add(lblNgayTaoText = new JLabel(""));
 		row1.setAlignmentX(Component.LEFT_ALIGNMENT);
-
 		boxInfoLeft.add(row1);
 		boxInfoLeft.add(Box.createVerticalStrut(10));
 
 		Box row2 = Box.createHorizontalBox();
-		row2.add(lblGhiChu = new JLabel("Ghi chú: "));
+		row2.add(new JLabel("Ghi chú: "));
 		row2.add(lblGhiChuValue = new JLabel(""));
 		row2.setAlignmentX(Component.LEFT_ALIGNMENT);
 		boxInfoLeft.add(row2);
 		boxInfoLeft.add(Box.createVerticalStrut(10));
-		Dimension lblSize = new Dimension(80, 20);
-		row0.getComponent(0).setPreferredSize(lblSize);
-		row1.getComponent(0).setPreferredSize(lblSize);
-		row2.getComponent(0).setPreferredSize(lblSize);
+
 		hoadon_info.add(boxInfoLeft, BorderLayout.WEST);
 
 		JPanel pnKhuyenMai = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-
+		pnKhuyenMai.add(new JLabel("Khuyến mãi:"));
+		cbKhuyenMai = new JComboBox<String>();
+		pnKhuyenMai.add(cbKhuyenMai);
 		hoadon_info.add(pnKhuyenMai, BorderLayout.EAST);
 		hoadon_content.add(hoadon_info, BorderLayout.NORTH);
 
@@ -237,20 +290,16 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 		hoadon_model = new DefaultTableModel(hoadon_cols, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				return false; // Không cho sửa trực tiếp trên bảng
+				return false;
 			}
 		};
 		hoadon_table = new JTable(hoadon_model);
 		hoadon_content.add(new JScrollPane(hoadon_table), BorderLayout.CENTER);
-		cbKhuyenMai = new JComboBox<String>();
-		pnKhuyenMai.add(cbKhuyenMai);
 		pnHoaDon.add(hoadon_content, BorderLayout.CENTER);
 
-		// Panel Thanh toán
 		JPanel hoaDon_south = new JPanel(new BorderLayout(10, 5));
 		hoaDon_south.setBorder(BorderFactory.createTitledBorder("Thanh toán"));
 
-		// Khu vực PTTT
 		JPanel pnPTTT = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pnPTTT.add(new JLabel("Chọn PTTT:"));
 		cbPTTT = new JComboBox<String>();
@@ -258,16 +307,40 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 		pnPTTT.add(cbPTTT);
 		hoaDon_south.add(pnPTTT, BorderLayout.WEST);
 
-		// Khu vực Tổng tiền
-		JPanel pnTongTien = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		JLabel lblTongTienTitle = new JLabel("Tổng tiền: ");
-		lblTongTienTitle.setFont(new Font("Arial", Font.BOLD, 16));
-		lblTongTienValue = new JLabel("0.0 VND");
-		lblTongTienValue.setFont(new Font("Arial", Font.BOLD, 16));
-		lblTongTienValue.setForeground(Color.RED);
-		pnTongTien.add(lblTongTienTitle);
-		pnTongTien.add(lblTongTienValue);
-		hoaDon_south.add(pnTongTien, BorderLayout.CENTER);
+		Box boxTongTien = Box.createVerticalBox();
+		boxTongTien.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		Font fontThuong = new Font("Arial", Font.PLAIN, 14);
+		Font fontDam = new Font("Arial", Font.BOLD, 16);
+
+		Box rowTong = Box.createHorizontalBox();
+		rowTong.add(new JLabel("Tổng tiền:"));
+		rowTong.add(Box.createHorizontalGlue());
+		lblTongTienValue = new JLabel("0 VND");
+		lblTongTienValue.setFont(fontThuong);
+		rowTong.add(lblTongTienValue);
+		boxTongTien.add(rowTong);
+		boxTongTien.add(Box.createVerticalStrut(5));
+
+		Box rowGiam = Box.createHorizontalBox();
+		rowGiam.add(new JLabel("Giảm giá (KM + Điểm):"));
+		rowGiam.add(Box.createHorizontalGlue());
+		lblTienGiamValue = new JLabel("0 VND");
+		lblTienGiamValue.setFont(fontThuong);
+		lblTienGiamValue.setForeground(Color.BLUE);
+		rowGiam.add(lblTienGiamValue);
+		boxTongTien.add(rowGiam);
+		boxTongTien.add(Box.createVerticalStrut(5));
+
+		Box rowThanhTien = Box.createHorizontalBox();
+		rowThanhTien.add(new JLabel("THÀNH TIỀN:"));
+		rowThanhTien.add(Box.createHorizontalGlue());
+		lblThanhTienValue = new JLabel("0 VND");
+		lblThanhTienValue.setFont(fontDam);
+		lblThanhTienValue.setForeground(Color.RED);
+		rowThanhTien.add(lblThanhTienValue);
+		boxTongTien.add(rowThanhTien);
+
+		hoaDon_south.add(boxTongTien, BorderLayout.CENTER);
 
 		JPanel pnThanhToanBtn = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		btnThanhToan = new JButton("Thanh Toán");
@@ -282,10 +355,8 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 	}
 
 	private void loadDataToComboBox() {
-		// Tải PTTT
 		ArrayList<PhuongThucThanhToan> dsPTTT = (ArrayList<PhuongThucThanhToan>) pttt_dao.layTatCa();
 		DefaultComboBoxModel<String> ptttModel = new DefaultComboBoxModel<>();
-
 		for (PhuongThucThanhToan pttt : dsPTTT) {
 			ptttModel.addElement(pttt.getTenPTTT());
 		}
@@ -295,7 +366,7 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 	private void loadDataToComboBoxKhuyenMai() {
 		ArrayList<KhuyenMai> dsKM = (ArrayList<KhuyenMai>) khuyenmai_dao.layTatCa();
 		DefaultComboBoxModel<String> kmModel = new DefaultComboBoxModel<>();
-		kmModel.addElement("Chọn khuyến mãi");
+		kmModel.addElement("Chọn khuyến mãi"); // Index 0
 		for (KhuyenMai km : dsKM) {
 			kmModel.addElement(km.getTenKM());
 		}
@@ -303,23 +374,12 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 	}
 
 	public void setTrangThaiMacDinh() {
-		// Panel Hóa đơn
-		lblHoaDonText.setText("HDxxx");
+		this.hoaDonHienTai = new HoaDon();
+		this.hoaDonHienTai.setMaHoaDon(taoMaHoaDon());
+		this.hoaDonHienTai.setNgayTao(LocalDate.now());
 
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-		lblNgayTaoText.setText(dtf.format(LocalDateTime.now()));
-
-		hoadon_model.setRowCount(0);
-
-		// Panel Thanh toán
-		cbPTTT.setSelectedIndex(0);
-		lblTongTienValue.setText("0.0 VND");
-		btnThanhToan.setEnabled(false);
-
-		// Panel Tích điểm
+		refreshUIFromEntity();
 		txtTichDiemSearch.setText("");
-		tichDiemModel.setRowCount(0);
-		btnDungDiem.setEnabled(false);
 	}
 
 	private void addListeners() {
@@ -337,180 +397,151 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 
 		if (o.equals(btnTichDiemSearch)) {
 			String txtSearch = txtTichDiemSearch.getText().trim();
-			KhachHang kh = kh_dao.timKhachHangTheoSDT(txtSearch);
-			if (kh == null) {
-				JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng. Tìm lại hoặc Đăng ký");
-				return;
-			}
-			maKhachHang_ = kh.getMaKhachHang(); // lấy mã cho việc đọc file
-			tichDiemModel.addRow(new Object[] { kh.getMaKhachHang(), kh.getHoTen(), kh.getDiemTichLuy() });
-		} else if (o.equals(btnThanhToan)) {
-			luuHoaDonXuongFile();
-			// sau khi thanh toán, cộng điểm tích lũy (khách hàng không dùng điểm)
-			if (!isDungDiem) {
-				if (tichDiemModel.getRowCount() != 0) {
-					double diemTichLuyMoi = (tongTienHienTai / 10);
-					double diemTichLuyCu = (double) tichDiemModel.getValueAt(0, 2);
-					kh_dao.capNhatDiemTichLuy(tichDiemModel.getValueAt(0, 0).toString(),
-							diemTichLuyCu + diemTichLuyMoi);
-					JOptionPane.showMessageDialog(this, "Cập nhật điểm tích lũy thành công");
-					tichDiemModel.setRowCount(0);
+
+			this.hoaDonHienTai.setTienGiamTuDiem(BigDecimal.ZERO);
+
+			if (txtSearch.isEmpty()) {
+				this.hoaDonHienTai.setKhachHang(null);
+			} else {
+				KhachHang kh = kh_dao.timKhachHangTheoSDT(txtSearch);
+				if (kh == null) {
+					JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng. Tìm lại hoặc Đăng ký");
+					this.hoaDonHienTai.setKhachHang(null);
+				} else {
+					this.hoaDonHienTai.setKhachHang(kh);
 				}
 			}
+			refreshUIFromEntity();
 
-		} else if (o == btnDungDiem) {
-			double tongTien = tongTienHienTai;
-			if (tongTien == 0)
+		} else if (o.equals(btnThanhToan)) {
+			xuLyThanhToan();
+
+		} else if (o == btnDungDiem)
+
+		{
+			KhachHang kh = hoaDonHienTai.getKhachHang();
+			if (kh == null) {
+				JOptionPane.showMessageDialog(this, "Vui lòng chọn khách hàng trước khi dùng điểm");
 				return;
-			if (tichDiemModel.getRowCount() == 0) {
-				JOptionPane.showMessageDialog(this, "Vui lòng tìm khách hàng cần Cộng điểm");
-				txtTichDiemSearch.grabFocus();
 			}
-			double diemTichLuy = (double) tichDiemModel.getValueAt(0, 2);
-			if (diemTichLuy >= tongTien) {
-				double diemTichLuyMoi = (diemTichLuy - tongTien);
-				kh_dao.capNhatDiemTichLuy(tichDiemModel.getValueAt(0, 0).toString().trim(), diemTichLuyMoi);
-			} else {
-				double diemTichLuyMoi = 0;
-				double tongTienMoi = (tongTien - diemTichLuy);
-				lblTongTienValue.setText(tongTienMoi + "");
-				kh_dao.capNhatDiemTichLuy(tichDiemModel.getValueAt(0, 0).toString().trim(), diemTichLuyMoi);
+			double diemHienCo = kh.getDiemTichLuy();
+			System.out.println("Điểm tích lũy trước: " + kh.getDiemTichLuy());
+			if (diemHienCo <= 0) {
+				JOptionPane.showMessageDialog(this, "Khách hàng không có điểm để sử dụng.");
+				return;
 			}
-			tichDiemModel.setRowCount(0);
-			JOptionPane.showMessageDialog(this, "Dùng điểm thành công");
-			isDungDiem = true; // khách hàng dùng điểm
+			double diemQuyDoiThanhTien = diemHienCo;
+
+			double tienSauKhiGiamKM = hoaDonHienTai.tinhTongTien().subtract(hoaDonHienTai.tinhTongGiamTuKM())
+					.doubleValue();
+
+			if (tienSauKhiGiamKM <= 0) {
+				JOptionPane.showMessageDialog(this, "Hóa đơn đã được giảm tối đa, không thể dùng điểm.");
+				return;
+			}
+
+			double tienGiamTuDiemToiDa = Math.min(diemQuyDoiThanhTien, tienSauKhiGiamKM);
+			hoaDonHienTai.setTienGiamTuDiem(BigDecimal.valueOf(tienGiamTuDiemToiDa));
+			System.out.println(
+					"\nSau khi set: " + hoaDonHienTai + " | tienGiamTuDiem=" + hoaDonHienTai.getTienGiamTuDiem());
+
+			JOptionPane.showMessageDialog(this,
+					String.format("Đã áp dụng điểm tích lũy vào hóa đơn.", tienGiamTuDiemToiDa, tienGiamTuDiemToiDa));
+
+			refreshUIFromEntity();
 		} else if (o == btnTaoTaiKhoan) {
 			mainFrame.switchToPanel(mainFrame.KEY_KHACH_HANG);
+
 		} else if (o.equals(cbKhuyenMai)) {
 			String selected = cbKhuyenMai.getSelectedItem().toString().trim();
-			KhuyenMai km = khuyenmai_dao.timKhuyenMaiTheoTen(selected);
-			if (km == null) {
-				System.out.println("Không tìm thấy khuyến mãi");
-				return;
+
+			if (cbKhuyenMai.getSelectedIndex() == 0) {
+				this.hoaDonHienTai.setKhuyenMai(null);
+			} else {
+				KhuyenMai km = khuyenmai_dao.timKhuyenMaiTheoTen(selected);
+				this.hoaDonHienTai.setKhuyenMai(km);
 			}
-			double tongTienSauKM = tongTienHienTai - (tongTienHienTai * km.getphanTramGiam());
-			lblTongTienValue.setText(String.format("%,.2f VND", tongTienSauKM));
+			refreshUIFromEntity();
+
+		} else if (o.equals(cbPTTT)) {
+			String selected = cbPTTT.getSelectedItem().toString().trim();
+			PhuongThucThanhToan pttt = pttt_dao.layPTTTTheoTen(selected);
+			this.hoaDonHienTai.setPhuongThucThanhToan(pttt);
 		}
-	}
-
-	public void nhanDanhSachSanPham(ArrayList<Object[]> orderData) {
-		// TODO Auto-generated method stub
-		String ghiChuChung = "";
-		for (Object[] rowData : orderData) {
-			String tenSP = (String) rowData[0];
-			int soLuong = (int) rowData[1];
-			double donGia = (double) rowData[2];
-			if (ghiChuChung.isEmpty()) {
-				ghiChuChung = (String) rowData[3];
-			}
-			nhanSanPhamTuMenu(tenSP, soLuong, donGia);
-		}
-		lblGhiChuValue.setText(ghiChuChung);
-	}
-
-	private void nhanSanPhamTuMenu(String tenSP, int soLuong, double donGia) {
-		// TODO Auto-generated method stub
-		for (int i = 0; i < hoadon_model.getRowCount(); i++) {
-			String tenSanPham_hoadon = hoadon_model.getValueAt(i, 0).toString();
-			if (tenSanPham_hoadon.equals(tenSP)) {
-				int soLuongMoi = (int) hoadon_model.getValueAt(i, 1) + soLuong;
-				double thanhTien = soLuongMoi * donGia;
-				hoadon_model.setValueAt(soLuongMoi, i, 1);
-				hoadon_model.setValueAt(donGia, i, 2);
-				hoadon_model.setValueAt(thanhTien, i, 3);
-
-				capNhatTongTien();
-				return;
-			}
-		}
-
-		double thanhTien = soLuong * donGia;
-		Object[] rowData = new Object[] { tenSP, soLuong, donGia, thanhTien };
-		hoadon_model.addRow(rowData);
-		capNhatTongTien();
-
-	}
-
-	private void capNhatTongTien() {
-		double tongTien = 0;
-		for (int i = 0; i < hoadon_model.getRowCount(); i++) {
-			tongTien += Double.parseDouble(hoadon_model.getValueAt(i, 3).toString());
-		}
-		this.tongTienHienTai = tongTien;
-		lblTongTienValue.setText(String.format("%,.2f VND", tongTien));
-		btnThanhToan.setVisible(tongTien > 0);
 	}
 
 	public String taoMaHoaDon() {
 		String maHoaDonCuoi = hd_dao.getMaHoaDonCuoiCung();
 		if (maHoaDonCuoi == null) {
-			maHoaDon_ = "HD001";
-			return maHoaDon_;
+			return "HD001";
 		}
 		try {
 			String phanSo = maHoaDonCuoi.substring(2);
 			int soHienTai = Integer.parseInt(phanSo);
 			soHienTai++;
 			String phanSoMoi = String.format("%03d", soHienTai);
-			maHoaDon_ = "HD" + phanSoMoi;
-			return maHoaDon_;
+			return "HD" + phanSoMoi;
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
-		maHoaDon_ = "HD_ERROR";
-		return maHoaDon_;
+		return "HD_ERROR";
 	}
 
-	public void luuHoaDonXuongFile() {
-		String maHD = taoMaHoaDon();
-		LocalDate ngayTao = LocalDate.now();
-		String ghiChu = lblGhiChuValue.getText().trim();
-		int trangThaiThanhToan = 1; // đã thanh toán
-		String maKM;
-		KhuyenMai km = khuyenmai_dao.timKhuyenMaiTheoTen(cbKhuyenMai.getSelectedItem().toString().trim());
-		if (km == null) {
-			maKM = "";
-		} else {
-			maKM = km.getMaKM();
+	private void xuLyThanhToan() {
+		if (hoaDonHienTai.getDsChiTiet().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Hóa đơn rỗng, không thể thanh toán");
+			return;
 		}
-		String cbpttt = cbPTTT.getSelectedItem().toString();
-		String maNV = "NV001";
-		String maKH = maKhachHang_;
-		PhuongThucThanhToan pttt = pttt_dao.layPTTTTheoTen(cbpttt);
-		String maPTTT = pttt == null ? null : pttt.getMaPTTT();
-		HoaDon hoaDon = new HoaDon(maHD, ngayTao, ghiChu, trangThaiThanhToan, maKH, maNV, maKM, maPTTT);
+		if (hoaDonHienTai.getPhuongThucThanhToan() == null) {
+			JOptionPane.showMessageDialog(this, "Vui lòng chọn Phương thức thanh toán");
+			return;
+		}
 
-		ArrayList<ChiTietHoaDon> dsCT = new ArrayList<ChiTietHoaDon>();
-		for (int i = 0; i < hoadon_model.getRowCount(); i++) {
-			String tenSP = hoadon_model.getValueAt(i, 0).toString().trim();
-			SanPham sp = sp_dao.timSanPhamTheoTen(tenSP);
+		hoaDonHienTai.setTrangThaiThanhToan(1);
 
-			if (sp == null) {
-				JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm " + tenSP);
-				return;
+		if (hd_dao.themHoaDon(hoaDonHienTai)) {
+
+			KhachHang kh = hoaDonHienTai.getKhachHang();
+			String message = "Thanh toán thành công!";
+
+			if (kh != null) {
+				double diemDaSuDung = hoaDonHienTai.getTienGiamTuDiem().doubleValue();
+				double diemHienCo = kh.getDiemTichLuy();
+				double diemMoi;
+
+				if (diemDaSuDung > 0) {
+					diemMoi = diemHienCo - diemDaSuDung;
+					kh_dao.capNhatDiemTichLuy(kh.getMaKhachHang(), diemMoi);
+					message = "Thanh toán thành công!\nĐã cập nhật (trừ) điểm của khách hàng.";
+
+				} else {
+					double thanhTien = hoaDonHienTai.tinhTongThanhToan().doubleValue();
+					double diemCong = Math.floor(thanhTien / 10);
+
+					if (diemCong > 0) {
+						diemMoi = diemHienCo + diemCong;
+						kh_dao.capNhatDiemTichLuy(kh.getMaKhachHang(), diemMoi);
+						message = String.format("Thanh toán thành công!\nĐã cộng %,.0f điểm cho khách hàng.", diemCong);
+					} else {
+						message = "Thanh toán thành công!";
+					}
+				}
 			}
-			Number donGiaNum = (Number) hoadon_model.getValueAt(i, 2);
-			BigDecimal donGia = BigDecimal.valueOf(donGiaNum.doubleValue());
-			int soLuong = (int) hoadon_model.getValueAt(i, 1);
-			ChiTietHoaDon ct = new ChiTietHoaDon(hoaDon, sp, soLuong, donGia);
-			dsCT.add(ct);
-		}
 
-		hoaDon.setDsChiTiet(dsCT);
+			JOptionPane.showMessageDialog(this, message);
 
-		if (hd_dao.themHoaDon(hoaDon)) {
-			System.out.println("Lưu thành công hóa đơn và chi tiết vào database thành công");
-			xuatHoaDonThanhFileTxt();
+			xuatHoaDonThanhFileTxt(hoaDonHienTai);
+
 			setTrangThaiMacDinh();
-			mainFrame.setTrangThaiHoaDon(false);
+			mainFrame.setTrangThaiHoaDon(false); // ẩn nav hóa đơn khi thanh toán xong
+
 		} else {
 			JOptionPane.showMessageDialog(this, "Đã xảy ra lỗi khi lưu. Giao dịch đã được hủy. Vui lòng thử lại.");
+			hoaDonHienTai.setTrangThaiThanhToan(0);
 		}
-
 	}
 
-	public void xuatHoaDonThanhFileTxt() {
+	public void xuatHoaDonThanhFileTxt(HoaDon hoaDon) {
 		String projectPath = System.getProperty("user.dir");
 		String folderPath = projectPath + File.separator + "file_hoadon";
 
@@ -519,49 +550,54 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 			folder.mkdir();
 		}
 
-		String filePath = "HoaDon" + File.separator + maHoaDon_ + ".txt";
+		String filePath = folderPath + File.separator + hoaDon.getMaHoaDon() + ".txt";
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, StandardCharsets.UTF_8))) {
 
 			writer.write("**************************************************\n");
-			writer.write("                QUÁN CAFE LMK");
-			writer.write("      12 Nguyễn Văn Bảo, P.4, Q.Gò Vấp, TPHCM\n");
+			writer.write("          _       QUÁN COOFFE LMK\n");
+			writer.write("      12 Nguyễn Văn Bảo, P.4, Q.Gò Vấp, TPHCM\n");
 			writer.write("**************************************************\n\n");
 
-			writer.write("             HÓA ĐƠN BÁN HÀNG\n\n");
-			writer.write("Mã HĐ:       " + maHoaDon_ + "\n");
-			writer.write("Ngày tạo:    " + lblNgayTaoText.getText() + "\n");
-			writer.write("Nhân viên:   NV001\n");
+			writer.write("             HÓA ĐƠN BÁN HÀNG\n\n");
+			writer.write("Mã HĐ:       " + hoaDon.getMaHoaDon() + "\n");
+			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+			writer.write("Ngày tạo:    " + dtf.format(LocalDateTime.now()));
 
-			if (tichDiemModel.getRowCount() > 0) {
-				writer.write("Khách hàng:  " + tichDiemModel.getValueAt(0, 1) + "\n");
+			KhachHang kh = hoaDon.getKhachHang();
+			if (kh != null) {
+				writer.write("\nKhách hàng:  " + kh.getHoTen() + "\n");
 			} else {
-				writer.write("Khách hàng:  Khách vãng lai\n");
+				writer.write("\nKhách hàng:  Khách vãng lai\n");
 			}
 			writer.write("--------------------------------------------------\n");
-
 			writer.write(String.format("%-25s %3s %10s %10s\n", "Tên Sản Phẩm", "SL", "Đơn Giá", "Thành Tiền"));
 			writer.write("--------------------------------------------------\n");
 
-			for (int i = 0; i < hoadon_model.getRowCount(); i++) {
-				String tenSP = hoadon_model.getValueAt(i, 0).toString();
+			for (ChiTietHoaDon ct : hoaDon.getDsChiTiet()) {
+				String tenSP = ct.getSanPham().getTenSanPham();
 				if (tenSP.length() > 25) {
 					tenSP = tenSP.substring(0, 22) + "...";
 				}
-
-				int sl = (int) hoadon_model.getValueAt(i, 1);
-				double donGia = Double.parseDouble(hoadon_model.getValueAt(i, 2).toString());
-				double thanhTien = Double.parseDouble(hoadon_model.getValueAt(i, 3).toString());
-
+				int sl = ct.getSoLuong();
+				double donGia = ct.getDonGia().doubleValue();
+				double thanhTien = ct.tinhThanhTien().doubleValue();
 				writer.write(String.format("%-25s %3d %10.0f %10.0f\n", tenSP, sl, donGia, thanhTien));
 			}
 			writer.write("--------------------------------------------------\n");
 
-			writer.write(String.format("%-38s %12.0f VND\n", "Tổng tiền:", this.tongTienHienTai));
+			double tongTien = hoaDon.tinhTongTien().doubleValue();
+			double giamGia = hoaDon.tinhTongGiamTuKM().add(hoaDon.getTienGiamTuDiem()).doubleValue();
+			double thanhTien = hoaDon.tinhTongThanhToan().doubleValue();
 
-			writer.write(String.format("%-38s %12s\n", "Phương thức thanh toán:", cbPTTT.getSelectedItem()));
-			writer.write(String.format("%-38s %12s\n", "Ghi chú:", lblGhiChuValue.getText()));
+			writer.write(String.format("%-38s %12.0f VND\n", "Tổng tiền:", tongTien));
+			writer.write(String.format("%-38s %12.0f VND\n", "Giảm giá:", giamGia));
+			writer.write(String.format("%-38s %12.0f VND\n", "Thành tiền:", thanhTien));
 
-			writer.write("\n\n             Cảm ơn quý khách!\n");
+			writer.write(String.format("%-38s %12s\n", "Phương thức thanh toán:",
+					hoaDon.getPhuongThucThanhToan().getTenPTTT()));
+			writer.write(String.format("%-38s %12s\n", "Ghi chú:", hoaDon.getGhiChu()));
+
+			writer.write("\n\n             Cảm ơn quý khách!\n");
 
 			JOptionPane.showMessageDialog(this, "Xuất hóa đơn TXT thành công!\nĐã lưu tại: " + filePath);
 
