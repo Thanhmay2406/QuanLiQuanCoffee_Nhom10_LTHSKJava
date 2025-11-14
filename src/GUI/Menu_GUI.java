@@ -118,7 +118,6 @@ public class Menu_GUI extends JPanel implements ActionListener {
 			public boolean isCellEditable(int row, int column) {
 				return column == COL_SO_LUONG;
 			}
-
 			@Override
 			public void setValueAt(Object aValue, int row, int column) {
 				if (column == COL_SO_LUONG) {

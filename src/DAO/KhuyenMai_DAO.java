@@ -84,7 +84,16 @@ public class KhuyenMai_DAO {
 			return false;
 		}
 	}
-
+	public boolean xoaKhuyenMai(String maKM) {
+        String sql = "DELETE FROM KhuyenMai WHERE maKM = ?";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, maKM);
+            return pst.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 	public KhuyenMai timTheoMaKhuyenMai(String maKM) {
 		String sql = "SELECT * FROM KhuyenMai WHERE maKM = ?";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
