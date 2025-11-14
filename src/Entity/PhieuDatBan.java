@@ -145,7 +145,7 @@ public class PhieuDatBan {
 
 	public void setMaKhachHang(String maKhachHang) {
 		if (maKhachHang == null || !maKhachHang.matches("^KH\\d{3,}$"))
-			throw new IllegalArgumentException("Mã khách hàng không hợp lệ (phải có dạng NVxxx)");
+			throw new IllegalArgumentException("Mã khách hàng không hợp lệ (phải có dạng KHxxx)");
 		this.maKhachHang = maKhachHang;
 	}
 

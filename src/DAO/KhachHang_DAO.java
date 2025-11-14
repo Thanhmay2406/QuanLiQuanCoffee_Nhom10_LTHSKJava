@@ -34,8 +34,8 @@ public class KhachHang_DAO {
 	/**
 	 * Lấy tất cả khách hàng từ CSDL
 	 */
-	public List<KhachHang> layTatCa() {
-		List<KhachHang> ds = new ArrayList<>();
+	public ArrayList<KhachHang> layTatCa() {
+		ArrayList<KhachHang> ds = new ArrayList<>();
 		try {
 			String sql = "SELECT * FROM KhachHang";
 			Statement stm = con.createStatement();
@@ -57,21 +57,21 @@ public class KhachHang_DAO {
 	 * Thêm một khách hàng mới vào CSDL
 	 */
 	public boolean themKhachHang(KhachHang kh) {
-		String sql = "INSERT INTO KhachHang (maKhachHang, hoTen, soDienThoai, email, diemTichLuy, ngayDangKy) VALUES (?, ?, ?, ?, ?, ?)";
-		try (PreparedStatement pstm = con.prepareStatement(sql)) {
-			pstm.setString(1, kh.getMaKhachHang());
-			pstm.setString(2, kh.getHoTen());
-			pstm.setString(3, kh.getSoDienThoai());
-			pstm.setString(4, kh.getEmail());
-			pstm.setString(5, kh.getDiaChi());
-			pstm.setDouble(6, kh.getDiemTichLuy());
-			pstm.setDate(7, java.sql.Date.valueOf(kh.getNgayDangKy()));
-
-			return pstm.executeUpdate() > 0;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return false;
-		}
+	    String sql = "INSERT INTO KhachHang (maKhachHang, hoTen, soDienThoai, email, diaChi, diemTichLuy, ngayDangKy) "
+	               + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+	    try (PreparedStatement pstm = con.prepareStatement(sql)) {
+	        pstm.setString(1, kh.getMaKhachHang());
+	        pstm.setString(2, kh.getHoTen());
+	        pstm.setString(3, kh.getSoDienThoai());
+	        pstm.setString(4, kh.getEmail());
+	        pstm.setString(5, kh.getDiaChi());
+	        pstm.setDouble(6, kh.getDiemTichLuy());
+	        pstm.setDate(7, java.sql.Date.valueOf(kh.getNgayDangKy()));
+	        return pstm.executeUpdate() > 0;
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class KhachHang_DAO {
 	 * Cập nhật thông tin một khách hàng
 	 */
 	public boolean capNhatKhachHang(KhachHang kh) {
-		String sql = "UPDATE KhachHang SET hoTen = ?, soDienThoai = ?, email = ?, diemTichLuy = ? WHERE maKhachHang = ?";
+		String sql = "UPDATE KhachHang SET hoTen = ?, soDienThoai = ?, email = ?, diaChi = ?, diemTichLuy = ? WHERE maKhachHang = ?";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
 			pstm.setString(1, kh.getHoTen());
 			pstm.setString(2, kh.getSoDienThoai());
@@ -143,5 +143,47 @@ public class KhachHang_DAO {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	// lưu khách hàng
+	public boolean luuTatCa(ArrayList<KhachHang> ds) {
+	    String sqlXoa = "DELETE FROM KhachHang";
+	    String sqlThem = "INSERT INTO KhachHang (maKhachHang, hoTen, soDienThoai, email, diaChi, diemTichLuy, ngayDangKy) "
+	                   + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+	    
+	    try {
+	        con.setAutoCommit(false);
+
+	        try (PreparedStatement pstmXoa = con.prepareStatement(sqlXoa)) {
+	            pstmXoa.executeUpdate();
+	        }
+
+	        try (PreparedStatement pstmThem = con.prepareStatement(sqlThem)) {
+	            for (KhachHang kh : ds) {
+	                pstmThem.setString(1, kh.getMaKhachHang());
+	                pstmThem.setString(2, kh.getHoTen());
+	                pstmThem.setString(3, kh.getSoDienThoai());
+	                pstmThem.setString(4, kh.getEmail());
+	                pstmThem.setString(5, kh.getDiaChi());
+	                pstmThem.setDouble(6, kh.getDiemTichLuy());
+	                pstmThem.setDate(7, java.sql.Date.valueOf(kh.getNgayDangKy()));
+	                pstmThem.addBatch();
+	            }
+	            pstmThem.executeBatch();
+	        }
+
+	        con.commit();
+	        con.setAutoCommit(true);
+	        return true;
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        try {
+	            con.rollback();
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	        }
+	        return false;
+	    }
 	}
 }

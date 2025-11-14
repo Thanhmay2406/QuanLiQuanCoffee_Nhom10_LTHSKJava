@@ -7,10 +7,26 @@
 
 package GUI;
 
+import java.awt.BorderLayout;
+import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableModel;
+
+import org.knowm.xchart.QuickChart;
+import org.knowm.xchart.XChartPanel;
+import org.knowm.xchart.XYChart;
+import org.knowm.xchart.XYChartBuilder;
 
 /*
 * @description
@@ -25,6 +41,14 @@ public class ThongKe_GUI extends JPanel implements ActionListener {
 	public ThongKe_GUI(MainFrame mainFrame) {
 		// TODO Auto-generated constructor stub
 		this.mainFrame = mainFrame;
+		
+		/*
+		 * tổng doanh thu
+		 * so sánh với tháng trước 
+		 * tổng số lượng lượt khách 
+		 * top 5 sản phẩm bán chạy nhất
+		 * 
+		 * */
 	}
 
 	@Override
