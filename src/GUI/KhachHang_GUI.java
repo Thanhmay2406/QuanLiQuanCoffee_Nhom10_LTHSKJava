@@ -165,7 +165,7 @@ public class KhachHang_GUI extends JPanel implements ActionListener, MouseListen
 
 		JScrollPane scroll = new JScrollPane(table);
 
-		scroll.setPreferredSize(new Dimension(850, 300));
+		scroll.setPreferredSize(new Dimension(820, 300));
 
 		pnDown.add(scroll);
 
