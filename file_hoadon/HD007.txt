@@ -1,24 +1,28 @@
 **************************************************
-          _       QUÁN COOFFE LMK
+                 QUÁN COOFFE LMK
       12 Nguyễn Văn Bảo, P.4, Q.Gò Vấp, TPHCM
 **************************************************
 
              HÓA ĐƠN BÁN HÀNG
 
 Mã HĐ:       HD007
-Ngày tạo:    13/11/2025 15:52:42Khách hàng:  Lê Văn Cường
+Mã NV:       NV001
+Ngày tạo:    14/11/2025 19:13:53
+Mã KH:       KH002
+
+Tên khách hàng:  Trần Thị Bình
+Mã bàn:       
 --------------------------------------------------
 Tên Sản Phẩm               SL    Đơn Giá Thành Tiền
 --------------------------------------------------
-Cappuccino                  1      50000      50000
-Cacao đá xay                1      55000      55000
-Trà Olong                   1      55000      55000
+Bạc xỉu                     1      35000      35000
+Bánh Tiramisu               1      35000      35000
 --------------------------------------------------
-Tổng tiền:                                   160000 VND
-Giảm giá:                                     16000 VND
-Thành tiền:                                  144000 VND
-Phương thức thanh toán:                    Tiền mặt
-Ghi chú:                                    thêm đá
+Tổng tiền:                                    70000 VND
+Giảm giá:                                     14000 VND
+Thành tiền:                                   56000 VND
+Phương thức thanh toán:                Chuyển khoản QR
+Ghi chú:                                           
 
 
              Cảm ơn quý khách!

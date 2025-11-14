@@ -143,6 +143,25 @@ public class PhieuDatBan_DAO {
 		return dsPDB;
 	}
 
+	public PhieuDatBan layPhieuDatBanTheoMaPhieu(String maPhieuDat) {
+		String sql = "select * from PhieuDatBan where maPhieuDat = ?";
+		try (PreparedStatement pstm = con.prepareStatement(sql)) {
+			pstm.setString(1, maPhieuDat.trim());
+			ResultSet rs = pstm.executeQuery();
+			if (rs.next()) {
+				PhieuDatBan pdb = new PhieuDatBan(rs.getString("maPhieuDat"), rs.getDate("ngayDat").toLocalDate(),
+						rs.getTime("gioBatDau").toLocalTime(), rs.getTime("gioKetThuc").toLocalTime(),
+						rs.getInt("soNguoi"), rs.getString("ghiChu"), rs.getInt("trangThai"),
+						rs.getString("maKhachHang"), rs.getString("maNhanVien"), rs.getString("soDienThoai"));
+				return pdb;
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	public boolean xoaPhieuDatBan(String maPhieuDat) {
 		String sql = "delete from PhieuDatBan where maPhieuDat = ?";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {

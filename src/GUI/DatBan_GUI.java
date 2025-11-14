@@ -34,7 +34,9 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import DAO.ChiTietDatBan_DAO;
 import DAO.PhieuDatBan_DAO;
+import Entity.ChiTietDatBan;
 import Entity.PhieuDatBan;
 
 public class DatBan_GUI extends JPanel implements ActionListener, ComponentListener {
@@ -46,11 +48,14 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 	private JTable table;
 	private PhieuDatBan_DAO pdb_dao;
 	private MainFrame mainFrame;
+	private JLabel lblSearch;
+	private ChiTietDatBan_DAO ctdb_dao;
 
 	public DatBan_GUI(MainFrame mainFrame) {
 		// TODO Auto-generated constructor stub
 		this.mainFrame = mainFrame;
 		this.pdb_dao = new PhieuDatBan_DAO();
+		this.ctdb_dao = new ChiTietDatBan_DAO();
 		this.setLayout(new BorderLayout());
 		// -------North--------
 		JPanel pnNorth = new JPanel();
@@ -61,6 +66,7 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 		JPanel pnCenter = new JPanel();
 		pnCenter.setLayout(new BoxLayout(pnCenter, BoxLayout.Y_AXIS));
 		JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+		searchPanel.add(lblSearch = new JLabel("Nhập số điện thoại: "));
 		searchPanel.add(txtSearch = new JTextField(10));
 		searchPanel.add(btnSearch = new JButton("Tìm kiếm"));
 		pnCenter.add(searchPanel, BorderLayout.NORTH);
@@ -133,6 +139,7 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 		// TODO Auto-generated method stub
 		mainFrame.switchToPanel(mainFrame.KEY_CHON_BAN);
 	}
+
 	private void chonMon() {
 		// TODO Auto-generated method stub
 		int selectedRow = table.getSelectedRow();
@@ -142,9 +149,17 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 
 			if (trangThai.equals("Chưa sử dụng")) {
 				try {
-					pdb_dao.capNhatTrangThaiPhieu(maPhieu, 1);
+					pdb_dao.capNhatTrangThaiPhieu(maPhieu, 1); // trangThai = 1 (đang sử dụng)
 					mainFrame.switchToPanel(mainFrame.KEY_BAN_HANG);
-					modelTabel.setValueAt("Đang sử dụng", selectedRow, 6); // set "Đã sử dụng" khi nhấn thanh toán
+					modelTabel.setValueAt("Đang sử dụng", selectedRow, 6); // set "Đã sử dụng" khi nhấn thanh toán thành
+																			// công
+					// lấy maBan, maPDB lưu vào trung gian MainFrame
+					ArrayList<String> dsMaBan = layMaBanTuCTDB(maPhieu);
+					String maKhachHang = modelTabel.getValueAt(selectedRow, 7).toString();
+					mainFrame.setMaKhachHang(maKhachHang);
+					mainFrame.setMaPhieuDatBan(maPhieu);
+					mainFrame.setDsMaBan(dsMaBan);
+
 				} catch (Exception e) {
 					// TODO: handle exception
 					System.out.println(selectedRow);
@@ -158,6 +173,17 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 			JOptionPane.showMessageDialog(this, "Vui lòng chọn phiếu đặt bàn");
 			return;
 		}
+
+	}
+
+	private ArrayList<String> layMaBanTuCTDB(String maPhieu) {
+		ArrayList<String> dsMaBan = new ArrayList<String>();
+		ArrayList<ChiTietDatBan> dsCT = (ArrayList<ChiTietDatBan>) ctdb_dao.layChiTietTheoMaPDB(maPhieu);
+		for (ChiTietDatBan ct : dsCT) {
+			dsMaBan.add(ct.getBan().getMaBan());
+		}
+		return dsMaBan;
+		// TODO Auto-generated method stub
 
 	}
 

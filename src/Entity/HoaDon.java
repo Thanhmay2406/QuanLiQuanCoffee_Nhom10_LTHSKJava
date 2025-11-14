@@ -30,6 +30,7 @@ public class HoaDon {
 	private PhuongThucThanhToan phuongThucThanhToan;
 	private List<ChiTietHoaDon> dsChiTiet;
 	private BigDecimal tienGiamTuDiem;
+	private Ban ban;
 
 	public HoaDon() {
 		this.dsChiTiet = new ArrayList<>();
@@ -41,7 +42,7 @@ public class HoaDon {
 	}
 
 	public HoaDon(String maHoaDon, LocalDate ngayTao, String ghiChu, int trangThaiThanhToan, KhachHang khachHang,
-			NhanVien nhanVien, KhuyenMai khuyenMai, PhuongThucThanhToan phuongThucThanhToan) {
+			NhanVien nhanVien, KhuyenMai khuyenMai, PhuongThucThanhToan phuongThucThanhToan, Ban ban) {
 		this();
 		this.maHoaDon = maHoaDon;
 		this.ngayTao = ngayTao;
@@ -51,6 +52,15 @@ public class HoaDon {
 		this.nhanVien = nhanVien;
 		this.khuyenMai = khuyenMai;
 		this.phuongThucThanhToan = phuongThucThanhToan;
+		this.ban = ban;
+	}
+
+	public Ban getBan() {
+		return ban;
+	}
+
+	public void setBan(Ban ban) {
+		this.ban = ban;
 	}
 
 	public KhachHang getKhachHang() {

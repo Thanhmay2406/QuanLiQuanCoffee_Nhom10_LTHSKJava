@@ -1,25 +1,25 @@
 **************************************************
-                QUÁN CAFE LMK
+                 QUÁN COOFFE LMK
       12 Nguyễn Văn Bảo, P.4, Q.Gò Vấp, TPHCM
 **************************************************
 
              HÓA ĐƠN BÁN HÀNG
 
 Mã HĐ:       HD004
-Ngày tạo:    13/11/2025 00:00:00
-Nhân viên:   N/A
-Khách hàng:  Khách vãng lai
+Ngày tạo:    14/11/2025 18:43:39
+Khách hàng:  Lê Văn Cường
 --------------------------------------------------
 Tên Sản Phẩm               SL    Đơn Giá Thành Tiền
 --------------------------------------------------
-Espresso                    1      40000      40000
+Cà phê sữa                  1      30000      30000
 Cacao đá xay                1      55000      55000
+Bánh Croissant              2      30000      60000
 --------------------------------------------------
-Tổng tiền:                                    95000 VND
-Giảm giá:                                         0 VND
-Thành tiền:                                   95000 VND
-Phương thức thanh toán:                    Tiền mặt
-Ghi chú:                                           
+Tổng tiền:                                   145000 VND
+Giảm giá:                                     14500 VND
+Thành tiền:                                  130500 VND
+Phương thức thanh toán:                Chuyển khoản QR
+Ghi chú:                               nhiều sữa, ít đá
 
 
              Cảm ơn quý khách!

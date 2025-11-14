@@ -113,13 +113,14 @@ public class SanPham_DAO {
 			ResultSet rs = pstm.executeQuery();
 			while (rs.next()) {
 				SanPham sp = new SanPham();
+				LoaiSanPham lsp = lsp_dao.layTheoMaLoai(rs.getString("maLSP"));
 				sp.setMaSanPham(rs.getString("maSanPham"));
 				sp.setTenSanPham(rs.getString("tenSanPham"));
-				sp.setDonViTinh("donViTinh");
+				sp.setDonViTinh(rs.getString("donViTinh"));
 				sp.setGia(rs.getBigDecimal("gia"));
-				sp.sethinhAnh("hinhAnh");
+				sp.sethinhAnh(rs.getString("hinhAnh"));
 				sp.setTrangThai(rs.getInt("trangThai"));
-				sp.setmaLoaiSP("maLoaiSP");
+				sp.setLoaiSP(lsp);
 				dsSP.add(sp);
 			}
 		} catch (Exception e) {

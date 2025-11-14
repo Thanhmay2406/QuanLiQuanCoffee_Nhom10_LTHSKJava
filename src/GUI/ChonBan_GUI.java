@@ -107,10 +107,16 @@ public class ChonBan_GUI extends JPanel implements ActionListener, ComponentList
 			return;
 		}
 
+		// trangThai = 0 (trống)
 		if (ban_selected.getTrangThai() == 0) {
 			int hoiNhac = JOptionPane.showConfirmDialog(this, "Chắc chắn chọn Bàn " + ban_selected.getMaBan() + "?",
 					"Xác nhận", JOptionPane.YES_NO_OPTION);
 			if (hoiNhac == JOptionPane.YES_OPTION) {
+				// lưu mã bàn vào lớp trung gian MainFrame
+				String maBan = ban_selected.getMaBan();
+				ArrayList<String> dsMaBan = new ArrayList<String>();
+				dsMaBan.add(maBan);
+				mainFrame.setDsMaBan(dsMaBan);
 				ban_dao.capNhatTrangThaiBan(ban_selected.getMaBan(), 1);
 				loadBanData();
 				mainFrame.switchToPanel(mainFrame.KEY_BAN_HANG);
@@ -119,6 +125,7 @@ public class ChonBan_GUI extends JPanel implements ActionListener, ComponentList
 			JOptionPane.showMessageDialog(this, "Bàn này không thể chọn vì đang bận!");
 		}
 	}
+
 	private void loadBanData() {
 		pnTableDisplay.removeAll();
 		tableButtons.clear();

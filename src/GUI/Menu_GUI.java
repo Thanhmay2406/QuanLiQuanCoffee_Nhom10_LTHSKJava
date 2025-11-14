@@ -118,6 +118,7 @@ public class Menu_GUI extends JPanel implements ActionListener {
 			public boolean isCellEditable(int row, int column) {
 				return column == COL_SO_LUONG;
 			}
+
 			@Override
 			public void setValueAt(Object aValue, int row, int column) {
 				if (column == COL_SO_LUONG) {
@@ -319,8 +320,8 @@ public class Menu_GUI extends JPanel implements ActionListener {
 
 		for (TableModelListener l : listeners) {
 			orderModel.addTableModelListener(l);
-			orderTable.revalidate(); // Báo cho layout manager tính toán lại
-			orderTable.repaint(); // Yêu cầu vẽ lại JTable ngay lập tức
+			orderTable.revalidate();
+			orderTable.repaint();
 		}
 		updateTotalOrder();
 	}
@@ -371,33 +372,25 @@ public class Menu_GUI extends JPanel implements ActionListener {
 				tenSanPhamCanXoa.add(tenSP);
 			}
 
-			// Xóa khỏi Entity
 			for (String tenSP : tenSanPhamCanXoa) {
-				// Lại phải gọi DAO để tìm mã SP từ tên
-				// TODO: Cần tạo hàm `timTheoTen` trong SanPham_DAO
 				SanPham sp = sp_dao.timSanPhamTheoTen(tenSP);
 				if (sp != null) {
-					// GỌI PHƯƠNG THỨC ENTITY
-					// TODO: Cần tạo hàm `xoaChiTiet(String maSanPham)` trong HoaDon
 					hoaDonHienTai.xoaChiTiet(sp.getMaSanPham());
 				}
 			}
 
-			// Cập nhật GUI
 			refreshOrderTable();
 
 		} else if (o == cbFilter) {
 			actionFilter();
 		} else if (o == btnTaoHoaDon) {
 			mainFrame.setTrangThaiHoaDon(true);
-			// === THAY ĐỔI 8: Gọi hàm `taoHoaDon` đã được sửa ===
 			taoHoaDon();
 		} else if (o == btnSearch) {
 			actionSearch();
 		}
 	}
 
-	// (Giữ nguyên, không thay đổi)
 	private void actionSearch() {
 		String strSearch = txtSearch.getText().trim();
 		if (strSearch.isEmpty()) {
@@ -422,7 +415,7 @@ public class Menu_GUI extends JPanel implements ActionListener {
 		});
 
 		if (menuTable.getRowCount() > 0) {
-			int viewIndex = 0; // row đầu tiên sau khi lọc
+			int viewIndex = 0;
 			menuTable.setRowSelectionInterval(viewIndex, viewIndex);
 			menuTable.scrollRectToVisible(menuTable.getCellRect(viewIndex, 0, true));
 		} else {
@@ -430,34 +423,26 @@ public class Menu_GUI extends JPanel implements ActionListener {
 		}
 	}
 
-	// === THAY ĐỔI 9: Sửa hàm `taoHoaDon` ===
 	private void taoHoaDon() {
-		// Kiểm tra bằng Entity
 		if (hoaDonHienTai.getDsChiTiet().isEmpty()) {
 			JOptionPane.showMessageDialog(this, "Chưa chọn sản phẩm nào");
 			return;
 		}
 
-		// Cập nhật ghi chú từ GUI vào Entity
 		hoaDonHienTai.setGhiChu(txtGhiChu.getText().trim());
 
-		// Chuyển đối tượng HoaDon (Entity) sang màn hình Hóa Đơn
-		// TODO: Bạn cần sửa/thêm hàm này trong MainFrame
 		mainFrame.chuyenHoaDonSangManHinhThanhToan(hoaDonHienTai);
 
 		mainFrame.switchToPanel(mainFrame.KEY_HOA_DON);
 
-		// Reset giỏ hàng (tạo hóa đơn mới) cho phiên làm việc tiếp theo
 		this.hoaDonHienTai = new HoaDon();
 		this.hoaDonHienTai.setNgayTao(LocalDate.now());
 		this.hoaDonHienTai.setTrangThaiThanhToan(0);
 
-		// Dọn dẹp GUI
-		refreshOrderTable(); // JTable sẽ tự động bị xóa
+		refreshOrderTable();
 		txtGhiChu.setText("");
 	}
 
-	// (Giữ nguyên, không thay đổi)
 	private void actionFilter() {
 		// TODO Auto-generated method stub
 		menuTable.clearSelection(); // làm mới dòng được chọn

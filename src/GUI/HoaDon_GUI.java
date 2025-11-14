@@ -52,12 +52,14 @@ import DAO.ChiTietHoaDon_DAO;
 import DAO.HoaDon_DAO;
 import DAO.KhachHang_DAO;
 import DAO.KhuyenMai_DAO;
+import DAO.PhieuDatBan_DAO;
 import DAO.PhuongThucThanhToan_DAO;
 import DAO.SanPham_DAO;
 import Entity.ChiTietHoaDon;
 import Entity.HoaDon;
 import Entity.KhachHang;
 import Entity.KhuyenMai;
+import Entity.PhieuDatBan;
 import Entity.PhuongThucThanhToan;
 
 public class HoaDon_GUI extends JPanel implements ActionListener {
@@ -84,9 +86,14 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 	private JButton btnThanhToan;
 	private JLabel lblHoaDonText;
 	private JLabel lblNgayTaoText;
-	private JLabel lblGhiChuValue;
-
 	private HoaDon hoaDonHienTai;
+	private PhieuDatBan_DAO pdb_dao;
+	private JLabel lblNhanVienText;
+	private JLabel lblMaBanText;
+	private JLabel lblMaKhachHangText;
+	private JLabel lblGhiChuText;
+
+	private boolean isSearchKhachHang = false;
 
 	public HoaDon_GUI(MainFrame mainFrame) {
 		this.khuyenmai_dao = new KhuyenMai_DAO();
@@ -95,7 +102,7 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 		this.hd_dao = new HoaDon_DAO();
 		this.ct_dao = new ChiTietHoaDon_DAO();
 		this.sp_dao = new SanPham_DAO();
-
+		this.pdb_dao = new PhieuDatBan_DAO();
 		this.mainFrame = mainFrame;
 		setLayout(new BorderLayout());
 
@@ -142,13 +149,26 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 			return;
 		}
 
-		System.out.println(
-				"refreshUIFromEntity(): " + hoaDonHienTai + " | tienGiamTuDiem=" + hoaDonHienTai.getTienGiamTuDiem());
-
 		lblHoaDonText.setText(this.hoaDonHienTai.getMaHoaDon());
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 		lblNgayTaoText.setText(dtf.format(LocalDateTime.now()));
-		lblGhiChuValue.setText(this.hoaDonHienTai.getGhiChu());
+		lblGhiChuText.setText(this.hoaDonHienTai.getGhiChu());
+		if (mainFrame.getMaKhachHang() != null) {
+			KhachHang kh = kh_dao.timKhachHangTheoMaKH(mainFrame.getMaKhachHang());
+			if (kh != null)
+				searchTichDiem(kh.getSoDienThoai());
+		}
+		String dsMaBan = "";
+		ArrayList<String> ds = mainFrame.getDsMaBan();
+		if (ds != null) {
+			for (String ma : ds) {
+				dsMaBan += ma + ",";
+			}
+			dsMaBan = (dsMaBan.length() > 0) ? dsMaBan.substring(0, dsMaBan.length() - 1) : dsMaBan;
+			lblMaBanText.setText(dsMaBan);
+		} else {
+			lblMaBanText.setText("");
+		}
 
 		hoadon_model.setRowCount(0);
 		for (ChiTietHoaDon ct : this.hoaDonHienTai.getDsChiTiet()) {
@@ -187,12 +207,6 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 		double tienGiamKM = hoaDonHienTai.tinhTongGiamTuKM().doubleValue();
 		double tienGiamDiem = hoaDonHienTai.getTienGiamTuDiem().doubleValue();
 		double thanhTien = hoaDonHienTai.tinhTongThanhToan().doubleValue(); // Gọi hàm tự tính toán
-
-		System.out.println("=========================resetUI====================");
-		System.out.println("\n Tổng tiền: " + tongTien);
-		System.out.println("\n Số tiền giảm từ KM: " + tienGiamKM);
-		System.out.println("\n Số tiền giảm từ điểm: " + tienGiamDiem);
-		System.out.println("====================================");
 
 		lblTongTienValue.setText(String.format("%,.0f VND", tongTien));
 		lblTienGiamValue.setText(String.format("%,.0f VND", (tienGiamKM + tienGiamDiem))); // Tổng giảm
@@ -258,23 +272,44 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 		Box boxInfoLeft = Box.createVerticalBox();
 		Box row0 = Box.createHorizontalBox();
 		row0.add(new JLabel("Mã hóa đơn: "));
-		row0.add(lblHoaDonText = new JLabel("HD-Chưa-Tạo"));
+		row0.add(lblHoaDonText = new JLabel(""));
 		row0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		boxInfoLeft.add(row0);
 		boxInfoLeft.add(Box.createVerticalStrut(10));
 
 		Box row1 = Box.createHorizontalBox();
-		row1.add(new JLabel("Ngày tạo: "));
-		row1.add(lblNgayTaoText = new JLabel(""));
+		row1.add(new JLabel("Mã nhân viên: "));
+		row1.add(lblNhanVienText = new JLabel("NV001"));
 		row1.setAlignmentX(Component.LEFT_ALIGNMENT);
 		boxInfoLeft.add(row1);
 		boxInfoLeft.add(Box.createVerticalStrut(10));
 
 		Box row2 = Box.createHorizontalBox();
-		row2.add(new JLabel("Ghi chú: "));
-		row2.add(lblGhiChuValue = new JLabel(""));
+		row2.add(new JLabel("Ngày tạo: "));
+		row2.add(lblNgayTaoText = new JLabel(""));
 		row2.setAlignmentX(Component.LEFT_ALIGNMENT);
 		boxInfoLeft.add(row2);
+		boxInfoLeft.add(Box.createVerticalStrut(10));
+
+		Box row3 = Box.createHorizontalBox();
+		row3.add(new JLabel("Mã bàn: "));
+		row3.add(lblMaBanText = new JLabel(""));
+		row3.setAlignmentX(Component.LEFT_ALIGNMENT);
+		boxInfoLeft.add(row3);
+		boxInfoLeft.add(Box.createVerticalStrut(10));
+
+		Box row4 = Box.createHorizontalBox();
+		row4.add(new JLabel("Mã khách hàng: "));
+		row4.add(lblMaKhachHangText = new JLabel(""));
+		row4.setAlignmentX(Component.LEFT_ALIGNMENT);
+		boxInfoLeft.add(row4);
+		boxInfoLeft.add(Box.createVerticalStrut(10));
+
+		Box row5 = Box.createHorizontalBox();
+		row5.add(new JLabel("Ghi chú: "));
+		row5.add(lblGhiChuText = new JLabel(""));
+		row5.setAlignmentX(Component.LEFT_ALIGNMENT);
+		boxInfoLeft.add(row5);
 		boxInfoLeft.add(Box.createVerticalStrut(10));
 
 		hoadon_info.add(boxInfoLeft, BorderLayout.WEST);
@@ -377,9 +412,18 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 		this.hoaDonHienTai = new HoaDon();
 		this.hoaDonHienTai.setMaHoaDon(taoMaHoaDon());
 		this.hoaDonHienTai.setNgayTao(LocalDate.now());
-
 		refreshUIFromEntity();
 		txtTichDiemSearch.setText("");
+	}
+
+	private void clearUI() {
+		for (JLabel lbl : new JLabel[] { lblGhiChuText, lblHoaDonText, lblMaBanText, lblMaKhachHangText, lblNgayTaoText,
+				lblNhanVienText, lblThanhTienValue, lblTienGiamValue, lblTongTienValue }) {
+			lbl.setText("");
+		}
+		cbKhuyenMai.setSelectedItem(false);
+		cbPTTT.setSelectedItem(false);
+		tichDiemModel.setRowCount(0);
 	}
 
 	private void addListeners() {
@@ -397,22 +441,9 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 
 		if (o.equals(btnTichDiemSearch)) {
 			String txtSearch = txtTichDiemSearch.getText().trim();
-
 			this.hoaDonHienTai.setTienGiamTuDiem(BigDecimal.ZERO);
-
-			if (txtSearch.isEmpty()) {
-				this.hoaDonHienTai.setKhachHang(null);
-			} else {
-				KhachHang kh = kh_dao.timKhachHangTheoSDT(txtSearch);
-				if (kh == null) {
-					JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng. Tìm lại hoặc Đăng ký");
-					this.hoaDonHienTai.setKhachHang(null);
-				} else {
-					this.hoaDonHienTai.setKhachHang(kh);
-				}
-			}
+			searchTichDiem(txtSearch);
 			refreshUIFromEntity();
-
 		} else if (o.equals(btnThanhToan)) {
 			xuLyThanhToan();
 
@@ -425,7 +456,6 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 				return;
 			}
 			double diemHienCo = kh.getDiemTichLuy();
-			System.out.println("Điểm tích lũy trước: " + kh.getDiemTichLuy());
 			if (diemHienCo <= 0) {
 				JOptionPane.showMessageDialog(this, "Khách hàng không có điểm để sử dụng.");
 				return;
@@ -442,9 +472,6 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 
 			double tienGiamTuDiemToiDa = Math.min(diemQuyDoiThanhTien, tienSauKhiGiamKM);
 			hoaDonHienTai.setTienGiamTuDiem(BigDecimal.valueOf(tienGiamTuDiemToiDa));
-			System.out.println(
-					"\nSau khi set: " + hoaDonHienTai + " | tienGiamTuDiem=" + hoaDonHienTai.getTienGiamTuDiem());
-
 			JOptionPane.showMessageDialog(this,
 					String.format("Đã áp dụng điểm tích lũy vào hóa đơn.", tienGiamTuDiemToiDa, tienGiamTuDiemToiDa));
 
@@ -468,6 +495,25 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 			PhuongThucThanhToan pttt = pttt_dao.layPTTTTheoTen(selected);
 			this.hoaDonHienTai.setPhuongThucThanhToan(pttt);
 		}
+	}
+
+	private void searchTichDiem(String txtSearch) {
+		// TODO Auto-generated method stub
+		if (txtSearch.isEmpty()) {
+			this.hoaDonHienTai.setKhachHang(null);
+		} else {
+			KhachHang kh = kh_dao.timKhachHangTheoSDT(txtSearch);
+			if (kh == null) {
+				JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng. Tìm lại hoặc Đăng ký");
+				this.hoaDonHienTai.setKhachHang(null);
+				return;
+			} else {
+				this.hoaDonHienTai.setKhachHang(kh);
+				lblMaKhachHangText.setText(hoaDonHienTai.getKhachHang().getMaKhachHang());
+				isSearchKhachHang = true;
+			}
+		}
+
 	}
 
 	public String taoMaHoaDon() {
@@ -533,8 +579,14 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 			xuatHoaDonThanhFileTxt(hoaDonHienTai);
 
 			setTrangThaiMacDinh();
+			clearUI();
 			mainFrame.setTrangThaiHoaDon(false); // ẩn nav hóa đơn khi thanh toán xong
-
+			// cập nhật trạng thái cho PDB
+			String maPDB = mainFrame.getMaPhieuDatBan();
+			if (maPDB != null && !maPDB.isEmpty()) {
+				PhieuDatBan pdb = pdb_dao.layPhieuDatBanTheoMaPhieu(maPDB);
+				pdb_dao.capNhatTrangThaiPhieu(pdb.getMaPhieuDat(), 2); // 2 (đã sử dụng)
+			}
 		} else {
 			JOptionPane.showMessageDialog(this, "Đã xảy ra lỗi khi lưu. Giao dịch đã được hủy. Vui lòng thử lại.");
 			hoaDonHienTai.setTrangThaiThanhToan(0);
@@ -554,21 +606,25 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, StandardCharsets.UTF_8))) {
 
 			writer.write("**************************************************\n");
-			writer.write("          _       QUÁN COOFFE LMK\n");
+			writer.write("                 QUÁN COOFFE LMK\n");
 			writer.write("      12 Nguyễn Văn Bảo, P.4, Q.Gò Vấp, TPHCM\n");
 			writer.write("**************************************************\n\n");
 
 			writer.write("             HÓA ĐƠN BÁN HÀNG\n\n");
 			writer.write("Mã HĐ:       " + hoaDon.getMaHoaDon() + "\n");
+			writer.write("Mã NV:       " + "NV001" + "\n");
+
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 			writer.write("Ngày tạo:    " + dtf.format(LocalDateTime.now()));
-
+			String maKH = (isSearchKhachHang) ? hoaDon.getKhachHang().getMaKhachHang() : "";
+			writer.write("\nMã KH:       " + maKH + "\n");
 			KhachHang kh = hoaDon.getKhachHang();
 			if (kh != null) {
-				writer.write("\nKhách hàng:  " + kh.getHoTen() + "\n");
+				writer.write("\nTên khách hàng:  " + kh.getHoTen() + "\n");
 			} else {
-				writer.write("\nKhách hàng:  Khách vãng lai\n");
+				writer.write("\nTên khách hàng:  Khách vãng lai\n");
 			}
+			writer.write("Mã bàn:       " + lblMaBanText.getText() + "\n");
 			writer.write("--------------------------------------------------\n");
 			writer.write(String.format("%-25s %3s %10s %10s\n", "Tên Sản Phẩm", "SL", "Đơn Giá", "Thành Tiền"));
 			writer.write("--------------------------------------------------\n");

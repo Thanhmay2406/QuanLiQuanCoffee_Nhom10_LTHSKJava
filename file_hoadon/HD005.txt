@@ -1,24 +1,27 @@
 **************************************************
-          _       QUÁN CAFE LMK
+                 QUÁN COOFFE LMK
       12 Nguyễn Văn Bảo, P.4, Q.Gò Vấp, TPHCM
 **************************************************
 
              HÓA ĐƠN BÁN HÀNG
 
 Mã HĐ:       HD005
-Ngày tạo:    13/11/2025 00:00:00
-Khách hàng:  Trần Thị Bình
+Mã NV:       NV001
+Ngày tạo:    14/11/2025 19:03:36Mã KH:       
+
+Tên khách hàng:  Khách vãng lai
+Mã bàn:       
 --------------------------------------------------
 Tên Sản Phẩm               SL    Đơn Giá Thành Tiền
 --------------------------------------------------
-Espresso                    1      40000      40000
-Chanh tuyết                 1      50000      50000
+Cappuccino                  1      50000      50000
+Bánh Tiramisu               1      35000      35000
 --------------------------------------------------
-Tổng tiền:                                    90000 VND
-Giảm giá:                                      9000 VND
-Thành tiền:                                   81000 VND
+Tổng tiền:                                    85000 VND
+Giảm giá:                                      8500 VND
+Thành tiền:                                   76500 VND
 Phương thức thanh toán:                    Tiền mặt
-Ghi chú:                                           
+Ghi chú:                                    thêm đá
 
 
              Cảm ơn quý khách!

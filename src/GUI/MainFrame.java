@@ -239,7 +239,6 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import Entity.HoaDon; // === THÊM IMPORT ===
-import Entity.NhanVien; // === THÊM IMPORT ===
 
 /*
 * @description
@@ -268,10 +267,13 @@ public class MainFrame extends JFrame {
 	private HoaDon_GUI hoadon_gui;
 	private JButton btnNavHoaDon;
 
-	// === THAY ĐỔI 2: Thêm thuộc tính nhân viên (cho logic nghiệp vụ) ===
-	private NhanVien nhanVienHienTai;
+	// tạo biến tòa cục để lưu trữ maBan và PDB
+	private ArrayList<String> dsMaBan;
+	private String maPhieuDatBan;
+	private String maKhachHang;
 
 	public MainFrame() {
+		dsMaBan = new ArrayList<String>();
 		this.hoadon_gui = new HoaDon_GUI(this);
 		setTitle("Quản Lý Quán Coffee");
 		setSize(1000, 750);
@@ -328,7 +330,6 @@ public class MainFrame extends JFrame {
 		ThongKe_GUI panelThongKe = new ThongKe_GUI(this);
 		contentPanel.add(panelThongKe, KEY_THONG_KE);
 
-		// Thêm HoaDon_GUI vào CardLayout
 		contentPanel.add(this.hoadon_gui, KEY_HOA_DON);
 
 		// gán key
@@ -349,6 +350,22 @@ public class MainFrame extends JFrame {
 		if (!navButtons.isEmpty()) {
 			updateNavButtonStyles(navButtons.get(0));
 		}
+	}
+
+	public ArrayList<String> getDsMaBan() {
+		return dsMaBan;
+	}
+
+	public void setDsMaBan(ArrayList<String> dsMaBan) {
+		this.dsMaBan = dsMaBan;
+	}
+
+	public String getMaPhieuDatBan() {
+		return maPhieuDatBan;
+	}
+
+	public void setMaPhieuDatBan(String maPhieuDatBan) {
+		this.maPhieuDatBan = maPhieuDatBan;
 	}
 
 	private JButton addNavButton(String text, String iconPath, String actionCommand, ActionListener listener) {
@@ -422,40 +439,16 @@ public class MainFrame extends JFrame {
 		});
 	}
 
-	// === THAY ĐỔI 3: Xóa phương thức cũ ===
-	/*
-	 * public void chuyenDanhSachOrderSangHoaDon(ArrayList<Object[]> orderData) {
-	 * hoadon_gui.nhanDanhSachSanPham(orderData); }
-	 */
-
-	// === THAY ĐỔI 4: Thêm phương thức mới mà Menu_GUI gọi ===
-	/**
-	 * Nhận đối tượng HoaDon từ Menu_GUI và chuyển tiếp đến HoaDon_GUI. * @param
-	 * hoaDon Đối tượng hóa đơn (giỏ hàng)
-	 */
 	public void chuyenHoaDonSangManHinhThanhToan(HoaDon hoaDon) {
-		// Gọi phương thức đã refactor của HoaDon_GUI
 		hoadon_gui.setHoaDonHienTai(hoaDon);
 	}
 
-	// === THAY ĐỔI 5: Thêm phương thức giả lập để HoaDon_GUI gọi ===
-	/**
-	 * Lấy thông tin nhân viên đang đăng nhập. (Hiện tại đang giả lập, sau này sẽ
-	 * thay bằng logic đăng nhập). * @return Đối tượng NhanVien
-	 */
-	public NhanVien getNhanVienHienTai() {
-		// TODO: Thay thế bằng logic đăng nhập thật sự
-		if (this.nhanVienHienTai == null) {
-			// Giả lập một nhân viên để test
-			System.out.println("MainFrame: Đang giả lập Nhân viên NV001");
-
-			// TODO: Bạn cần đảm bảo Entity NhanVien có constructor này
-			// Ví dụ: NhanVien(maNV, tenNV, sdt, email, chucVu, ngayVaoLam, trangThai)
-			// (Tôi tạm thời dùng constructor rỗng và set)
-			this.nhanVienHienTai = new NhanVien();
-			this.nhanVienHienTai.setMaNhanVien("NV001");
-			this.nhanVienHienTai.setHoTen("Trần Văn Long");
-		}
-		return this.nhanVienHienTai;
+	public String getMaKhachHang() {
+		return maKhachHang;
 	}
+
+	public void setMaKhachHang(String maKhachHang) {
+		this.maKhachHang = maKhachHang;
+	}
+
 }
