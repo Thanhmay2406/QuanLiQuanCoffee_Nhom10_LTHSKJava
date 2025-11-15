@@ -12,6 +12,7 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -59,8 +60,7 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 	private JLabel lblMaSP;
 	private JLabel lblTenSP;
 	private JComboBox cboLoai;
-	private JTextField txtSearch;
-	private JButton btnSearch;
+	private JTextField txtTim;
 	private JButton btnLuu;
 	private JLabel lblLoaiSP;
 	private JTextField txtLoaiSP;
@@ -78,6 +78,8 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 	private ArrayList<SanPham> dsSanPhamThem;
 	private List<String> dsSanPhamXoa = new ArrayList<>();
 	private SanPham  spHienTai = null;
+	private JComboBox cbLocTheoLoai;
+	private JButton btnTim;
 	
 	public SanPham_GUI(MainFrame mainFrame) {
 		// TODO Auto-generated constructor stub
@@ -107,8 +109,6 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 		pnInput.add(new JLabel("Loại sản phẩm:"));
 		cboLoaiSP = new JComboBox<>();
 		pnInput.add(cboLoaiSP);
-
-		loadTenLoaiSanPham();
 		
 		pnInput.add(lblTenSP = new JLabel("Tên sản phẩm:"));
 		txtTenSP = new JTextField(20);
@@ -146,6 +146,19 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 		btnThem.setPreferredSize(btnSize);
 		btnClear.setPreferredSize(btnSize);
 		btnCapNhat.setPreferredSize(btnSize);
+		
+		JPanel pnLocTimKiem = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+		cbLocTheoLoai = new JComboBox<>();
+		btnTim = new JButton("Tìm");
+		btnTim.setPreferredSize(btnSize);
+		txtTim = new JTextField(15);
+		
+		pnLocTimKiem.add(cbLocTheoLoai);
+		pnLocTimKiem.add(txtTim);
+		pnLocTimKiem.add(btnTim);
+		pnLocTimKiem.setBorder(BorderFactory.createTitledBorder(""));
+		
+		pnFormButtons.add(pnLocTimKiem);
 		pnFormButtons.add(btnThem);
 		pnFormButtons.add(btnClear);
 		pnFormButtons.add(btnCapNhat);
@@ -178,6 +191,9 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 		pnSouth.add(btnLuu);
 		
 		add(pnSouth, BorderLayout.SOUTH);
+		
+
+		loadTenLoaiSanPham();
 		btnLuu.setEnabled(false);
 		btnThem.addActionListener(this);
 		btnCapNhat.addActionListener(this);
@@ -185,15 +201,20 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 		btnLuu.addActionListener(this);
 		btnClear.addActionListener(this);
 		btnThemAnh.addActionListener(this);
+		btnTim.addActionListener(this);
+		cbLocTheoLoai.addActionListener(e -> locTheoLoai());
+
 		
 	}
 
 	private void loadTenLoaiSanPham() {
 	    cboLoaiSP.removeAllItems();
 	    cboLoaiSP.addItem("- - - - - - - - - -");
+	    cbLocTheoLoai.addItem("Tất cả");
 	    List<LoaiSanPham> dsLoai = loaiDAO.layTatCa();
 	    for (LoaiSanPham l : dsLoai) {
 	        cboLoaiSP.addItem(l.getTenLoai());
+	        cbLocTheoLoai.addItem(l.getTenLoai());
 	    }
 	}
 
@@ -216,8 +237,52 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 		 else if (o.equals(btnCapNhat)) {
         	xuLyCapNhatSanPham();
 		}
+		 else if (o.equals(btnTim)) {
+	        	xulyTimKiemSanPham();
+		}
 	}
 	
+	private void xulyTimKiemSanPham() {
+	    String tuKhoa = txtTim.getText().trim().toLowerCase();
+	    model.setRowCount(0);
+	    List<SanPham> dsSP = sanPhamDAO.layTatCa();
+
+	    for (SanPham sp : dsSP) {
+	        String tenSP = sp.getTenSanPham().toLowerCase();
+	        if (tenSP.contains(tuKhoa)) {
+
+	            String maSP = sp.getMaSanPham();
+	            String maLoai = sp.getLoaiSP().getMaLoaiSP();
+	            String dvt = sp.getDonViTinh();
+	            double gia = sp.getGia().doubleValue();
+	            String trangThaiStr = sp.getTrangThai() == 1 ? "Còn hàng" : "Hết hàng";
+	            String tenAnh = sp.gethinhAnh();
+
+	            ImageIcon icon = null;
+	            if (tenAnh != null && !tenAnh.isEmpty()) {
+	                java.net.URL imgURL = getClass().getResource("/img/" + tenAnh);
+	                if (imgURL != null) {
+	                    icon = new ImageIcon(new ImageIcon(imgURL)
+	                        .getImage()
+	                        .getScaledInstance(60, 60, Image.SCALE_SMOOTH));
+	                }
+	            }
+
+	            model.addRow(new Object[]{maSP, maLoai,sp.getTenSanPham(),dvt,gia,trangThaiStr,icon,tenAnh});
+	        }
+	    }
+
+	    tblSanPham.setModel(model);
+	    tblSanPham.setRowHeight(60);
+
+	    // Ẩn cột tenAnh
+	    tblSanPham.getColumnModel().getColumn(7).setMinWidth(0);
+	    tblSanPham.getColumnModel().getColumn(7).setMaxWidth(0);
+	    tblSanPham.getColumnModel().getColumn(7).setWidth(0);
+	}
+
+
+
 	private void capNhatTrangThaiNutLuu() {
 	    btnLuu.setEnabled(!dsSanPhamThem.isEmpty());
 	}
@@ -225,6 +290,18 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 	private void xuLyLuuSanPham() {
 	    int soLuongLuu = 0;
 	    for (SanPham sp : dsSanPhamThem) {
+	        // Tách tên file trước khi lưu
+	        String tenAnh = sp.gethinhAnh();
+	        if (tenAnh != null && !tenAnh.isEmpty()) {
+	            int index1 = tenAnh.lastIndexOf("/");
+	            int index2 = tenAnh.lastIndexOf("\\");
+	            int index = Math.max(index1, index2);
+	            if (index >= 0) {
+	                tenAnh = tenAnh.substring(index + 1);
+	            }
+	            sp.sethinhAnh(tenAnh); 
+	        }
+
 	        if (sanPhamDAO.themSanPham(sp)) soLuongLuu++;
 	    }
 
@@ -274,7 +351,7 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 	    String tenLoai = cboLoaiSP.getSelectedItem().toString();
 	    String tenAnh = txtHienTenAnh.getText().trim(); // đường dẫn tạm
 
-	    String maLoai = layMaLoaiTuTen(tenLoai);
+	    String maLoai = loaiDAO.layTheoTenLoai(tenLoai).getMaLoaiSP();
 	    LoaiSanPham loaiSP = loaiDAO.layTheoMaLoai(maLoai);
 	    if (loaiSP == null) {
 	        JOptionPane.showMessageDialog(this, "Loại sản phẩm không hợp lệ!");
@@ -308,7 +385,10 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 	        JOptionPane.showMessageDialog(this, "Mã sản phẩm đã tồn tại!");
 	        return;
 	    }
-
+	    if (tenAnh.isEmpty()) {
+	        JOptionPane.showMessageDialog(this, "Vui lòng chọn ảnh cho sản phẩm!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+	        return; 
+	    }
 	    SanPham sp = new SanPham(maSP, tenSP, donVi, new BigDecimal(gia), tenAnh, trangThai, loaiSP);
 	    dsSanPhamThem.add(sp);
 	    capNhatTrangThaiNutLuu();
@@ -319,25 +399,13 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 	            icon = new ImageIcon(new ImageIcon(tenAnh).getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH));
 	        }
 	    }
+	    
+	    
 
 	    model.addRow(new Object[]{maSP, loaiSP.getMaLoaiSP(), tenSP, donVi, gia, trangThaiStr, icon, tenAnh});
 	    tblSanPham.setRowHeight(60);
 
 	    xuLyLamMoi(); 
-	}
-
-
-
-
-	
-	private String layMaLoaiTuTen(String tenLoai) {
-	    List<LoaiSanPham> dsLoai = loaiDAO.layTatCa(); 
-	    for (LoaiSanPham l : dsLoai) {
-	        if (l.getTenLoai().equals(tenLoai)) {
-	            return l.getMaLoaiSP();
-	        }
-	    }
-	    return null; 
 	}
 
 	private void xuLyLamMoi() {
@@ -408,31 +476,43 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 	    });
 	}
 
-	
-
 	private void hienThiChiTietSanPham() {
 	    int row = tblSanPham.getSelectedRow();
-	    if (row >= 0) {
-	        String maSP = model.getValueAt(row, 0).toString();
+	    if (row < 0) return;
 
-	        spHienTai = sanPhamDAO.timTheoMa(maSP);
+	    String maSP = model.getValueAt(row, 0).toString();
+	    spHienTai = sanPhamDAO.timTheoMa(maSP);
 
-	        txtMaSP.setText(spHienTai.getMaSanPham());
-	        txtMaSP.setEditable(false);
-
-	        String tenLoai = spHienTai.getLoaiSP().getTenLoai();
-	        cboLoaiSP.setSelectedItem(tenLoai);
-
-	        txtTenSP.setText(spHienTai.getTenSanPham());
-	        cboDVT.setSelectedItem(spHienTai.getDonViTinh());
-	        txtGia.setText(spHienTai.getGia().toString());
-	        cboTrangThai.setSelectedItem(spHienTai.getTrangThai() == 1 ? "Còn hàng" : "Hết hàng");
-	        txtHienTenAnh.setText(spHienTai.gethinhAnh());
-
-	        btnCapNhat.setEnabled(false);
-	        addChangeListeners();
+	    // Nếu chưa lưu vào DB thì tìm trong danh sách tạm
+	    if (spHienTai == null) {
+	        for (SanPham sp : dsSanPhamThem) {
+	            if (sp.getMaSanPham().equals(maSP)) {
+	                spHienTai = sp;
+	                break;
+	            }
+	        }
 	    }
+
+	    if (spHienTai == null) {
+	        return;
+	    }
+
+	    txtMaSP.setText(spHienTai.getMaSanPham());
+	    txtMaSP.setEditable(false);
+
+	    cboLoaiSP.setSelectedItem(spHienTai.getLoaiSP().getTenLoai());
+	    txtTenSP.setText(spHienTai.getTenSanPham());
+	    cboDVT.setSelectedItem(spHienTai.getDonViTinh());
+	    txtGia.setText(spHienTai.getGia().toString());
+	    cboTrangThai.setSelectedItem(spHienTai.getTrangThai() == 1 ? "Còn hàng" : "Hết hàng");
+	    txtHienTenAnh.setText(spHienTai.gethinhAnh());
+
+	    btnCapNhat.setEnabled(false);
+	    addChangeListeners();
 	}
+
+
+
 
 
 	public void xuLyChonAnh() {
@@ -492,11 +572,13 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 	    spHienTai.setGia(new BigDecimal(txtGia.getText().trim()));
 	    spHienTai.setTrangThai(cboTrangThai.getSelectedItem().toString().equals("Còn hàng") ? 1 : 0);
 
-	    String maLoaiMoi = layMaLoaiTuTen(cboLoaiSP.getSelectedItem().toString());
+	    String maLoaiMoi = loaiDAO.layTheoTenLoai(cboLoaiSP.getSelectedItem().toString()).getMaLoaiSP();
 	    LoaiSanPham loaiMoi = loaiDAO.layTheoMaLoai(maLoaiMoi);
 	    spHienTai.setLoaiSP(loaiMoi);
-
-	    spHienTai.sethinhAnh(txtHienTenAnh.getText().trim());
+	    
+	    String tenFile = txtHienTenAnh.getText();
+	    
+	    spHienTai.sethinhAnh(tenFile);
 
 	    if (sanPhamDAO.capNhatSanPham(spHienTai)) {
 	        JOptionPane.showMessageDialog(this, "Cập nhật sản phẩm thành công!");
@@ -506,5 +588,62 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 	        JOptionPane.showMessageDialog(this, "Cập nhật thất bại!");
 	    }
 	}
+	
+	public void locTheoLoai() {
+	    String tenLoai = cbLocTheoLoai.getSelectedItem().toString();
+	    if (tenLoai.equals("Tất cả")) {
+	        hienThiSanPham();
+	        return;
+	    }
+
+	    try {
+	        LoaiSanPham_DAO loaiDAO = new LoaiSanPham_DAO();
+	        SanPham_DAO spDAO = new SanPham_DAO();
+	        LoaiSanPham loai = loaiDAO.layTheoTenLoai(tenLoai);
+	        if (loai == null) {
+	            System.out.println("Không tìm thấy loại: " + tenLoai);
+	            return;
+	        }
+
+	        String maLoaiSP = loai.getMaLoaiSP();
+	        ArrayList<SanPham> dsSP = spDAO.timTheoLoai(maLoaiSP);
+	        model.setRowCount(0);
+
+	        for (SanPham sp : dsSP) {
+	            String maSP = sp.getMaSanPham();
+	            String maLoai = sp.getLoaiSP().getMaLoaiSP();
+	            String tenSP = sp.getTenSanPham();
+	            String dvt = sp.getDonViTinh();
+	            double gia = sp.getGia().doubleValue();
+	            String trangThaiStr = sp.getTrangThai() == 1 ? "Còn hàng" : "Hết hàng";
+	            String tenAnh = sp.gethinhAnh();
+
+	            ImageIcon icon = null;
+	            if (tenAnh != null && !tenAnh.isEmpty()) {
+	                java.net.URL imgURL = getClass().getResource("/img/" + tenAnh);
+	                if (imgURL != null) {
+	                    icon = new ImageIcon(new ImageIcon(imgURL).getImage()
+	                            .getScaledInstance(60, 60, Image.SCALE_SMOOTH));
+	                }
+	            }
+
+	            model.addRow(new Object[]{
+	                maSP, maLoai, tenSP, dvt, gia, trangThaiStr, icon, tenAnh
+	            });
+	        }
+
+	        tblSanPham.setModel(model);
+	        tblSanPham.setRowHeight(60);
+
+	        // Ẩn cột tên file ảnh
+	        tblSanPham.getColumnModel().getColumn(7).setMinWidth(0);
+	        tblSanPham.getColumnModel().getColumn(7).setMaxWidth(0);
+	        tblSanPham.getColumnModel().getColumn(7).setWidth(0);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+
 
 }

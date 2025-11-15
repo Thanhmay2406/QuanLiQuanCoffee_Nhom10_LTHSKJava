@@ -2,6 +2,7 @@ package GUI;
 
 
 import java.awt.BorderLayout;
+import java.awt.Button;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -18,6 +19,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -62,6 +64,9 @@ public class KhuyenMai_GUI extends JPanel implements ActionListener {
 	private ArrayList<KhuyenMai> dsKhuyenMaiThem;
 	private List<String> dsKhuyenMaiXoa = new ArrayList<>(); 
 	private KhuyenMai kmHienTai;
+	private JComboBox cbLocTheoLoai;
+	private JButton btnTim;
+	private JTextField txtTim;
 	
 	public KhuyenMai_GUI(MainFrame mainFrame) {
 		// TODO Auto-generated constructor stub
@@ -124,6 +129,19 @@ public class KhuyenMai_GUI extends JPanel implements ActionListener {
         btnThem.setPreferredSize(btnSize);
         btnClear.setPreferredSize(btnSize);
         btnCapNhat.setPreferredSize(btnSize);
+        
+        JPanel pnLocTimKiem = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+		cbLocTheoLoai = new JComboBox<>(new String[]{"Tất cả", "Theo sản phẩm", "Theo hóa đơn"});
+		btnTim = new JButton("Tìm");
+		btnTim.setPreferredSize(btnSize);
+		txtTim = new JTextField(15);
+		
+		pnLocTimKiem.add(cbLocTheoLoai);
+		pnLocTimKiem.add(txtTim);
+		pnLocTimKiem.add(btnTim);
+		pnLocTimKiem.setBorder(BorderFactory.createTitledBorder(""));
+		
+		pnFormButtons.add(pnLocTimKiem);
         pnFormButtons.add(btnThem);
         pnFormButtons.add(btnClear);
         pnFormButtons.add(btnCapNhat);
@@ -163,11 +181,13 @@ public class KhuyenMai_GUI extends JPanel implements ActionListener {
         btnCapNhat.addActionListener(this);
         btnXoa.addActionListener(this);
         btnLuu.addActionListener(this);
-
+        btnTim.addActionListener(this);
+		cbLocTheoLoai.addActionListener(e -> locTheoLoai());
         tblKM.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) hienThiChiTietKhuyenMai();
         });
     }
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 	    Object o = e.getSource();
@@ -184,9 +204,59 @@ public class KhuyenMai_GUI extends JPanel implements ActionListener {
 		 else if (o.equals(btnCapNhat)) {
         	capNhatKhuyenMai();
 		}
+		 else if (o.equals(btnTim)) {
+	        	timKiemKhuyenMai();
+		}
 	}
 	
+	private void locTheoLoai() {
+		String tenLoai = cbLocTheoLoai.getSelectedItem().toString();
+		if (tenLoai.equals("Tất cả")) {
+	        hienThiDanhSach();
+	        return;
+	    }
+		model.setRowCount(0);
+	    List<KhuyenMai> ds = khuyenMaiDAO.layTatCa();
 
+	    for (KhuyenMai km : ds) {
+	        if (tenLoai.equalsIgnoreCase("Tất cả") ||
+	            km.getloaiKM().equalsIgnoreCase(tenLoai)) {
+
+	            model.addRow(new Object[]{
+	                    km.getMaKM(),
+	                    km.getTenKM(),
+	                    km.getPhanTramGiam(),
+	                    km.getloaiKM(),
+	                    km.getNgayBatDau(),
+	                    km.getNgayKetThuc(),
+	                    km.getTrangThai() == 1 ? "Còn hiệu lực" : "Hết hiệu lực"
+	            });
+	        }
+	    }
+	}
+	
+	private void timKiemKhuyenMai() {
+	    String tuKhoa = txtTim.getText().trim().toLowerCase();
+
+	    model.setRowCount(0);
+	    List<KhuyenMai> ds = khuyenMaiDAO.layTatCa();
+
+	    for (KhuyenMai km : ds) {
+	        String tenKM = km.getTenKM().toLowerCase();
+	        if (tenKM.contains(tuKhoa)) {
+	            model.addRow(new Object[]{
+	                    km.getMaKM(),
+	                    km.getTenKM(),
+	                    km.getPhanTramGiam(),
+	                    km.getloaiKM(),
+	                    km.getNgayBatDau(),
+	                    km.getNgayKetThuc(),
+	                    km.getTrangThai() == 1 ? "Còn hiệu lực" : "Hết hiệu lực"
+	            });
+	        }
+	    }
+	}
+	
 	private void luuKhuyenMai() {
 	    if (dsKhuyenMaiThem.isEmpty() && dsKhuyenMaiXoa.isEmpty()) {
 	        JOptionPane.showMessageDialog(this, "Danh sách tạm rỗng, không có gì để lưu!");
@@ -195,30 +265,23 @@ public class KhuyenMai_GUI extends JPanel implements ActionListener {
 
 	    int soLuongThem = 0;
 	    int soLuongXoa = 0;
-
-	    // ====== Lưu các KM thêm mới ======
 	    for (KhuyenMai km : dsKhuyenMaiThem) {
 	        if (khuyenMaiDAO.themKhuyenMai(km)) {
 	            soLuongThem++;
 	        }
 	    }
-
-	    // ====== Xóa các KM đã xóa trên bảng ======
 	    for (String maKM : dsKhuyenMaiXoa) {
 	        if (khuyenMaiDAO.xoaKhuyenMai(maKM)) {
 	            soLuongXoa++;
 	        }
 	    }
 
-	    // ====== Thông báo ======
 	    JOptionPane.showMessageDialog(this,
 	            "Đã lưu: " + soLuongThem + " khuyến mãi thêm, " + soLuongXoa + " khuyến mãi xóa.");
 
-	    // ====== Reset danh sách tạm ======
 	    dsKhuyenMaiThem.clear();
 	    dsKhuyenMaiXoa.clear();
 
-	    // ====== Load lại bảng ======
 	    xuLyLamMoi();
 
 	    // ====== Vô hiệu nút lưu ======

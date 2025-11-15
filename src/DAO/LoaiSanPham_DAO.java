@@ -78,6 +78,28 @@ public class LoaiSanPham_DAO {
 		}
 		return null;
 	}
+	public LoaiSanPham layTheoTenLoai(String tenLoai) {
+	    LoaiSanPham loai = null;
+	    String sql = "SELECT * FROM LoaiSanPham WHERE tenLoai = ?";
+
+	    try (PreparedStatement pstm = con.prepareStatement(sql)) {
+	        pstm.setString(1, tenLoai);
+	        ResultSet rs = pstm.executeQuery();
+
+	        if (rs.next()) {
+	            loai = new LoaiSanPham(
+	                rs.getString("maLoaiSP"),
+	                rs.getString("tenLoai"),
+	                rs.getString("moTa"),
+	                rs.getInt("trangThai")
+	            );
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return loai;
+	}
 
 	// ... Thêm các hàm capNhat, timTheoMa nếu cần
 }
