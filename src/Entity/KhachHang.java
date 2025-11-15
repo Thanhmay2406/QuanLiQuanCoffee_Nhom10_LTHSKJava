@@ -26,7 +26,22 @@ public class KhachHang {
 		setNgayDangKy(ngayDangKy);
 		this.diaChi = diaChi;
 	}
-
+	
+	
+	
+//	public KhachHang(String maKhachHang, String hoTen, String soDienThoai, String email, String diaChi, double diemTichLuy,
+//			LocalDate ngayDangKy) {
+//		super();
+//		this.maKhachHang = maKhachHang;
+//		this.hoTen = hoTen;
+//		this.soDienThoai = soDienThoai;
+//		this.email = email;
+//		this.diaChi = diaChi;
+//		this.diemTichLuy = diemTichLuy;
+//		this.ngayDangKy = ngayDangKy;
+//
+//	}
+	
 	public String getDiaChi() {
 		return diaChi;
 	}

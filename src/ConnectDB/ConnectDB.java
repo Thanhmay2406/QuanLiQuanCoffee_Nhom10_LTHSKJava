@@ -15,6 +15,7 @@ public class ConnectDB {
 			String password = "sapassword";
 			connection = DriverManager.getConnection(url, user, password);
 		} catch (SQLException e) {
+			System.out.println("Kết nối thất bại");
 			e.printStackTrace();
 		}
 	}
