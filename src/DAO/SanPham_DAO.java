@@ -59,6 +59,10 @@ public class SanPham_DAO {
 	}
 
 	public boolean capNhatSanPham(SanPham sp) {
+		if (sp.getLoaiSP() == null) {
+			System.out.println(sp);
+			return false;
+		}
 		String sql = "UPDATE SanPham SET tenSanPham = ?, donViTinh = ?, gia = ?, hinhAnh = ?, trangThai = ?, maLoaiSP = ? WHERE maSanPham = ?";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
 			pstm.setString(1, sp.getTenSanPham());
@@ -153,6 +157,20 @@ public class SanPham_DAO {
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println("Không tìm theo tên được");
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public String getMaSanPhamCuoiCung() {
+		String sql = "select top 1 maSanPham from SanPham order by maSanPham DESC";
+		try (PreparedStatement pstm = con.prepareStatement(sql)) {
+			ResultSet rs = pstm.executeQuery();
+			if (rs.next()) {
+				return rs.getString("maSanPham");
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return null;

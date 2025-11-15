@@ -32,22 +32,15 @@ import Entity.SanPham;
  */
 public class ChiTietHoaDon_DAO {
 
-	// DAO phụ
 	private SanPham_DAO sanPham_DAO;
-	// Lưu ý: Không nên khởi tạo HoaDon_DAO ở đây để tránh lỗi lặp vô hạn
 
 	public ChiTietHoaDon_DAO() {
 		sanPham_DAO = new SanPham_DAO();
 	}
 
-	/**
-	 * === THAY ĐỔI: Thêm Chi Tiết (dùng cho Transaction) === Hàm này nhận
-	 * Connection từ HoaDon_DAO để đảm bảo Giao dịch
-	 */
 	public boolean themChiTiet(ChiTietHoaDon ct, Connection con) throws SQLException {
 		String sql = "INSERT INTO ChiTietHoaDon (maHoaDon, maSanPham, soLuong, donGia) VALUES (?, ?, ?, ?)";
 
-		// Không tạo connection mới, dùng connection được truyền vào
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
 			pstm.setString(1, ct.getHoaDon().getMaHoaDon());
 			pstm.setString(2, ct.getSanPham().getMaSanPham());
@@ -56,22 +49,12 @@ public class ChiTietHoaDon_DAO {
 
 			return pstm.executeUpdate() > 0;
 		}
-		// Không catch, để `finally` của HoaDon_DAO xử lý rollback
 	}
 
-	/**
-	 * === THAY ĐỔI: Lấy chi tiết theo mã Hóa Đơn === Hàm này phải "lắp ráp"
-	 * (hydrate) các đối tượng
-	 */
 	public List<ChiTietHoaDon> layChiTietTheoMaHoaDon(String maHoaDon) {
 		List<ChiTietHoaDon> ds = new ArrayList<>();
 		String sql = "SELECT * FROM ChiTietHoaDon WHERE maHoaDon = ?";
 
-		// Cần có HoaDon_DAO để lấy đối tượng HoaDon (nếu cần)
-		// Nhưng chúng ta có thể truyền đối tượng HoaDon vào
-		// Tuy nhiên, để đơn giản, ta chỉ cần set `null` và `maHoaDon`
-
-		// Lấy connection mới vì đây là 1 truy vấn độc lập
 		Connection con = ConnectDB.getInstance().getConnection();
 
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
@@ -79,17 +62,12 @@ public class ChiTietHoaDon_DAO {
 			ResultSet rs = pstm.executeQuery();
 
 			while (rs.next()) {
-				// 1. Lấy mã SanPham (String) từ CSDL
 				String maSP = rs.getString("maSanPham");
-				// 2. Dùng DAO phụ để lấy đối tượng SanPham đầy đủ
-				SanPham sp = sanPham_DAO.timTheoMa(maSP); // Giả định bạn có hàm `timTheoMa`
+				SanPham sp = sanPham_DAO.timTheoMa(maSP);
 
 				int soLuong = rs.getInt("soLuong");
 				java.math.BigDecimal donGia = rs.getBigDecimal("donGia");
 
-				// 3. Tạo đối tượng ChiTietHoaDon
-				// Chúng ta không cần đối tượng HoaDon ở đây (để tránh lặp)
-				// nên ta truyền `null`
 				ChiTietHoaDon ct = new ChiTietHoaDon(null, sp, soLuong, donGia);
 				ds.add(ct);
 			}

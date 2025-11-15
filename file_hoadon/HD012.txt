@@ -5,24 +5,24 @@
 
              HÓA ĐƠN BÁN HÀNG
 
-Mã HĐ:       HD010
+Mã HĐ:       HD012
 Mã NV:       NV001
-Ngày tạo:    15/11/2025 14:23:19
-Mã KH:       KH001
+Ngày tạo:    15/11/2025 20:41:14
+Mã KH:       KH002
 
-Tên khách hàng:  Nguyễn Văn An
-Mã bàn:       B003,B004
+Tên khách hàng:  Trần Thị Bình
+Mã bàn:       B001
 --------------------------------------------------
 Tên Sản Phẩm               SL    Đơn Giá Thành Tiền
 --------------------------------------------------
-Cà phê sữa                  1      30000      30000
 Bánh Tiramisu               1      35000      35000
+Americano                   1      40000      40000
 --------------------------------------------------
-Tổng tiền:                                    65000 VND
-Giảm giá:                                     13000 VND
-Thành tiền:                                   52000 VND
+Tổng tiền:                                    75000 VND
+Giảm giá:                                      7500 VND
+Thành tiền:                                   67500 VND
 Phương thức thanh toán:                Chuyển khoản QR
-Ghi chú:                                    thêm đá
+Ghi chú:                               thêm đá, đường, xin 1 ly trà
 
 
              Cảm ơn quý khách!

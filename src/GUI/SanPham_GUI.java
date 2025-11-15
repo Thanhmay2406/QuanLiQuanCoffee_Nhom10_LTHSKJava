@@ -8,8 +8,9 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener; // Thêm
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -23,8 +24,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 
 import DAO.LoaiSanPham_DAO;
@@ -32,7 +31,7 @@ import DAO.SanPham_DAO;
 import Entity.LoaiSanPham;
 import Entity.SanPham;
 
-public class SanPham_GUI extends JPanel implements ActionListener {
+public class SanPham_GUI extends JPanel implements ActionListener, ComponentListener {
 	private MainFrame mainFrame;
 	private SanPham_DAO sanPhamDAO;
 	private JLabel title;
@@ -45,14 +44,8 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 	private JButton btnXoa;
 	private JLabel lblMaSP;
 	private JLabel lblTenSP;
-	private JComboBox cboLoai;
 	private JTextField txtSearch;
 	private JButton btnSearch;
-	private JButton btnLuu;
-	private JLabel lblLoaiSP;
-	private JTextField txtLoaiSP;
-	private JLabel lblDVT;
-	private JTextField txtDVT;
 	private JLabel lblGia;
 	private JTextField txtGia;
 	private JButton btnClear;
@@ -62,17 +55,14 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 	private JButton btnThemAnh;
 	private JComboBox cboLoaiSP;
 	private LoaiSanPham_DAO loaiDAO;
-	private ArrayList<SanPham> dsSanPhamThem;
-	private List<String> dsSanPhamXoa = new ArrayList<>();
-	private SanPham spHienTai = null;
+	private JButton btnTrangChu;
 
 	public SanPham_GUI(MainFrame mainFrame) {
-		// TODO Auto-generated constructor stub
 		this.mainFrame = mainFrame;
 		this.sanPhamDAO = new SanPham_DAO();
 		this.loaiDAO = new LoaiSanPham_DAO();
-		this.dsSanPhamThem = new ArrayList<>();
 		this.setLayout(new BorderLayout());
+
 		// -------North--------
 		JPanel pnNorth = new JPanel();
 		pnNorth.add(title = new JLabel("Quản lý Sản phẩm"));
@@ -88,6 +78,7 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 
 		pnInput.add(lblMaSP = new JLabel("Mã sản phẩm:"));
 		txtMaSP = new JTextField(20);
+		txtMaSP.setEditable(false);
 		pnInput.add(txtMaSP);
 
 		pnInput.add(new JLabel("Loại sản phẩm:"));
@@ -127,10 +118,12 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 		btnThem = new JButton("Thêm");
 		btnClear = new JButton("Làm mới");
 		btnCapNhat = new JButton("Cập nhật");
+
 		Dimension btnSize = new Dimension(100, 30);
 		btnThem.setPreferredSize(btnSize);
 		btnClear.setPreferredSize(btnSize);
 		btnCapNhat.setPreferredSize(btnSize);
+
 		pnFormButtons.add(btnThem);
 		pnFormButtons.add(btnClear);
 		pnFormButtons.add(btnCapNhat);
@@ -149,25 +142,30 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 
 		hienThiSanPham();
 
-		JPanel pnSouth = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+		// pnSouth
+		JPanel pnSouth = new JPanel(new BorderLayout());
+		btnTrangChu = new JButton("Trang chủ");
 		btnXoa = new JButton("Xóa");
-		btnLuu = new JButton("Lưu");
-
 		btnXoa.setPreferredSize(btnSize);
-		btnLuu.setPreferredSize(btnSize);
-
-		pnSouth.add(btnXoa);
-		pnSouth.add(btnLuu);
-
+		btnTrangChu.setPreferredSize(btnSize);
+		pnSouth.add(btnTrangChu, BorderLayout.WEST);
+		pnSouth.add(btnXoa, BorderLayout.EAST);
 		add(pnSouth, BorderLayout.SOUTH);
-		btnLuu.setEnabled(false);
+
 		btnThem.addActionListener(this);
 		btnCapNhat.addActionListener(this);
 		btnXoa.addActionListener(this);
-		btnLuu.addActionListener(this);
 		btnClear.addActionListener(this);
 		btnThemAnh.addActionListener(this);
+		btnTrangChu.addActionListener(this);
 
+		tblSanPham.getSelectionModel().addListSelectionListener(e -> {
+			if (!e.getValueIsAdjusting()) {
+				hienThiChiTietSanPham();
+			}
+		});
+
+		refreshMa();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -188,41 +186,15 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 			xuLyThemSanPham();
 		} else if (o.equals(btnXoa)) {
 			xuLyXoaSanPham();
-		} else if (o.equals(btnLuu)) {
-			xuLyLuuSanPham();
 		} else if (o.equals(btnClear)) {
 			xuLyLamMoi();
 		} else if (o.equals(btnThemAnh)) {
 			xuLyChonAnh();
 		} else if (o.equals(btnCapNhat)) {
 			xuLyCapNhatSanPham();
+		} else if (o.equals(btnTrangChu)) {
+			mainFrame.switchToPanel(mainFrame.KEY_DAT_BAN);
 		}
-	}
-
-	private void capNhatTrangThaiNutLuu() {
-		btnLuu.setEnabled(!dsSanPhamThem.isEmpty());
-	}
-
-	private void xuLyLuuSanPham() {
-		int soLuongLuu = 0;
-		for (SanPham sp : dsSanPhamThem) {
-			if (sanPhamDAO.themSanPham(sp))
-				soLuongLuu++;
-		}
-
-		int soLuongXoa = 0;
-		for (String maSP : dsSanPhamXoa) {
-			if (sanPhamDAO.xoaSanPham(maSP))
-				soLuongXoa++;
-		}
-
-		JOptionPane.showMessageDialog(this,
-				"Đã lưu " + soLuongLuu + " sản phẩm thêm, xóa " + soLuongXoa + " sản phẩm.");
-
-		dsSanPhamThem.clear();
-		dsSanPhamXoa.clear();
-		hienThiSanPham();
-		btnLuu.setEnabled(false);
 	}
 
 	private void xuLyXoaSanPham() {
@@ -239,14 +211,35 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 
 		String maSP = model.getValueAt(row, 0).toString();
 
-		dsSanPhamThem.removeIf(sp -> sp.getMaSanPham().equals(maSP));
+		if (sanPhamDAO.xoaSanPham(maSP)) {
+			JOptionPane.showMessageDialog(this, "Sản phẩm đã xóa!");
+			hienThiSanPham();
+			xuLyLamMoi();
+			refreshMa();
+		} else {
+			JOptionPane.showMessageDialog(this, "Xóa thất bại!");
+		}
+	}
 
-		dsSanPhamXoa.add(maSP);
+	private void refreshMa() {
+		txtMaSP.setText(taoMaSanPham());
+	}
 
-		model.removeRow(row);
-		btnLuu.setEnabled(true);
-
-		JOptionPane.showMessageDialog(this, "Sản phẩm đã xóa !");
+	public String taoMaSanPham() {
+		String maSPCuoi = sanPhamDAO.getMaSanPhamCuoiCung();
+		if (maSPCuoi == null) {
+			return "SP001";
+		}
+		try {
+			String phanSo = maSPCuoi.substring(2);
+			int soHienTai = Integer.parseInt(phanSo);
+			soHienTai++;
+			String phanSoMoi = String.format("%03d", soHienTai);
+			return "SP" + phanSoMoi;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "SP_ERROR";
 	}
 
 	private void xuLyThemSanPham() {
@@ -255,21 +248,21 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 		String donVi = cboDVT.getSelectedItem().toString();
 		String trangThaiStr = cboTrangThai.getSelectedItem().toString();
 		String tenLoai = cboLoaiSP.getSelectedItem().toString();
-		String tenAnh = txtHienTenAnh.getText().trim(); // đường dẫn tạm
-
-		String maLoai = layMaLoaiTuTen(tenLoai);
-		LoaiSanPham loaiSP = loaiDAO.layTheoMaLoai(maLoai);
-		if (loaiSP == null) {
-			JOptionPane.showMessageDialog(this, "Loại sản phẩm không hợp lệ!");
-			return;
-		}
+		String tenAnh = txtHienTenAnh.getText().trim();
 
 		if (!maSP.matches("SP\\d{3}")) {
 			JOptionPane.showMessageDialog(this, "Mã sản phẩm phải có dạng SPxxx!");
 			return;
 		}
-		if (tenSP.isEmpty() || donVi.equals("Chọn đơn vị tính") || trangThaiStr.equals("Chọn trạng thái")) {
+		if (tenSP.isEmpty() || donVi.equals("Chọn đơn vị tính") || trangThaiStr.equals("Chọn trạng thái")
+				|| tenLoai.equals("Loại sản phẩm")) {
 			JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!");
+			return;
+		}
+
+		LoaiSanPham loaiSP = loaiDAO.layTheoTenLoai(tenLoai);
+		if (loaiSP == null) {
+			JOptionPane.showMessageDialog(this, "Loại sản phẩm không hợp lệ!");
 			return;
 		}
 
@@ -283,44 +276,21 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 
 		int trangThai = trangThaiStr.equals("Còn hàng") ? 1 : 0;
 
-		boolean trungMaDS = dsSanPhamThem.stream().anyMatch(sp -> sp.getMaSanPham().equals(maSP));
-		boolean trungMaDB = sanPhamDAO.timTheoMa(maSP) != null;
-
-		if (trungMaDS || trungMaDB) {
-			JOptionPane.showMessageDialog(this, "Mã sản phẩm đã tồn tại!");
-			return;
-		}
-
 		SanPham sp = new SanPham(maSP, tenSP, donVi, new BigDecimal(gia), tenAnh, trangThai, loaiSP);
-		dsSanPhamThem.add(sp);
-		capNhatTrangThaiNutLuu();
-		ImageIcon icon = null;
-		if (tenAnh != null && !tenAnh.isEmpty()) {
-			java.io.File file = new java.io.File(tenAnh);
-			if (file.exists()) {
-				icon = new ImageIcon(new ImageIcon(tenAnh).getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH));
-			}
+
+		if (sanPhamDAO.themSanPham(sp)) {
+			JOptionPane.showMessageDialog(this, "Thêm sản phẩm thành công!");
+			hienThiSanPham();
+			xuLyLamMoi();
+			refreshMa();
+		} else {
+			JOptionPane.showMessageDialog(this, "Thêm sản phẩm thất bại!");
 		}
-
-		model.addRow(new Object[] { maSP, loaiSP.getMaLoaiSP(), tenSP, donVi, gia, trangThaiStr, icon, tenAnh });
-		tblSanPham.setRowHeight(60);
-
-		xuLyLamMoi();
-	}
-
-	private String layMaLoaiTuTen(String tenLoai) {
-		List<LoaiSanPham> dsLoai = loaiDAO.layTatCa();
-		for (LoaiSanPham l : dsLoai) {
-			if (l.getTenLoai().equals(tenLoai)) {
-				return l.getMaLoaiSP();
-			}
-		}
-		return null;
 	}
 
 	private void xuLyLamMoi() {
-		txtMaSP.setText("");
-		txtMaSP.setEditable(true);
+		txtMaSP.setText(taoMaSanPham());
+
 		txtTenSP.setText("");
 		txtGia.setText("");
 		txtHienTenAnh.setText("");
@@ -329,12 +299,12 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 
 		if (cboLoaiSP.getItemCount() > 0)
 			cboLoaiSP.setSelectedIndex(0);
-		btnCapNhat.setEnabled(false);
-		txtMaSP.requestFocus();
+
+		tblSanPham.clearSelection();
 	}
 
 	public void hienThiSanPham() {
-		String[] columnNames = { "Mã SP", "Mã loại SP", "Tên SP", "Đơn vị tính", "Giá", "Trạng thái", "Ảnh", "tenAnh" };
+		String[] columnNames = { "Mã SP", "Loại SP", "Tên SP", "Đơn vị tính", "Giá", "Trạng thái", "Ảnh", "tenAnh" };
 		model = new DefaultTableModel(columnNames, 0) {
 			@Override
 			public Class<?> getColumnClass(int columnIndex) {
@@ -353,7 +323,7 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 
 		for (SanPham sp : dsSP) {
 			String maSP = sp.getMaSanPham();
-			String maLoai = sp.getLoaiSP().getMaLoaiSP();
+			String tenLoai = sp.getLoaiSP().getTenLoai();
 			String tenSP = sp.getTenSanPham();
 			String dvt = sp.getDonViTinh();
 			double gia = sp.getGia().doubleValue();
@@ -366,16 +336,17 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 				if (imgURL != null) {
 					icon = new ImageIcon(
 							new ImageIcon(imgURL).getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH));
+				} else {
+					System.err.println("Không tìm thấy ảnh: " + tenAnh);
 				}
 			}
 
-			model.addRow(new Object[] { maSP, maLoai, tenSP, dvt, gia, trangThaiStr, icon, tenAnh });
+			model.addRow(new Object[] { maSP, tenLoai, tenSP, dvt, gia, trangThaiStr, icon, tenAnh });
 		}
 
 		tblSanPham.setModel(model);
 		tblSanPham.setRowHeight(60);
 
-		// Ẩn cột ẩn tên ảnh
 		tblSanPham.getColumnModel().getColumn(7).setMinWidth(0);
 		tblSanPham.getColumnModel().getColumn(7).setMaxWidth(0);
 		tblSanPham.getColumnModel().getColumn(7).setWidth(0);
@@ -390,24 +361,19 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 	private void hienThiChiTietSanPham() {
 		int row = tblSanPham.getSelectedRow();
 		if (row >= 0) {
-			String maSP = model.getValueAt(row, 0).toString();
+			txtMaSP.setText(model.getValueAt(row, 0).toString());
 
-			spHienTai = sanPhamDAO.timTheoMa(maSP);
+			String tenLoai = model.getValueAt(row, 1).toString();
+			LoaiSanPham loaiSP = loaiDAO.layTheoTenLoai(tenLoai);
+			if (loaiSP != null) {
+				cboLoaiSP.setSelectedItem(loaiSP.getTenLoai());
+			}
 
-			txtMaSP.setText(spHienTai.getMaSanPham());
-			txtMaSP.setEditable(false);
-
-			String tenLoai = spHienTai.getLoaiSP().getTenLoai();
-			cboLoaiSP.setSelectedItem(tenLoai);
-
-			txtTenSP.setText(spHienTai.getTenSanPham());
-			cboDVT.setSelectedItem(spHienTai.getDonViTinh());
-			txtGia.setText(spHienTai.getGia().toString());
-			cboTrangThai.setSelectedItem(spHienTai.getTrangThai() == 1 ? "Còn hàng" : "Hết hàng");
-			txtHienTenAnh.setText(spHienTai.gethinhAnh());
-
-			btnCapNhat.setEnabled(false);
-			addChangeListeners();
+			txtTenSP.setText(model.getValueAt(row, 2).toString());
+			cboDVT.setSelectedItem(model.getValueAt(row, 3).toString());
+			txtGia.setText(model.getValueAt(row, 4).toString());
+			cboTrangThai.setSelectedItem(model.getValueAt(row, 5).toString());
+			txtHienTenAnh.setText(model.getValueAt(row, 7).toString());
 		}
 	}
 
@@ -420,80 +386,57 @@ public class SanPham_GUI extends JPanel implements ActionListener {
 		int result = fileChooser.showOpenDialog(this);
 		if (result == JFileChooser.APPROVE_OPTION) {
 			java.io.File file = fileChooser.getSelectedFile();
-			txtHienTenAnh.setText(file.getAbsolutePath());
+			txtHienTenAnh.setText(file.getName());
 		}
-	}
-
-	private void addChangeListeners() {
-		DocumentListener docListener = new DocumentListener() {
-			public void changedUpdate(DocumentEvent e) {
-				checkChange();
-			}
-
-			public void removeUpdate(DocumentEvent e) {
-				checkChange();
-			}
-
-			public void insertUpdate(DocumentEvent e) {
-				checkChange();
-			}
-		};
-
-		txtTenSP.getDocument().addDocumentListener(docListener);
-		txtGia.getDocument().addDocumentListener(docListener);
-		txtHienTenAnh.getDocument().addDocumentListener(docListener);
-
-		ActionListener comboListener = e -> checkChange();
-		cboDVT.addActionListener(comboListener);
-		cboTrangThai.addActionListener(comboListener);
-		cboLoaiSP.addActionListener(comboListener);
-	}
-
-	private void checkChange() {
-		if (spHienTai == null)
-			return;
-
-		boolean thayDoi = false;
-
-		if (!txtTenSP.getText().trim().equals(spHienTai.getTenSanPham()))
-			thayDoi = true;
-		else if (!cboDVT.getSelectedItem().toString().equals(spHienTai.getDonViTinh()))
-			thayDoi = true;
-		else if (!txtGia.getText().trim().equals(spHienTai.getGia().toString()))
-			thayDoi = true;
-		else if (!cboTrangThai.getSelectedItem().toString()
-				.equals(spHienTai.getTrangThai() == 1 ? "Còn hàng" : "Hết hàng"))
-			thayDoi = true;
-		else if (!cboLoaiSP.getSelectedItem().toString().equals(spHienTai.getLoaiSP().getTenLoai()))
-			thayDoi = true;
-		else if (!txtHienTenAnh.getText().trim().equals(spHienTai.gethinhAnh()))
-			thayDoi = true;
-
-		btnCapNhat.setEnabled(thayDoi);
 	}
 
 	private void xuLyCapNhatSanPham() {
-		if (spHienTai == null)
-			return;
+		try {
+			String maSP = txtMaSP.getText().trim();
+			String tenSP = txtTenSP.getText().trim();
+			String donVi = cboDVT.getSelectedItem().toString();
+			BigDecimal gia = new BigDecimal(txtGia.getText().trim());
+			int trangThai = cboTrangThai.getSelectedItem().toString().equals("Còn hàng") ? 1 : 0;
+			String tenLoai = cboLoaiSP.getSelectedItem().toString().trim();
+			LoaiSanPham loaiMoi = loaiDAO.layTheoTenLoai(tenLoai);
 
-		spHienTai.setTenSanPham(txtTenSP.getText().trim());
-		spHienTai.setDonViTinh(cboDVT.getSelectedItem().toString());
-		spHienTai.setGia(new BigDecimal(txtGia.getText().trim()));
-		spHienTai.setTrangThai(cboTrangThai.getSelectedItem().toString().equals("Còn hàng") ? 1 : 0);
+			String tenAnh = txtHienTenAnh.getText().trim();
 
-		String maLoaiMoi = layMaLoaiTuTen(cboLoaiSP.getSelectedItem().toString());
-		LoaiSanPham loaiMoi = loaiDAO.layTheoMaLoai(maLoaiMoi);
-		spHienTai.setLoaiSP(loaiMoi);
+			SanPham spMoi = new SanPham(maSP, tenSP, donVi, gia, tenAnh, trangThai, loaiMoi);
 
-		spHienTai.sethinhAnh(txtHienTenAnh.getText().trim());
-
-		if (sanPhamDAO.capNhatSanPham(spHienTai)) {
-			JOptionPane.showMessageDialog(this, "Cập nhật sản phẩm thành công!");
-			hienThiSanPham();
-			btnCapNhat.setEnabled(false);
-		} else {
-			JOptionPane.showMessageDialog(this, "Cập nhật thất bại!");
+			if (sanPhamDAO.capNhatSanPham(spMoi)) {
+				JOptionPane.showMessageDialog(this, "Cập nhật sản phẩm thành công!");
+				hienThiSanPham();
+				xuLyLamMoi();
+			} else {
+				JOptionPane.showMessageDialog(this, "Cập nhật thất bại!");
+			}
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "Giá phải là số!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật");
+			e.printStackTrace();
 		}
 	}
 
+	@Override
+	public void componentResized(ComponentEvent e) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void componentMoved(ComponentEvent e) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void componentShown(ComponentEvent e) {
+		xuLyLamMoi();
+		refreshMa();
+	}
+
+	@Override
+	public void componentHidden(ComponentEvent e) {
+		// TODO Auto-generated method stub
+	}
 }

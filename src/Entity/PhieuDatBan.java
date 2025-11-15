@@ -14,9 +14,10 @@ public class PhieuDatBan {
 	private int soNguoi;
 	private String ghiChu;
 	private int trangThai;
-	private String maKhachHang;
-	private String maNhanVien;
-	private String soDienThoai;
+
+	private KhachHang khachHang;
+	private NhanVien nhanVien;
+
 	private List<ChiTietDatBan> dsChiTiet;
 
 	public PhieuDatBan() {
@@ -24,18 +25,17 @@ public class PhieuDatBan {
 	}
 
 	public PhieuDatBan(String maPhieuDat, LocalDate ngayDat, LocalTime gioBatDau, LocalTime gioKetThuc, int soNguoi,
-			String ghiChu, int trangThai, String maKhachHang, String maNhanVien, String soDienThoai) {
+			String ghiChu, int trangThai, KhachHang khachHang, NhanVien nhanVien) {
 		super();
 		setMaPhieuDat(maPhieuDat);
-		setngayDat(ngayDat);
+		setNgayDat(ngayDat);
 		setGioBatDau(gioBatDau);
 		setGioKetThuc(gioKetThuc);
 		setSoNguoi(soNguoi);
 		setGhiChu(ghiChu);
 		setTrangThai(trangThai);
-		setMaKhachHang(maKhachHang);
-		setMaNhanVien(maNhanVien);
-		setSoDienThoai(soDienThoai);
+		setKhachHang(khachHang);
+		setNhanVien(nhanVien);
 		this.dsChiTiet = new ArrayList<>();
 	}
 
@@ -61,13 +61,13 @@ public class PhieuDatBan {
 		this.maPhieuDat = maPhieuDat;
 	}
 
-	public LocalDate getngayDat() {
+	public LocalDate getNgayDat() {
 		return ngayDat;
 	}
 
-	public void setngayDat(LocalDate ngayDat) {
-		if (ngayDat == null)
-			throw new IllegalArgumentException("Ngày không được để trống");
+	public void setNgayDat(LocalDate ngayDat) {
+		if (ngayDat == null || ngayDat.isBefore(LocalDate.now()))
+			throw new IllegalArgumentException("Ngày đặt phải là hôm nay hoặc một ngày trong tương lai");
 		this.ngayDat = ngayDat;
 	}
 
@@ -114,39 +114,29 @@ public class PhieuDatBan {
 	}
 
 	public void setTrangThai(int trangThai) {
-		if (trangThai < 0 || trangThai > 2) // 0 = đã hủy, 1 = đang chờ, 2 = hoàn thành
-			throw new IllegalArgumentException("Trạng thái không hợp lệ");
+		if (trangThai < 0 || trangThai > 3) // 0 = đã hủy, 1 = chưa sử dụng, 2 = hoàn thành, 3 là hết hạn
+			throw new IllegalArgumentException("Trạng thái là 0,1,2 hoặc 3");
 		this.trangThai = trangThai;
 	}
 
-	public String getMaNhanVien() {
-		return maNhanVien;
+	public NhanVien getNhanVien() {
+		return nhanVien;
 	}
 
-	public void setMaNhanVien(String maNhanVien) {
-		if (maNhanVien == null || !maNhanVien.matches("^NV\\d{3,}$"))
-			throw new IllegalArgumentException("Mã nhân viên không hợp lệ (phải có dạng NVxxx)");
-		this.maNhanVien = maNhanVien;
+	public void setNhanVien(NhanVien nhanVien) {
+		if (nhanVien == null)
+			throw new IllegalArgumentException("Nhân viên không được để trống");
+		this.nhanVien = nhanVien;
 	}
 
-	public LocalDate getNgayDat() {
-		return ngayDat;
+	public KhachHang getKhachHang() {
+		return khachHang;
 	}
 
-	public void setNgayDat(LocalDate ngayDat) {
-		if (ngayDat.isAfter(LocalDate.now()))
-			throw new IllegalArgumentException("Ngày đặt phải trước ngày hôm nay");
-		this.ngayDat = ngayDat;
-	}
-
-	public String getMaKhachHang() {
-		return maKhachHang;
-	}
-
-	public void setMaKhachHang(String maKhachHang) {
-		if (maKhachHang == null || !maKhachHang.matches("^KH\\d{3,}$"))
-			throw new IllegalArgumentException("Mã khách hàng không hợp lệ (phải có dạng KHxxx)");
-		this.maKhachHang = maKhachHang;
+	public void setKhachHang(KhachHang khachHang) {
+		if (khachHang == null)
+			throw new IllegalArgumentException("Khách hàng không được để trống");
+		this.khachHang = khachHang;
 	}
 
 	public void setDsChiTiet(List<ChiTietDatBan> dsChiTiet) {
@@ -155,7 +145,7 @@ public class PhieuDatBan {
 
 	public void capNhatThongTin(LocalDate ngayDatMoi, int soNguoiMoi, LocalTime gioBatDauMoi) {
 		if (ngayDatMoi != null)
-			setngayDat(ngayDatMoi);
+			setNgayDat(ngayDatMoi);
 		if (soNguoiMoi > 0)
 			setSoNguoi(soNguoiMoi);
 		if (gioBatDauMoi != null)
@@ -186,16 +176,4 @@ public class PhieuDatBan {
 		PhieuDatBan other = (PhieuDatBan) obj;
 		return Objects.equals(maPhieuDat, other.maPhieuDat);
 	}
-
-	public String getSoDienThoai() {
-		return soDienThoai;
-	}
-
-	public void setSoDienThoai(String soDienThoai) {
-		if (!soDienThoai.matches("^0\\d{9}$")) {
-			throw new IllegalArgumentException("Số điện thoại phải bắt đầu là 0 và có 10 chữ số");
-		}
-		this.soDienThoai = soDienThoai;
-	}
-
 }

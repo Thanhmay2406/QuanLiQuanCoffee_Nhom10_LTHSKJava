@@ -50,6 +50,7 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 	private MainFrame mainFrame;
 	private JLabel lblSearch;
 	private ChiTietDatBan_DAO ctdb_dao;
+	private JButton btnHuyPhieu;
 
 	public DatBan_GUI(MainFrame mainFrame) {
 		// TODO Auto-generated constructor stub
@@ -89,6 +90,8 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 
 		// -------South---------
 		JPanel pnSouth = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		pnSouth.add(btnHuyPhieu = new JButton("Hủy phiếu"));
+		pnSouth.add(Box.createHorizontalStrut(10));
 		pnSouth.add(btnChonBan = new JButton("Chọn bàn"));
 		pnSouth.add(btnChonMon = new JButton("Chọn món"));
 
@@ -100,6 +103,7 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 		btnChonBan.addActionListener(this);
 		btnChonMon.addActionListener(this);
 		btnSearch.addActionListener(this);
+		btnHuyPhieu.addActionListener(this);
 	}
 
 	@Override
@@ -114,6 +118,25 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 		}
 		if (o == btnSearch) {
 			timKiemPhieuDatBan();
+		}
+		if (o == btnHuyPhieu) {
+			huyPhieu();
+		}
+	}
+
+	private void huyPhieu() {
+		// TODO Auto-generated method stub
+		int row_selected = table.getSelectedRow();
+		if (row_selected != -1) {
+			String maPDB = modelTabel.getValueAt(row_selected, 0).toString();
+			int hoiNhac = JOptionPane.showConfirmDialog(this, "Chắc chắn hủy phiếu " + maPDB, "Xác nhận",
+					JOptionPane.YES_NO_OPTION);
+			if (hoiNhac == JOptionPane.YES_OPTION) {
+				if (pdb_dao.capNhatTrangThaiPhieu(maPDB, 0)) {
+					JOptionPane.showMessageDialog(this, "Đã xóa phiếu " + maPDB);
+					loadPhieuDatBan();
+				}
+			}
 		}
 	}
 
@@ -149,7 +172,7 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 
 			if (trangThai.equals("Chưa sử dụng")) {
 				try {
-					pdb_dao.capNhatTrangThaiPhieu(maPhieu, 1); // trangThai = 1 (đang sử dụng)
+					pdb_dao.capNhatTrangThaiPhieu(maPhieu, 2); // trangThai = 1 (đang chờ)
 					mainFrame.switchToPanel(mainFrame.KEY_BAN_HANG);
 					modelTabel.setValueAt("Đang sử dụng", selectedRow, 6); // set "Đã sử dụng" khi nhấn thanh toán thành
 																			// công
@@ -190,7 +213,7 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 	public void loadPhieuDatBan() {
 		modelTabel.setRowCount(0);
 		try {
-			ArrayList<PhieuDatBan> dsPDB = (ArrayList<PhieuDatBan>) pdb_dao.layTatCa();
+			ArrayList<PhieuDatBan> dsPDB = (ArrayList<PhieuDatBan>) pdb_dao.layPhieuDatBanHopLe();
 			updateTableData(dsPDB);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -204,20 +227,23 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 			for (PhieuDatBan pdb : dsPDB) {
 				String trangThai = "";
 				int trangThai_pdb = pdb.getTrangThai();
-				if (trangThai_pdb == 0) {
+				if (trangThai_pdb == 1) {
 					trangThai = "Chưa sử dụng";
-				} else if (trangThai_pdb == 1) {
-					trangThai = "Đang sử dụng";
-				} else if (trangThai_pdb == -1) {
+				} else if (trangThai_pdb == 0) {
 					trangThai = "Đã hủy";
 				} else if (trangThai_pdb == 2) {
 					trangThai = "Đã sử dụng";
+				} else if (trangThai_pdb == 3) {
+					trangThai = "Hết hạn";
 				}
-				modelTabel.addRow(new Object[] { pdb.getMaPhieuDat(), pdb.getngayDat(), pdb.getGioBatDau(),
-						pdb.getGioKetThuc(), pdb.getSoNguoi(), pdb.getGhiChu(), trangThai, pdb.getMaKhachHang(),
-						pdb.getMaNhanVien(), pdb.getSoDienThoai() });
+				modelTabel.addRow(
+						new Object[] { pdb.getMaPhieuDat(), pdb.getNgayDat(), pdb.getGioBatDau(), pdb.getGioKetThuc(),
+								pdb.getSoNguoi(), pdb.getGhiChu(), trangThai, pdb.getKhachHang().getMaKhachHang(),
+								pdb.getNhanVien().getMaNhanVien(), pdb.getKhachHang().getSoDienThoai() });
 			}
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			// TODO: handle exception
 		}
 	}

@@ -18,7 +18,6 @@ public class SanPham {
 
 	public SanPham(String maSanPham, String tenSanPham, String donViTinh, BigDecimal gia, String hinhAnh, int trangThai,
 			LoaiSanPham loaiSanPham) {
-		super();
 		setMaSanPham(maSanPham);
 		this.loaiSanPham = loaiSanPham;
 		setTenSanPham(tenSanPham);

@@ -10,13 +10,10 @@ package GUI;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.time.LocalDate;
@@ -30,13 +27,11 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import DAO.KhachHang_DAO;
-import Entity.DanhSach_KhachHang;
 import Entity.KhachHang;
 
 /*
@@ -46,34 +41,31 @@ import Entity.KhachHang;
 * @version: 1.0
 */
 
-public class KhachHang_GUI extends JPanel implements ActionListener, MouseListener {
-	private DanhSach_KhachHang ds;
+public class KhachHang_GUI extends JPanel implements ActionListener, MouseListener, ComponentListener {
 
 	private MainFrame mainFrame;
 
 	private JTextField txtMaKH, txtHoTen, txtSDT, txtEmail, txtDiaChi, txtDiemTichLuy, txtNgayDangKy, txtSearch;
-	private JButton btnSearch, btnDelete, btnHome, btnSave, btnAdd, btnUpdate;
+	private JButton btnSearch, btnDelete, btnHome, btnAdd, btnUpdate;
 
 	private DefaultTableModel tableModel;
 	private JTable table;
 	private String[] headerTable = { "Mã KH", "Họ tên", "STĐ", "Email", "Địa chỉ", "Điểm tích lũy", "Ngày đăng ký" };
+	private KhachHang_DAO kh_dao;
 
 	public KhachHang_GUI(MainFrame mainFrame) {
 		// TODO Auto-generated constructor stub
 		this.mainFrame = mainFrame;
-
-		ds = new DanhSach_KhachHang();
+		this.kh_dao = new KhachHang_DAO();
 
 		setLayout(new BorderLayout());
 
-		/* ======================NORTH===================== */
 		JPanel pnNorth = new JPanel();
 		JLabel title = new JLabel("KHÁCH HÀNG");
 		title.setFont(new Font("Arial", Font.BOLD, 26));
 		pnNorth.add(title);
 		add(pnNorth, BorderLayout.NORTH);
 
-		/* ======================CENTER===================== */
 		JPanel pnCenter = new JPanel();
 		pnCenter.setLayout(new BorderLayout());
 
@@ -95,6 +87,7 @@ public class KhachHang_GUI extends JPanel implements ActionListener, MouseListen
 		txtDiemTichLuy.setEditable(false);
 		txtNgayDangKy = new JTextField(20);
 		txtNgayDangKy.setEditable(false);
+		setTrangThaiMacDinh();
 
 		JPanel row1 = new JPanel();
 		row1.add(new JLabel("Mã khách hàng: "));
@@ -150,7 +143,11 @@ public class KhachHang_GUI extends JPanel implements ActionListener, MouseListen
 
 		// down
 		JPanel pnDown = new JPanel();
-		tableModel = new DefaultTableModel(headerTable, 0);
+		tableModel = new DefaultTableModel(headerTable, 0) {
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			};
+		};
 		table = new JTable(tableModel);
 
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -173,57 +170,60 @@ public class KhachHang_GUI extends JPanel implements ActionListener, MouseListen
 
 		add(pnCenter, BorderLayout.CENTER);
 
-		/* ======================SOUTH===================== */
 		JPanel pnSouth = new JPanel();
-
+		btnHome = new JButton("Trang chủ");
+		pnSouth.add(btnHome);
+		pnSouth.add(Box.createHorizontalStrut(50));
 		pnSouth.add(new JLabel("Nhập STĐ cần tìm: "));
 		txtSearch = new JTextField(20);
 		pnSouth.add(txtSearch);
 		btnSearch = new JButton("Tìm kiếm");
 		pnSouth.add(btnSearch);
 		pnSouth.add(Box.createHorizontalStrut(30));
-		btnHome = new JButton("Trang chủ");
-		pnSouth.add(Box.createHorizontalStrut(10));
-		btnSave = new JButton("Lưu");
-		pnSouth.add(btnHome);
 
 		pnSouth.add(Box.createHorizontalStrut(10));
-		pnSouth.add(btnSave);
-
 		add(pnSouth, BorderLayout.SOUTH);
 
-		/* ======================EVENT===================== */
 		loadDSKH();
 		btnAdd.addActionListener(this);
 		btnDelete.addActionListener(this);
 		btnUpdate.addActionListener(this);
 		btnSearch.addActionListener(this);
 		btnHome.addActionListener(this);
-		btnSave.addActionListener(this);
 		table.addMouseListener(this);
 	}
 
 	public void loadDSKH() {
 		try {
-			ds = new DanhSach_KhachHang();
-			updateTableData(ds.getDs());
+			ArrayList<KhachHang> dsKhachHang = (ArrayList<KhachHang>) kh_dao.layTatCa();
+			tableModel.setRowCount(0);
+			for (KhachHang it : dsKhachHang) {
+				tableModel.addRow(new Object[] { it.getMaKhachHang(), it.getHoTen(), it.getSoDienThoai(), it.getEmail(),
+						it.getDiaChi(), it.getDiemTichLuy(), it.getNgayDangKy() });
+			}
+
 		} catch (Exception e) {
 			// TODO: handle exception
+			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Có lỗi khi tải dữ liệu lên bảng");
 		}
 	}
 
-	public void updateTableData(ArrayList<KhachHang> ds) {
-		tableModel.setRowCount(0);
-		try {
-			for (KhachHang it : ds) {
-				tableModel.addRow(new Object[] { it.getMaKhachHang(), it.getHoTen(), it.getSoDienThoai(), it.getEmail(),
-						it.getDiaChi(), it.getDiemTichLuy(), it.getNgayDangKy() });
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-			JOptionPane.showMessageDialog(null, "Có lỗi khi cập nhật bảng");
+	public String taoMaKhachHang() {
+		String maKhachHangCuoi = kh_dao.getMaKhachHangCuoiCung();
+		if (maKhachHangCuoi == null) {
+			return "KH001";
 		}
+		try {
+			String phanSo = maKhachHangCuoi.substring(2);
+			int soHienTai = Integer.parseInt(phanSo);
+			soHienTai++;
+			String phanSoMoi = String.format("%03d", soHienTai);
+			return "KH" + phanSoMoi;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "KH_ERROR";
 	}
 
 	@Override
@@ -232,28 +232,33 @@ public class KhachHang_GUI extends JPanel implements ActionListener, MouseListen
 		Object o = e.getSource();
 		if (o.equals(btnAdd)) {
 			themKhachHang();
+			setTrangThaiMacDinh();
+			loadDSKH();
 		} else if (o.equals(btnDelete)) {
 			xoaKH();
+			setTrangThaiMacDinh();
 		} else if (o.equals(btnUpdate)) {
 			capNhat();
+			setTrangThaiMacDinh();
 		} else if (o.equals(btnSearch)) {
 			timKiem();
 		} else if (o.equals(btnHome)) {
-
-		} else if (o.equals(btnSave)) {
-			luu();
+			mainFrame.switchToPanel(mainFrame.KEY_DAT_BAN);
 		}
 	}
 
+	private void setTrangThaiMacDinh() {
+		txtMaKH.setText(taoMaKhachHang());
+		txtNgayDangKy.setText(LocalDate.now().toString());
+		txtDiemTichLuy.setText("0.0");
+	}
+
 	public void clearTXT() {
-		txtMaKH.setText("");
-		txtHoTen.setText("");
-		txtSDT.setText("");
-		txtEmail.setText("");
-		txtDiaChi.setText("");
-		txtDiemTichLuy.setText("");
-		txtNgayDangKy.setText("");
-		txtHoTen.requestFocus();
+		for (JTextField txt : new JTextField[] { txtDiaChi, txtDiemTichLuy, txtEmail, txtHoTen, txtMaKH, txtNgayDangKy,
+				txtSDT, txtSearch }) {
+			txt.setText("");
+		}
+		txtHoTen.grabFocus();
 	}
 
 	public void themKhachHang() {
@@ -263,22 +268,34 @@ public class KhachHang_GUI extends JPanel implements ActionListener, MouseListen
 			String std = txtSDT.getText();
 			String email = txtEmail.getText();
 			String diaChi = txtDiaChi.getText();
-			if (maKH.equals("")) {
-				ds.themKhachHang(hoTen, std, email, diaChi);
-				updateTableData(ds.getDs());
-				clearTXT();
-			} else {
-				JOptionPane.showMessageDialog(null, "Không thể thêm khách hàng (do khách hàng đã tồn tại)");
+
+			if (maKH.isEmpty() || hoTen.isEmpty() || std.isEmpty() || email.isEmpty()) {
+				JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin");
+				return;
 			}
-		} catch (IllegalArgumentException ex) {
-			JOptionPane.showMessageDialog(this, ex.getMessage(), "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
-			clearTXT();
+
+			if (kh_dao.kiemTraEmailTonTai(email)) {
+				JOptionPane.showMessageDialog(this, "Email đã được đăng ký. Vui lòng chọn email khác");
+				return;
+			}
+
+			if (kh_dao.kiemTraSoDienThoaiTonTai(std)) {
+				JOptionPane.showMessageDialog(this, "Số điện thoại đã được đăng ký. Vui lòng chọn số điện thoại khác");
+				return;
+			}
+
+			KhachHang kh = new KhachHang(maKH, hoTen, std, email, diaChi, 0, LocalDate.now());
+			if (kh_dao.themKhachHang(kh)) {
+				JOptionPane.showMessageDialog(this, "Thêm thành công");
+			} else {
+				JOptionPane.showMessageDialog(this, "Lỗi khi thêm khách hàng");
+			}
 		} catch (Exception e) {
 			// TODO: handle exception
-			JOptionPane.showMessageDialog(null, "Có lỗi khi thêm khách hàng");
-			clearTXT();
-			return;
+			JOptionPane.showMessageDialog(this, "Lỗi nhập liệu");
+			e.printStackTrace();
 		}
+
 	}
 
 	public void xoaKH() {
@@ -289,7 +306,7 @@ public class KhachHang_GUI extends JPanel implements ActionListener, MouseListen
 					JOptionPane.YES_NO_OPTION);
 
 			if (hoiNhac == JOptionPane.YES_OPTION) {
-				if (ds.xoaKhachHang(maKH)) {
+				if (kh_dao.xoaKhachHang(maKH)) {
 					tableModel.removeRow(row);
 				}
 			}
@@ -311,8 +328,9 @@ public class KhachHang_GUI extends JPanel implements ActionListener, MouseListen
 			}
 
 			KhachHang X = new KhachHang(maKH, hoTen, std, email, diaChi, diemTichLuy, ngayDangKy);
-			ds.capNhatKH(X);
-			updateTableData(ds.getDs());
+			kh_dao.capNhatKhachHang(X);
+
+			loadDSKH();
 			JOptionPane.showMessageDialog(null, "Cập nhật khách hàng thành công");
 			clearTXT();
 		} catch (IllegalArgumentException ex) {
@@ -323,35 +341,9 @@ public class KhachHang_GUI extends JPanel implements ActionListener, MouseListen
 			JOptionPane.showMessageDialog(null, "Có lỗi khi cập nhật khách hàng");
 		}
 	}
-	
+
 	public void timKiem() {
-		String s = txtSearch.getText();
-		if (s.isEmpty()) {
-			JOptionPane.showMessageDialog(null, "chưa nhập số điện thoại");
-			txtSearch.setText("");
-			txtSearch.requestFocus();
-			return;
-		}
-		
-		int row = ds.timKiem_STD(s);
-		
-		table.setRowSelectionInterval(row, 0);
-		txtMaKH.setText(table.getValueAt(row, 0).toString());
-		txtHoTen.setText(table.getValueAt(row, 1).toString());
-		txtSDT.setText(table.getValueAt(row, 2).toString());
-		txtEmail.setText(table.getValueAt(row, 3).toString());
-		txtDiaChi.setText(table.getValueAt(row, 4).toString());
-		txtDiemTichLuy.setText(table.getValueAt(row, 5).toString());
-		txtNgayDangKy.setText(table.getValueAt(row, 6).toString());
-	}
-	
-	public void luu() {
-		if (ds.luuTatCa()) {
-			JOptionPane.showMessageDialog(null, "Lưu thành công");
-		}
-		else {
-			JOptionPane.showMessageDialog(null, "Lưu thất bại");
-		}
+
 	}
 
 	@Override
@@ -389,6 +381,31 @@ public class KhachHang_GUI extends JPanel implements ActionListener, MouseListen
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void componentResized(ComponentEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void componentMoved(ComponentEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void componentShown(ComponentEvent e) {
+		// TODO Auto-generated method stub
+		loadDSKH();
+		setTrangThaiMacDinh();
+	}
+
+	@Override
+	public void componentHidden(ComponentEvent e) {
 		// TODO Auto-generated method stub
 
 	}

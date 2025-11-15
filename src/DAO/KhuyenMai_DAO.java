@@ -84,16 +84,18 @@ public class KhuyenMai_DAO {
 			return false;
 		}
 	}
+
 	public boolean xoaKhuyenMai(String maKM) {
-        String sql = "DELETE FROM KhuyenMai WHERE maKM = ?";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, maKM);
-            return pst.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+		String sql = "DELETE FROM KhuyenMai WHERE maKM = ?";
+		try (PreparedStatement pst = con.prepareStatement(sql)) {
+			pst.setString(1, maKM);
+			return pst.executeUpdate() > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
 	public KhuyenMai timTheoMaKhuyenMai(String maKM) {
 		String sql = "SELECT * FROM KhuyenMai WHERE maKM = ?";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
@@ -137,6 +139,21 @@ public class KhuyenMai_DAO {
 						rs.getString("loaiKM"), rs.getDate("ngayBatDau").toLocalDate(),
 						rs.getDate("ngayKetThuc").toLocalDate(), rs.getInt("trangThai"));
 				return km;
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public String getMaKhuyenMaiCuoiCung() {
+		// TODO Auto-generated method stub
+		String sql = "select top 1 maKM from KhuyenMai order by maKM DESC";
+		try (PreparedStatement pstm = con.prepareStatement(sql)) {
+			ResultSet rs = pstm.executeQuery();
+			if (rs.next()) {
+				return rs.getString("maKM");
 			}
 		} catch (Exception e) {
 			// TODO: handle exception

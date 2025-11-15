@@ -32,6 +32,7 @@ public class ChonBan_GUI extends JPanel implements ActionListener, ComponentList
 	private ArrayList<JButton> tableButtons;
 	private JPanel pnTableDisplay;
 	private Ban ban_selected;
+	private JButton btnLamTrong;
 
 	// Màu trạng thái
 	private static final Color COLOR_TRONG = new Color(144, 238, 144);
@@ -74,13 +75,18 @@ public class ChonBan_GUI extends JPanel implements ActionListener, ComponentList
 		JPanel pnSouth = new JPanel(new BorderLayout());
 		btnQuayLai = new JButton("Quay lại");
 		btnChonBan = new JButton("Chọn bàn");
+		btnLamTrong = new JButton("Làm trống");
+		JPanel pnBtn = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		pnBtn.add(btnLamTrong);
+		pnBtn.add(btnChonBan);
 		pnSouth.add(btnQuayLai, BorderLayout.WEST);
-		pnSouth.add(btnChonBan, BorderLayout.EAST);
+		pnSouth.add(pnBtn, BorderLayout.EAST);
 		add(pnSouth, BorderLayout.SOUTH);
 
 		cbTrangThaiBan.addActionListener(this);
 		btnChonBan.addActionListener(this);
 		btnQuayLai.addActionListener(this);
+		btnLamTrong.addActionListener(this);
 		addComponentListener(this);
 		// Load dữ liệu
 		loadBanData();
@@ -99,6 +105,19 @@ public class ChonBan_GUI extends JPanel implements ActionListener, ComponentList
 
 		else if (o == btnQuayLai)
 			mainFrame.switchToPanel(mainFrame.KEY_DAT_BAN);
+		else if (o == btnLamTrong) {
+			if (ban_selected == null) {
+				JOptionPane.showMessageDialog(this, "Vui lòng chọn bàn");
+				return;
+			}
+			String maBan = ban_selected.getMaBan().trim();
+			int hoiNhac = JOptionPane.showConfirmDialog(this, "Chắc chắn làm trống " + maBan + " ?", "Xác nhận",
+					JOptionPane.YES_NO_OPTION);
+			if (hoiNhac == JOptionPane.YES_OPTION) {
+				if (ban_dao.capNhatTrangThaiBan(maBan, 0))
+					loadBanData();
+			}
+		}
 	}
 
 	private void xuLyChonBan() {
