@@ -20,8 +20,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -36,10 +34,12 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import DAO.ChiTietDatBan_DAO;
 import DAO.PhieuDatBan_DAO;
+import Entity.ChiTietDatBan;
 import Entity.PhieuDatBan;
 
-public class DatBan_GUI extends JPanel implements ActionListener, MouseListener, ComponentListener {
+public class DatBan_GUI extends JPanel implements ActionListener, ComponentListener {
 
 	private JLabel title;
 	private JButton btnSearch, btnChonBan, btnChonMon;
@@ -48,11 +48,15 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 	private JTable table;
 	private PhieuDatBan_DAO pdb_dao;
 	private MainFrame mainFrame;
+	private JLabel lblSearch;
+	private ChiTietDatBan_DAO ctdb_dao;
+	private JButton btnHuyPhieu;
 
 	public DatBan_GUI(MainFrame mainFrame) {
 		// TODO Auto-generated constructor stub
 		this.mainFrame = mainFrame;
 		this.pdb_dao = new PhieuDatBan_DAO();
+		this.ctdb_dao = new ChiTietDatBan_DAO();
 		this.setLayout(new BorderLayout());
 		// -------North--------
 		JPanel pnNorth = new JPanel();
@@ -63,6 +67,7 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 		JPanel pnCenter = new JPanel();
 		pnCenter.setLayout(new BoxLayout(pnCenter, BoxLayout.Y_AXIS));
 		JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+		searchPanel.add(lblSearch = new JLabel("Nhập số điện thoại: "));
 		searchPanel.add(txtSearch = new JTextField(10));
 		searchPanel.add(btnSearch = new JButton("Tìm kiếm"));
 		pnCenter.add(searchPanel, BorderLayout.NORTH);
@@ -85,6 +90,8 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 
 		// -------South---------
 		JPanel pnSouth = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		pnSouth.add(btnHuyPhieu = new JButton("Hủy phiếu"));
+		pnSouth.add(Box.createHorizontalStrut(10));
 		pnSouth.add(btnChonBan = new JButton("Chọn bàn"));
 		pnSouth.add(btnChonMon = new JButton("Chọn món"));
 
@@ -96,36 +103,7 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 		btnChonBan.addActionListener(this);
 		btnChonMon.addActionListener(this);
 		btnSearch.addActionListener(this);
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-
+		btnHuyPhieu.addActionListener(this);
 	}
 
 	@Override
@@ -140,6 +118,25 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 		}
 		if (o == btnSearch) {
 			timKiemPhieuDatBan();
+		}
+		if (o == btnHuyPhieu) {
+			huyPhieu();
+		}
+	}
+
+	private void huyPhieu() {
+		// TODO Auto-generated method stub
+		int row_selected = table.getSelectedRow();
+		if (row_selected != -1) {
+			String maPDB = modelTabel.getValueAt(row_selected, 0).toString();
+			int hoiNhac = JOptionPane.showConfirmDialog(this, "Chắc chắn hủy phiếu " + maPDB, "Xác nhận",
+					JOptionPane.YES_NO_OPTION);
+			if (hoiNhac == JOptionPane.YES_OPTION) {
+				if (pdb_dao.capNhatTrangThaiPhieu(maPDB, 0)) {
+					JOptionPane.showMessageDialog(this, "Đã xóa phiếu " + maPDB);
+					loadPhieuDatBan();
+				}
+			}
 		}
 	}
 
@@ -163,7 +160,7 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 
 	private void chonBan() {
 		// TODO Auto-generated method stub
-		mainFrame.swicthToPanel(mainFrame.KEY_CHON_BAN);
+		mainFrame.switchToPanel(mainFrame.KEY_CHON_BAN);
 	}
 
 	private void chonMon() {
@@ -175,9 +172,17 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 
 			if (trangThai.equals("Chưa sử dụng")) {
 				try {
-					pdb_dao.capNhatTrangThaiPhieu(maPhieu, 1);
-					mainFrame.swicthToPanel(mainFrame.KEY_BAN_HANG);
-					modelTabel.setValueAt("Đang sử dụng", selectedRow, 6); // set "Đã sử dụng" khi nhấn thanh toán
+					pdb_dao.capNhatTrangThaiPhieu(maPhieu, 2); // trangThai = 1 (đang chờ)
+					mainFrame.switchToPanel(mainFrame.KEY_BAN_HANG);
+					modelTabel.setValueAt("Đang sử dụng", selectedRow, 6); // set "Đã sử dụng" khi nhấn thanh toán thành
+																			// công
+					// lấy maBan, maPDB lưu vào trung gian MainFrame
+					ArrayList<String> dsMaBan = layMaBanTuCTDB(maPhieu);
+					String maKhachHang = modelTabel.getValueAt(selectedRow, 7).toString();
+					mainFrame.setMaKhachHang(maKhachHang);
+					mainFrame.setMaPhieuDatBan(maPhieu);
+					mainFrame.setDsMaBan(dsMaBan);
+
 				} catch (Exception e) {
 					// TODO: handle exception
 					System.out.println(selectedRow);
@@ -194,10 +199,21 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 
 	}
 
+	private ArrayList<String> layMaBanTuCTDB(String maPhieu) {
+		ArrayList<String> dsMaBan = new ArrayList<String>();
+		ArrayList<ChiTietDatBan> dsCT = (ArrayList<ChiTietDatBan>) ctdb_dao.layChiTietTheoMaPDB(maPhieu);
+		for (ChiTietDatBan ct : dsCT) {
+			dsMaBan.add(ct.getBan().getMaBan());
+		}
+		return dsMaBan;
+		// TODO Auto-generated method stub
+
+	}
+
 	public void loadPhieuDatBan() {
 		modelTabel.setRowCount(0);
 		try {
-			ArrayList<PhieuDatBan> dsPDB = (ArrayList<PhieuDatBan>) pdb_dao.layTatCa();
+			ArrayList<PhieuDatBan> dsPDB = (ArrayList<PhieuDatBan>) pdb_dao.layPhieuDatBanHopLe();
 			updateTableData(dsPDB);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -211,20 +227,23 @@ public class DatBan_GUI extends JPanel implements ActionListener, MouseListener,
 			for (PhieuDatBan pdb : dsPDB) {
 				String trangThai = "";
 				int trangThai_pdb = pdb.getTrangThai();
-				if (trangThai_pdb == 0) {
+				if (trangThai_pdb == 1) {
 					trangThai = "Chưa sử dụng";
-				} else if (trangThai_pdb == 1) {
-					trangThai = "Đang sử dụng";
-				} else if (trangThai_pdb == -1) {
+				} else if (trangThai_pdb == 0) {
 					trangThai = "Đã hủy";
 				} else if (trangThai_pdb == 2) {
 					trangThai = "Đã sử dụng";
+				} else if (trangThai_pdb == 3) {
+					trangThai = "Hết hạn";
 				}
-				modelTabel.addRow(new Object[] { pdb.getMaPhieuDat(), pdb.getngayDat(), pdb.getGioBatDau(),
-						pdb.getGioKetThuc(), pdb.getSoNguoi(), pdb.getGhiChu(), trangThai, pdb.getMaKhachHang(),
-						pdb.getMaNhanVien(), pdb.getSoDienThoai() });
+				modelTabel.addRow(
+						new Object[] { pdb.getMaPhieuDat(), pdb.getNgayDat(), pdb.getGioBatDau(), pdb.getGioKetThuc(),
+								pdb.getSoNguoi(), pdb.getGhiChu(), trangThai, pdb.getKhachHang().getMaKhachHang(),
+								pdb.getNhanVien().getMaNhanVien(), pdb.getKhachHang().getSoDienThoai() });
 			}
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			// TODO: handle exception
 		}
 	}

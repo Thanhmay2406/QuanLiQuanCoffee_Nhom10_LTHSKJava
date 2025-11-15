@@ -84,6 +84,38 @@ public class NhanVien_DAO {
 		}
 	}
 
+	public boolean kiemTraEmailTonTai(String email) {
+		String sql = "select count(*) from NhanVien where email = ?";
+		try (PreparedStatement pstm = con.prepareStatement(sql)) {
+			pstm.setString(1, email.trim());
+			ResultSet rs = pstm.executeQuery();
+			if (rs.next()) {
+				return rs.getInt(1) > 0;
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+
+		}
+		return false;
+	}
+
+	public boolean kiemTraSoDienThoaiTonTai(String soDienThoai) {
+		String sql = "select count(*) from NhanVien where soDienThoai = ?";
+		try (PreparedStatement pstm = con.prepareStatement(sql)) {
+			pstm.setString(1, soDienThoai.trim());
+			ResultSet rs = pstm.executeQuery();
+			if (rs.next()) {
+				return rs.getInt(1) > 0;
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+
+		}
+		return false;
+	}
+
 	public NhanVien timTheoMa(String maNV) {
 		String sql = "SELECT * FROM NhanVien WHERE maNhanVien = ?";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {

@@ -23,15 +23,21 @@ import java.util.List;
 
 import ConnectDB.ConnectDB;
 import Entity.ChiTietDatBan;
+import Entity.KhachHang;
+import Entity.NhanVien;
 import Entity.PhieuDatBan;
 
 public class PhieuDatBan_DAO {
 	private Connection con;
 	private ChiTietDatBan_DAO ctDatBan_DAO;
+	private NhanVien_DAO nv_dao;
+	private KhachHang_DAO kh_dao;
 
 	public PhieuDatBan_DAO() {
 		con = ConnectDB.getInstance().getConnection();
 		ctDatBan_DAO = new ChiTietDatBan_DAO();
+		this.nv_dao = new NhanVien_DAO();
+		this.kh_dao = new KhachHang_DAO();
 	}
 
 	public List<PhieuDatBan> layTatCa() {
@@ -40,10 +46,12 @@ public class PhieuDatBan_DAO {
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
 			ResultSet rs = pstm.executeQuery();
 			while (rs.next()) {
+				NhanVien nv = nv_dao.timTheoMa(rs.getString("maNhanVien"));
+				KhachHang kh = kh_dao.timKhachHangTheoMaKH(rs.getString("maKhachHang"));
+
 				PhieuDatBan pdb = new PhieuDatBan(rs.getString("maPhieuDat"), rs.getDate("ngayDat").toLocalDate(),
 						rs.getTime("gioBatDau").toLocalTime(), rs.getTime("gioKetThuc").toLocalTime(),
-						rs.getInt("soNguoi"), rs.getString("ghiChu"), rs.getInt("trangThai"),
-						rs.getString("maKhachHang"), rs.getString("maNhanVien"), rs.getString("soDienThoai"));
+						rs.getInt("soNguoi"), rs.getString("ghiChu"), rs.getInt("trangThai"), kh, nv);
 
 				ds.add(pdb);
 			}
@@ -51,6 +59,44 @@ public class PhieuDatBan_DAO {
 			e.printStackTrace();
 		}
 		return ds;
+	}
+
+	public ArrayList<PhieuDatBan> layPhieuDatBanHopLe() {
+		String sql = "select * from PhieuDatBan where ngayDat >= CAST(GETDATE() AS DATE) and trangThai = 1"; // 1 là
+																												// chưa
+																												// dùng
+		ArrayList<PhieuDatBan> dsPB = new ArrayList<PhieuDatBan>();
+		try (PreparedStatement pstm = con.prepareStatement(sql)) {
+			ResultSet rs = pstm.executeQuery();
+			while (rs.next()) {
+				NhanVien nv = nv_dao.timTheoMa(rs.getString("maNhanVien"));
+				KhachHang kh = kh_dao.timKhachHangTheoMaKH(rs.getString("maKhachHang"));
+
+				PhieuDatBan pdb = new PhieuDatBan(rs.getString("maPhieuDat"), rs.getDate("ngayDat").toLocalDate(),
+						rs.getTime("gioBatDau").toLocalTime(), rs.getTime("gioKetThuc").toLocalTime(),
+						rs.getInt("soNguoi"), rs.getString("ghiChu"), rs.getInt("trangThai"), kh, nv);
+
+				dsPB.add(pdb);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return dsPB;
+	}
+
+	// 3 là hết hạn
+	public void capNhatTranThaiTuDong() {
+		String sql = "update PhieuDatBan set trangThai = 3 where trangThai = 1  and ((ngayDat < CAST(GETDATE() AS DATE)) or (ngayDat = CAST(GETDATE() AS DATE) and gioKetThuc < CAST(GETDATE() AS TIME)))";
+		try (PreparedStatement pstm = con.prepareStatement(sql)) {
+			int soDongUpdated = pstm.executeUpdate();
+			if (soDongUpdated != 0) {
+				System.out.println("Đã tự động cập nhật " + soDongUpdated + " phiếu");
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
 	}
 
 	public boolean themPhieuDatBan(PhieuDatBan pdb) {
@@ -62,14 +108,14 @@ public class PhieuDatBan_DAO {
 			// 1. Thêm Phiếu Đặt Bàn
 			try (PreparedStatement pstm = con.prepareStatement(sqlPDB)) {
 				pstm.setString(1, pdb.getMaPhieuDat());
-				pstm.setDate(2, java.sql.Date.valueOf(pdb.getngayDat()));
+				pstm.setDate(2, java.sql.Date.valueOf(pdb.getNgayDat()));
 				pstm.setTime(3, java.sql.Time.valueOf(pdb.getGioBatDau()));
 				pstm.setTime(4, java.sql.Time.valueOf(pdb.getGioKetThuc()));
 				pstm.setInt(5, pdb.getSoNguoi());
 				pstm.setString(6, pdb.getGhiChu());
 				pstm.setInt(7, pdb.getTrangThai());
-				pstm.setString(8, pdb.getMaKhachHang());
-				pstm.setString(9, pdb.getMaNhanVien());
+				pstm.setString(8, pdb.getKhachHang().getMaKhachHang());
+				pstm.setString(9, pdb.getNhanVien().getMaNhanVien());
 				pstm.executeUpdate();
 			}
 
@@ -110,10 +156,12 @@ public class PhieuDatBan_DAO {
 			pstm.setDate(1, java.sql.Date.valueOf(ngayDat));
 			ResultSet rs = pstm.executeQuery();
 			while (rs.next()) {
+				NhanVien nv = nv_dao.timTheoMa(rs.getString("maNhanVien"));
+				KhachHang kh = kh_dao.timKhachHangTheoMaKH(rs.getString("maKhachHang"));
+
 				PhieuDatBan pdb = new PhieuDatBan(rs.getString("maPhieuDat"), rs.getDate("ngayDat").toLocalDate(),
 						rs.getTime("gioBatDau").toLocalTime(), rs.getTime("gioKetThuc").toLocalTime(),
-						rs.getInt("soNguoi"), rs.getString("ghiChu"), rs.getInt("trangThai"),
-						rs.getString("maKhachHang"), rs.getString("maNhanVien"), rs.getString("soDienThoai"));
+						rs.getInt("soNguoi"), rs.getString("ghiChu"), rs.getInt("trangThai"), kh, nv);
 				dsPDB.add(pdb);
 			}
 		} catch (Exception e) {
@@ -130,10 +178,12 @@ public class PhieuDatBan_DAO {
 			pstm.setString(1, soDienThoai.trim());
 			ResultSet rs = pstm.executeQuery();
 			while (rs.next()) {
+				NhanVien nv = nv_dao.timTheoMa(rs.getString("maNhanVien"));
+				KhachHang kh = kh_dao.timKhachHangTheoMaKH(rs.getString("maKhachHang"));
+
 				PhieuDatBan pdb = new PhieuDatBan(rs.getString("maPhieuDat"), rs.getDate("ngayDat").toLocalDate(),
 						rs.getTime("gioBatDau").toLocalTime(), rs.getTime("gioKetThuc").toLocalTime(),
-						rs.getInt("soNguoi"), rs.getString("ghiChu"), rs.getInt("trangThai"),
-						rs.getString("maKhachHang"), rs.getString("maNhanVien"), rs.getString("soDienThoai"));
+						rs.getInt("soNguoi"), rs.getString("ghiChu"), rs.getInt("trangThai"), kh, nv);
 				dsPDB.add(pdb);
 			}
 		} catch (Exception e) {
@@ -141,6 +191,27 @@ public class PhieuDatBan_DAO {
 			e.printStackTrace();
 		}
 		return dsPDB;
+	}
+
+	public PhieuDatBan layPhieuDatBanTheoMaPhieu(String maPhieuDat) {
+		String sql = "select * from PhieuDatBan where maPhieuDat = ?";
+		try (PreparedStatement pstm = con.prepareStatement(sql)) {
+			pstm.setString(1, maPhieuDat.trim());
+			ResultSet rs = pstm.executeQuery();
+			if (rs.next()) {
+				NhanVien nv = nv_dao.timTheoMa(rs.getString("maNhanVien"));
+				KhachHang kh = kh_dao.timKhachHangTheoMaKH(rs.getString("maKhachHang"));
+
+				PhieuDatBan pdb = new PhieuDatBan(rs.getString("maPhieuDat"), rs.getDate("ngayDat").toLocalDate(),
+						rs.getTime("gioBatDau").toLocalTime(), rs.getTime("gioKetThuc").toLocalTime(),
+						rs.getInt("soNguoi"), rs.getString("ghiChu"), rs.getInt("trangThai"), kh, nv);
+				return pdb;
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public boolean xoaPhieuDatBan(String maPhieuDat) {

@@ -1,0 +1,28 @@
+**************************************************
+                 QUÁN COOFFE LMK
+      12 Nguyễn Văn Bảo, P.4, Q.Gò Vấp, TPHCM
+**************************************************
+
+             HÓA ĐƠN BÁN HÀNG
+
+Mã HĐ:       HD011
+Mã NV:       NV001
+Ngày tạo:    15/11/2025 14:49:10
+Mã KH:       KH005
+
+Tên khách hàng:  Nguyễn Văn Nam
+Mã bàn:       
+--------------------------------------------------
+Tên Sản Phẩm               SL    Đơn Giá Thành Tiền
+--------------------------------------------------
+Trà đào cam sả              1      45000      45000
+Bánh Tiramisu               1      35000      35000
+--------------------------------------------------
+Tổng tiền:                                    80000 VND
+Giảm giá:                                      8000 VND
+Thành tiền:                                   72000 VND
+Phương thức thanh toán:                Chuyển khoản QR
+Ghi chú:                                    thêm đá
+
+
+             Cảm ơn quý khách!

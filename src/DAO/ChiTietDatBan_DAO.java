@@ -75,10 +75,10 @@ public class ChiTietDatBan_DAO {
 		}
 	}
 
-	public boolean xoaChiTietDatBan(String maPhieuDatBan, String maBan) {
-		String sql = "delete from ChiTietDatBan where maPhieuDatBan = ? and maBan = ?";
+	public boolean xoaChiTietDatBan(String maPhieuDat, String maBan) {
+		String sql = "delete from ChiTietDatBan where maPhieuDat = ? and maBan = ?";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
-			pstm.setString(1, maPhieuDatBan);
+			pstm.setString(1, maPhieuDat);
 			pstm.setString(2, maBan);
 			return pstm.executeUpdate() > 0;
 		} catch (Exception e) {

@@ -7,6 +7,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -21,7 +23,7 @@ import javax.swing.SwingConstants;
 import DAO.Ban_DAO;
 import Entity.Ban;
 
-public class ChonBan_GUI extends JPanel implements ActionListener {
+public class ChonBan_GUI extends JPanel implements ActionListener, ComponentListener {
 	private MainFrame mainFrame;
 	private JLabel title;
 	private JComboBox<String> cbTrangThaiBan;
@@ -30,6 +32,7 @@ public class ChonBan_GUI extends JPanel implements ActionListener {
 	private ArrayList<JButton> tableButtons;
 	private JPanel pnTableDisplay;
 	private Ban ban_selected;
+	private JButton btnLamTrong;
 
 	// Màu trạng thái
 	private static final Color COLOR_TRONG = new Color(144, 238, 144);
@@ -44,17 +47,17 @@ public class ChonBan_GUI extends JPanel implements ActionListener {
 
 		setLayout(new BorderLayout(10, 10));
 
-		// ---------------- NORTH ----------------
+		// north
 		JPanel pnNorth = new JPanel(new BorderLayout());
 		title = new JLabel("CHỌN BÀN", SwingConstants.CENTER);
 		title.setFont(new Font("Arial", Font.BOLD, 20));
 		pnNorth.add(title, BorderLayout.CENTER);
 		add(pnNorth, BorderLayout.NORTH);
 
-		// ---------------- CENTER ----------------
+		// center
 		JPanel pnCenter = new JPanel(new BorderLayout(10, 10));
 
-		// Bộ lọc
+		// filter
 		JPanel pnFilter = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
 		String[] trangThai_cb = { "Tất cả", "Trống", "Đã đặt", "Đang phục vụ" };
 		cbTrangThaiBan = new JComboBox<>(trangThai_cb);
@@ -62,31 +65,34 @@ public class ChonBan_GUI extends JPanel implements ActionListener {
 		pnFilter.add(cbTrangThaiBan);
 		pnCenter.add(pnFilter, BorderLayout.NORTH);
 
-		// Danh sách bàn
 		pnTableDisplay = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 20));
 		JScrollPane spTables = new JScrollPane(pnTableDisplay);
 		spTables.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 		pnCenter.add(spTables, BorderLayout.CENTER);
 		add(pnCenter, BorderLayout.CENTER);
 
-		// ---------------- SOUTH ----------------
+		// south
 		JPanel pnSouth = new JPanel(new BorderLayout());
 		btnQuayLai = new JButton("Quay lại");
 		btnChonBan = new JButton("Chọn bàn");
+		btnLamTrong = new JButton("Làm trống");
+		JPanel pnBtn = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		pnBtn.add(btnLamTrong);
+		pnBtn.add(btnChonBan);
 		pnSouth.add(btnQuayLai, BorderLayout.WEST);
-		pnSouth.add(btnChonBan, BorderLayout.EAST);
+		pnSouth.add(pnBtn, BorderLayout.EAST);
 		add(pnSouth, BorderLayout.SOUTH);
 
-		// Sự kiện
 		cbTrangThaiBan.addActionListener(this);
 		btnChonBan.addActionListener(this);
 		btnQuayLai.addActionListener(this);
-
+		btnLamTrong.addActionListener(this);
+		addComponentListener(this);
 		// Load dữ liệu
 		loadBanData();
 	}
 
-	// ---------------- ACTION ----------------
+	// action
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object o = e.getSource();
@@ -98,7 +104,20 @@ public class ChonBan_GUI extends JPanel implements ActionListener {
 			xuLyChonBan();
 
 		else if (o == btnQuayLai)
-			mainFrame.swicthToPanel(mainFrame.KEY_DAT_BAN);
+			mainFrame.switchToPanel(mainFrame.KEY_DAT_BAN);
+		else if (o == btnLamTrong) {
+			if (ban_selected == null) {
+				JOptionPane.showMessageDialog(this, "Vui lòng chọn bàn");
+				return;
+			}
+			String maBan = ban_selected.getMaBan().trim();
+			int hoiNhac = JOptionPane.showConfirmDialog(this, "Chắc chắn làm trống " + maBan + " ?", "Xác nhận",
+					JOptionPane.YES_NO_OPTION);
+			if (hoiNhac == JOptionPane.YES_OPTION) {
+				if (ban_dao.capNhatTrangThaiBan(maBan, 0))
+					loadBanData();
+			}
+		}
 	}
 
 	private void xuLyChonBan() {
@@ -107,20 +126,25 @@ public class ChonBan_GUI extends JPanel implements ActionListener {
 			return;
 		}
 
+		// trangThai = 0 (trống)
 		if (ban_selected.getTrangThai() == 0) {
 			int hoiNhac = JOptionPane.showConfirmDialog(this, "Chắc chắn chọn Bàn " + ban_selected.getMaBan() + "?",
 					"Xác nhận", JOptionPane.YES_NO_OPTION);
 			if (hoiNhac == JOptionPane.YES_OPTION) {
+				// lưu mã bàn vào lớp trung gian MainFrame
+				String maBan = ban_selected.getMaBan();
+				ArrayList<String> dsMaBan = new ArrayList<String>();
+				dsMaBan.add(maBan);
+				mainFrame.setDsMaBan(dsMaBan);
 				ban_dao.capNhatTrangThaiBan(ban_selected.getMaBan(), 1);
 				loadBanData();
-				mainFrame.swicthToPanel(mainFrame.KEY_BAN_HANG);
+				mainFrame.switchToPanel(mainFrame.KEY_BAN_HANG);
 			}
 		} else {
 			JOptionPane.showMessageDialog(this, "Bàn này không thể chọn vì đang bận!");
 		}
 	}
 
-	// ---------------- LOAD + FILTER ----------------
 	private void loadBanData() {
 		pnTableDisplay.removeAll();
 		tableButtons.clear();
@@ -174,6 +198,7 @@ public class ChonBan_GUI extends JPanel implements ActionListener {
 			case "Đang phục vụ" -> ban.getTrangThai() == 2;
 			default -> true;
 			};
+			setBanStyle(btn, ban.getTrangThai());
 			btn.setVisible(visible);
 		}
 		pnTableDisplay.revalidate();
@@ -188,5 +213,29 @@ public class ChonBan_GUI extends JPanel implements ActionListener {
 		case 2 -> COLOR_DANG_PHUC_VU;
 		default -> Color.GRAY;
 		});
+	}
+
+	@Override
+	public void componentResized(ComponentEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void componentMoved(ComponentEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void componentShown(ComponentEvent e) {
+		// TODO Auto-generated method stub
+		loadBanData();
+	}
+
+	@Override
+	public void componentHidden(ComponentEvent e) {
+		// TODO Auto-generated method stub
+
 	}
 }

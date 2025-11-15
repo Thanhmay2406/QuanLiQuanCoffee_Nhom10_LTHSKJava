@@ -13,12 +13,22 @@ public class KhachHang {
 	private LocalDate ngayDangKy;
 
 	public KhachHang() {
-		this("", "", "", "", "", 0.0, LocalDate.now());
 	}
 
 	public KhachHang(String maKhachHang, String hoTen, String soDienThoai, String email, String diaChi,
 			double diemTichLuy, LocalDate ngayDangKy) {
-		super();
+		setMaKhachHang(maKhachHang);
+		setHoTen(hoTen);
+		setSoDienThoai(soDienThoai);
+		setEmail(email);
+		setDiemTichLuy(diemTichLuy);
+		setNgayDangKy(ngayDangKy);
+		this.diaChi = diaChi;
+
+	}
+
+	public KhachHang(String hoTen, String soDienThoai, String email, String diaChi, double diemTichLuy,
+			LocalDate ngayDangKy) {
 		setMaKhachHang(maKhachHang);
 		setHoTen(hoTen);
 		setSoDienThoai(soDienThoai);

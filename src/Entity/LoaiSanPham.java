@@ -9,7 +9,6 @@ public class LoaiSanPham {
 	private int trangThai;
 
 	public LoaiSanPham() {
-		this("", "", "", 0);
 	}
 
 	public LoaiSanPham(String maLoaiSP, String tenLoai, String moTa, int trangThai) {

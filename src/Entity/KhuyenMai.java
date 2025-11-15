@@ -25,7 +25,6 @@ public class KhuyenMai {
 
 	public KhuyenMai() {
 		// TODO Auto-generated constructor stub
-		this("", "", 0.0, "", LocalDate.now(), LocalDate.now(), 0);
 	}
 
 	public double getPhanTramGiam() {
@@ -51,8 +50,8 @@ public class KhuyenMai {
 	public void setMaKM(String maKM) {
 		if (maKM == null || maKM.isEmpty())
 			throw new IllegalArgumentException("Mã khuyến mãi không được bỏ trống");
-		if (!maKM.matches("^MKM\\d{3}$")) {
-			throw new IllegalArgumentException("Mã khuyến mãi phải theo dạng MKMxxx");
+		if (!maKM.matches("^KM\\d{3}$")) {
+			throw new IllegalArgumentException("Mã khuyến mãi phải theo dạng KMxxx");
 		}
 		this.maKM = maKM;
 	}
@@ -81,9 +80,6 @@ public class KhuyenMai {
 	}
 
 	public void setNgayBatDau(LocalDate ngayBatDau) {
-		if (ngayBatDau.isAfter(LocalDate.now())) {
-			throw new IllegalArgumentException("Ngày bắt đầu phải trước ngày hôm nay");
-		}
 		this.ngayBatDau = ngayBatDau;
 	}
 
@@ -92,9 +88,6 @@ public class KhuyenMai {
 	}
 
 	public void setNgayKetThuc(LocalDate ngayKetThuc) {
-		if (ngayKetThuc.isBefore(LocalDate.now())) {
-			throw new IllegalArgumentException("Ngày bắt đầu phải sau ngày hôm nay");
-		}
 		this.ngayKetThuc = ngayKetThuc;
 	}
 

@@ -35,7 +35,6 @@ public class Ban {
 	}
 
 	public Ban() {
-		this("", "", 1, "", 0, "");
 	}
 
 	public String getMaBan() {

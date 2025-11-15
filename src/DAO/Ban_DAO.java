@@ -31,9 +31,6 @@ public class Ban_DAO {
 		con = ConnectDB.getInstance().getConnection();
 	}
 
-	/**
-	 * Lấy tất cả bàn
-	 */
 	public List<Ban> layTatCa() {
 		List<Ban> ds = new ArrayList<>();
 		String sql = "SELECT * FROM Ban";
@@ -50,9 +47,6 @@ public class Ban_DAO {
 		return ds;
 	}
 
-	/**
-	 * Lấy danh sách bàn theo trạng thái (ví dụ: bàn trống)
-	 */
 	public List<Ban> layTheoTrangThai(int trangThai) {
 		List<Ban> ds = new ArrayList<>();
 		String sql = "SELECT * FROM Ban WHERE trangThai = ?";
@@ -71,9 +65,6 @@ public class Ban_DAO {
 		return ds;
 	}
 
-	/**
-	 * Thêm bàn mới
-	 */
 	public boolean themBan(Ban ban) {
 		String sql = "INSERT INTO Ban (maBan, tenBan, soLuongChoNgoi, khuVuc, trangThai, ghiChu) VALUES (?, ?, ?, ?, ?, ?)";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
@@ -91,9 +82,6 @@ public class Ban_DAO {
 		}
 	}
 
-	/**
-	 * Cập nhật thông tin bàn
-	 */
 	public boolean capNhatBan(Ban ban) {
 		String sql = "UPDATE Ban SET tenBan = ?, soLuongChoNgoi = ?, khuVuc = ?, trangThai = ?, ghiChu = ? WHERE maBan = ?";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
@@ -111,9 +99,6 @@ public class Ban_DAO {
 		}
 	}
 
-	/**
-	 * Tìm bàn theo mã
-	 */
 	public Ban timTheoMaBan(String maBan) {
 		String sql = "SELECT * FROM Ban WHERE maBan = ?";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
@@ -130,7 +115,6 @@ public class Ban_DAO {
 		return null;
 	}
 
-	// Xóa theo mã bàn
 	public boolean xoaBan(String maBan) {
 		String sql = "delete from Ban where maBan = ?";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {

@@ -66,12 +66,6 @@ public class KhuyenMai_DAO {
 		}
 	}
 
-	/**
-	 * Cập nhật toàn bộ thông tin của một khuyến mãi dựa trên maKM.
-	 * 
-	 * @param khuyenMaiMoi Đối tượng KhuyenMai chứa thông tin mới.
-	 * @return true nếu cập nhật thành công, false nếu thất bại.
-	 */
 	public boolean capNhatKhuyenMai(KhuyenMai khuyenMaiMoi) {
 		String sql = "UPDATE KhuyenMai SET tenKM = ?, phanTramGiam = ?, loaiKM = ?, ngayBatDau = ?, ngayKetThuc = ?, trangThai = ? WHERE maKM = ?";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {
@@ -85,6 +79,17 @@ public class KhuyenMai_DAO {
 			pstm.setString(7, khuyenMaiMoi.getMaKM());
 
 			return pstm.executeUpdate() > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public boolean xoaKhuyenMai(String maKM) {
+		String sql = "DELETE FROM KhuyenMai WHERE maKM = ?";
+		try (PreparedStatement pst = con.prepareStatement(sql)) {
+			pst.setString(1, maKM);
+			return pst.executeUpdate() > 0;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -122,5 +127,38 @@ public class KhuyenMai_DAO {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	public KhuyenMai timKhuyenMaiTheoTen(String tenKM) {
+		String sql = "select * from KhuyenMai where tenKM = ?";
+		try (PreparedStatement pstm = con.prepareStatement(sql)) {
+			pstm.setString(1, tenKM);
+			ResultSet rs = pstm.executeQuery();
+			if (rs.next()) {
+				KhuyenMai km = new KhuyenMai(rs.getString("maKM"), rs.getString("tenKM"), rs.getDouble("phanTramGiam"),
+						rs.getString("loaiKM"), rs.getDate("ngayBatDau").toLocalDate(),
+						rs.getDate("ngayKetThuc").toLocalDate(), rs.getInt("trangThai"));
+				return km;
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public String getMaKhuyenMaiCuoiCung() {
+		// TODO Auto-generated method stub
+		String sql = "select top 1 maKM from KhuyenMai order by maKM DESC";
+		try (PreparedStatement pstm = con.prepareStatement(sql)) {
+			ResultSet rs = pstm.executeQuery();
+			if (rs.next()) {
+				return rs.getString("maKM");
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
