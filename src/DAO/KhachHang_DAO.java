@@ -31,9 +31,6 @@ public class KhachHang_DAO {
 		con = ConnectDB.getInstance().getConnection();
 	}
 
-	/**
-	 * Lấy tất cả khách hàng từ CSDL
-	 */
 	public List<KhachHang> layTatCa() {
 		List<KhachHang> ds = new ArrayList<>();
 		try {

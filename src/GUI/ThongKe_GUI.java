@@ -175,6 +175,9 @@ public class ThongKe_GUI extends JPanel implements ActionListener, ComponentList
 		JPanel pnSouth = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pnSouth.add(btnTrangChu = new JButton("Trang chủ"));
 		add(pnSouth, BorderLayout.SOUTH);
+
+		// actionListerner
+		addComponentListener(this);
 		btnTrangChu.addActionListener(this);
 		refreshData();
 	}
@@ -195,6 +198,7 @@ public class ThongKe_GUI extends JPanel implements ActionListener, ComponentList
 	}
 
 	private void refreshData() {
+		tableModel.setRowCount(0);
 		ansLb1.setText(String.valueOf(tk_dao.tongDoanhThu()));
 		ansLb2.setText(String.valueOf(tk_dao.soLuongSP()));
 		ansLb3.setText(tk_dao.sanPhamBanChayNhat());

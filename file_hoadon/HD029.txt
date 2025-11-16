@@ -1,0 +1,28 @@
+**************************************************
+                 QUÁN COOFFE LMK
+      12 Nguyễn Văn Bảo, P.4, Q.Gò Vấp, TPHCM
+**************************************************
+
+             HÓA ĐƠN BÁN HÀNG
+
+Mã HĐ:       HD029
+Mã NV:       NV001
+Ngày tạo:    17/11/2025 06:55:46
+Mã KH:       KH011
+
+Tên khách hàng:  Trần thị trung
+Mã bàn:       
+--------------------------------------------------
+Tên Sản Phẩm               SL    Đơn Giá Thành Tiền
+--------------------------------------------------
+Cappuccino                  1      50000      50000
+Cà phê Cốt Dừa              1      55000      55000
+--------------------------------------------------
+Tổng tiền:                                   105000 VND
+Giảm giá:                                         0 VND
+Thành tiền:                                  105000 VND
+Phương thức thanh toán:                    Tiền mặt
+Ghi chú:                               không cốt dừa
+
+
+             Cảm ơn quý khách!
