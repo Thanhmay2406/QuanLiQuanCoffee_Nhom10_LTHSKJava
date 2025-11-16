@@ -107,6 +107,7 @@ public class Menu_GUI extends JPanel implements ActionListener, ComponentListene
 		btnTrangChu.addActionListener(this);
 		btnXoa.addActionListener(this);
 		cbFilter.addActionListener(this);
+		addComponentListener(this);
 	}
 
 	// Panel "Order"
@@ -290,6 +291,12 @@ public class Menu_GUI extends JPanel implements ActionListener, ComponentListene
 
 	private void loadMenuData() {
 		ArrayList<SanPham> dsSP = (ArrayList<SanPham>) sp_dao.layTatCa();
+		menuModel.setRowCount(0);
+		@SuppressWarnings("unchecked")
+		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>) menuTable.getRowSorter();
+		if (sorter != null) {
+			sorter.setRowFilter(null);
+		}
 		for (SanPham sp : dsSP) {
 			String imgPath = "/img/" + sp.gethinhAnh().trim();
 			ImageIcon icon = editAnhSanPham(imgPath, 50, 45);
@@ -407,21 +414,27 @@ public class Menu_GUI extends JPanel implements ActionListener, ComponentListene
 			sorter = new TableRowSorter<>(menuModel);
 			menuTable.setRowSorter(sorter);
 		}
-
-		sorter.setRowFilter(new RowFilter<TableModel, Integer>() {
+		RowFilter<TableModel, Integer> searchFilter = new RowFilter<TableModel, Integer>() {
 			@Override
 			public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
 				String tenSP = entry.getStringValue(1);
 				return tenSP.toLowerCase().contains(strSearch.toLowerCase());
 			}
-		});
+		};
+
+		sorter.setRowFilter(searchFilter);
 
 		if (menuTable.getRowCount() > 0) {
 			int viewIndex = 0;
 			menuTable.setRowSelectionInterval(viewIndex, viewIndex);
 			menuTable.scrollRectToVisible(menuTable.getCellRect(viewIndex, 0, true));
 		} else {
-			JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm");
+			JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm nào có tên '" + strSearch + "'", "Thông báo",
+					JOptionPane.INFORMATION_MESSAGE);
+
+			sorter.setRowFilter(null);
+			txtSearch.setText("");
+			menuTable.clearSelection();
 		}
 	}
 

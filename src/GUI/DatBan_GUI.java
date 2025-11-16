@@ -258,21 +258,27 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 			sorter = new TableRowSorter<>(modelTabel);
 			table.setRowSorter(sorter);
 		}
-
-		sorter.setRowFilter(new RowFilter<TableModel, Integer>() {
+		RowFilter<TableModel, Integer> searchFilter = new RowFilter<TableModel, Integer>() {
 			@Override
 			public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
 				String soDienThoai = entry.getStringValue(9);
 				return soDienThoai.toLowerCase().contains(strSearch.toLowerCase());
 			}
-		});
+		};
+
+		sorter.setRowFilter(searchFilter);
 
 		if (table.getRowCount() > 0) {
 			int viewIndex = 0;
 			table.setRowSelectionInterval(viewIndex, viewIndex);
 			table.scrollRectToVisible(table.getCellRect(viewIndex, 0, true));
 		} else {
-			JOptionPane.showMessageDialog(this, "Không tìm thấy phiếu đặt bàn");
+			JOptionPane.showMessageDialog(this, "Không tìm thấy phiếu đặt bàn nào có số điện thoại:  " + strSearch,
+					"Thông báo", JOptionPane.INFORMATION_MESSAGE);
+
+			sorter.setRowFilter(null);
+			txtSearch.setText("");
+			table.clearSelection();
 		}
 	}
 

@@ -196,11 +196,18 @@ public class KhachHang_GUI extends JPanel implements ActionListener, MouseListen
 		btnSearch.addActionListener(this);
 		btnHome.addActionListener(this);
 		table.addMouseListener(this);
+		addComponentListener(this);
 	}
 
 	public void loadDSKH() {
 		try {
 			ArrayList<KhachHang> dsKhachHang = (ArrayList<KhachHang>) kh_dao.layTatCa();
+
+			@SuppressWarnings("unchecked")
+			TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>) table.getRowSorter();
+			if (sorter != null) {
+				sorter.setRowFilter(null);
+			}
 			tableModel.setRowCount(0);
 			for (KhachHang it : dsKhachHang) {
 				tableModel.addRow(new Object[] { it.getMaKhachHang(), it.getHoTen(), it.getSoDienThoai(), it.getEmail(),
@@ -361,21 +368,27 @@ public class KhachHang_GUI extends JPanel implements ActionListener, MouseListen
 			sorter = new TableRowSorter<>(tableModel);
 			table.setRowSorter(sorter);
 		}
-
-		sorter.setRowFilter(new RowFilter<TableModel, Integer>() {
+		RowFilter<TableModel, Integer> searchFilter = new RowFilter<TableModel, Integer>() {
 			@Override
 			public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
 				String soDienThoai = entry.getStringValue(2);
 				return soDienThoai.toLowerCase().contains(strSearch.toLowerCase());
 			}
-		});
+		};
+
+		sorter.setRowFilter(searchFilter);
 
 		if (table.getRowCount() > 0) {
 			int viewIndex = 0;
 			table.setRowSelectionInterval(viewIndex, viewIndex);
 			table.scrollRectToVisible(table.getCellRect(viewIndex, 0, true));
 		} else {
-			JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng");
+			JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng nào có số điện thoại " + strSearch,
+					"Thông báo", JOptionPane.INFORMATION_MESSAGE);
+
+			sorter.setRowFilter(null);
+			txtSearch.setText("");
+			table.clearSelection();
 		}
 	}
 

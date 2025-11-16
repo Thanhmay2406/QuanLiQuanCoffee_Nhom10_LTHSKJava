@@ -166,7 +166,7 @@ public class KhuyenMai_GUI extends JPanel implements ActionListener, ComponentLi
 		btnXoa.addActionListener(this);
 		btnTrangChu.addActionListener(this);
 		btnSearch.addActionListener(this);
-
+		addComponentListener(this);
 		tblKM.getSelectionModel().addListSelectionListener(e -> {
 			if (!e.getValueIsAdjusting())
 				hienThiChiTietKhuyenMai();
@@ -208,21 +208,27 @@ public class KhuyenMai_GUI extends JPanel implements ActionListener, ComponentLi
 			sorter = new TableRowSorter<>(model);
 			tblKM.setRowSorter(sorter);
 		}
-
-		sorter.setRowFilter(new RowFilter<TableModel, Integer>() {
+		RowFilter<TableModel, Integer> searchFilter = new RowFilter<TableModel, Integer>() {
 			@Override
 			public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
-				String maKM = entry.getStringValue(0);
-				return maKM.toLowerCase().contains(strSearch.toLowerCase());
+				String tenSP = entry.getStringValue(1);
+				return tenSP.toLowerCase().contains(strSearch.toLowerCase());
 			}
-		});
+		};
+
+		sorter.setRowFilter(searchFilter);
 
 		if (tblKM.getRowCount() > 0) {
 			int viewIndex = 0;
 			tblKM.setRowSelectionInterval(viewIndex, viewIndex);
 			tblKM.scrollRectToVisible(tblKM.getCellRect(viewIndex, 0, true));
 		} else {
-			JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm");
+			JOptionPane.showMessageDialog(this, "Không tìm thấy khuyến mãi có mã '" + strSearch + "'", "Thông báo",
+					JOptionPane.INFORMATION_MESSAGE);
+
+			sorter.setRowFilter(null);
+			txtSearch.setText("");
+			tblKM.clearSelection();
 		}
 	}
 
@@ -309,6 +315,11 @@ public class KhuyenMai_GUI extends JPanel implements ActionListener, ComponentLi
 	}
 
 	private void hienThiDanhSach() {
+		@SuppressWarnings("unchecked")
+		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>) tblKM.getRowSorter();
+		if (sorter != null) {
+			sorter.setRowFilter(null);
+		}
 		model.setRowCount(0);
 		List<KhuyenMai> ds = khuyenMaiDAO.layTatCa();
 		for (KhuyenMai km : ds) {
@@ -397,7 +408,7 @@ public class KhuyenMai_GUI extends JPanel implements ActionListener, ComponentLi
 		txtPhanTram.setText("");
 		cboLoaiKM.setSelectedIndex(0);
 		cboTrangThai.setSelectedIndex(0);
-
+		txtSearch.setText("");
 		spNgayBD.setValue(new java.util.Date());
 		spNgayKT.setValue(new java.util.Date());
 
@@ -421,6 +432,7 @@ public class KhuyenMai_GUI extends JPanel implements ActionListener, ComponentLi
 		// TODO Auto-generated method stub
 		xuLyLamMoi();
 		refreshMa();
+		hienThiDanhSach();
 	}
 
 	@Override
