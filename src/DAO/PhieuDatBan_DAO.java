@@ -119,7 +119,6 @@ public class PhieuDatBan_DAO {
 				pstm.executeUpdate();
 			}
 
-			// 2. Thêm Chi Tiết Đặt Bàn
 			for (ChiTietDatBan ct : pdb.getDsChiTiet()) {
 				ct.setPhieuDatBan(pdb);
 
@@ -248,5 +247,4 @@ public class PhieuDatBan_DAO {
 		return false;
 	}
 
-	// ... Thêm các hàm capNhatTrangThaiPhieu, xoaPhieu (hủy phiếu)...
 }

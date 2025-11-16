@@ -146,7 +146,6 @@ public class NhanVien_DAO {
 		return false;
 	}
 
-//	Lấy nhân viên theo email (dùng cho việc kiểm tra đăng nhập hoặc khôi phục tài khoản)
 	public NhanVien layNhanVienTheoEmail(String email) {
 		String sql = "select * from NhanVien where email = ?";
 		try (PreparedStatement pstm = con.prepareStatement(sql)) {

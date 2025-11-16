@@ -28,7 +28,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 
 import DAO.PhieuDatBan_DAO;
 import Entity.HoaDon; // === THÊM IMPORT ===
@@ -42,7 +41,6 @@ import Entity.HoaDon; // === THÊM IMPORT ===
 
 public class MainFrame extends JFrame {
 
-	// Key là tên file
 	public static final String KEY_DAT_BAN = "DatBan_GUI.java";
 
 	public static final String KEY_BAN_HANG = "Menu_GUI.java";
@@ -77,18 +75,16 @@ public class MainFrame extends JFrame {
 		setResizable(false);
 		setLayout(new BorderLayout());
 
-		// ----------Thanh điều hướng------------
+		// thanh điều hướng
 		navPanel = new JPanel();
 		navPanel.setLayout(new BoxLayout(navPanel, BoxLayout.Y_AXIS));
 		navPanel.setBackground(new Color(230, 240, 255));
 		navPanel.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
 		navButtons = new ArrayList<>();
 
-		// ---------Nội dung---------
 		cardLayout = new CardLayout();
 		contentPanel = new JPanel(cardLayout);
 
-		// ---------gắn sự kiện------------
 		ActionListener navListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -101,31 +97,24 @@ public class MainFrame extends JFrame {
 		// cập nhật db
 		pdb_dao.capNhatTranThaiTuDong();
 
-		// Trang đặt bàn
 		DatBan_GUI panelDatBan = new DatBan_GUI(this);
 		contentPanel.add(panelDatBan, KEY_DAT_BAN);
 
-		// Chọn bàn
 		ChonBan_GUI panelChonBan = new ChonBan_GUI(this);
 		contentPanel.add(panelChonBan, KEY_CHON_BAN);
 
-		// Trang Bán Hàng
 		Menu_GUI panelBanHang = new Menu_GUI(this);
 		contentPanel.add(panelBanHang, KEY_BAN_HANG);
 
-		// Trang Sản Phẩm
 		SanPham_GUI panelSanPham = new SanPham_GUI(this);
 		contentPanel.add(panelSanPham, KEY_SAN_PHAM);
 
-		// Trang Khách Hàng
 		KhachHang_GUI panelKhachHang = new KhachHang_GUI(this);
 		contentPanel.add(panelKhachHang, KEY_KHACH_HANG);
 
-		// Trang giam giá
 		KhuyenMai_GUI panelKhuyenMai = new KhuyenMai_GUI(this);
 		contentPanel.add(panelKhuyenMai, KEY_GIAM_GIA);
 
-		// Trang thống kê
 		ThongKe_GUI panelThongKe = new ThongKe_GUI(this);
 		contentPanel.add(panelThongKe, KEY_THONG_KE);
 
@@ -231,12 +220,6 @@ public class MainFrame extends JFrame {
 				break;
 			}
 		}
-	}
-
-	public static void main(String[] args) {
-		SwingUtilities.invokeLater(() -> {
-			new MainFrame().setVisible(true);
-		});
 	}
 
 	public void chuyenHoaDonSangManHinhThanhToan(HoaDon hoaDon) {

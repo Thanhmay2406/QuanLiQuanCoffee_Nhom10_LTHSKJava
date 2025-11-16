@@ -24,12 +24,6 @@ import ConnectDB.ConnectDB;
 import Entity.ChiTietHoaDon;
 import Entity.SanPham;
 
-/**
- * @description DAO cho ChiTietHoaDon, đã được refactor
- * @author: Van Long
- * @date: Nov 13, 2025
- * @version: 2.0
- */
 public class ChiTietHoaDon_DAO {
 
 	private SanPham_DAO sanPham_DAO;

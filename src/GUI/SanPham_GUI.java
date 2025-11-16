@@ -71,7 +71,7 @@ public class SanPham_GUI extends JPanel implements ActionListener, ComponentList
 		this.loaiDAO = new LoaiSanPham_DAO();
 		this.setLayout(new BorderLayout());
 
-		// -------North--------
+		// pnNorth
 		JPanel pnNorth = new JPanel();
 		pnNorth.add(title = new JLabel("Quản lý Sản phẩm"));
 		Font fnt = new Font("Arial", Font.BOLD, 20);
@@ -80,7 +80,7 @@ public class SanPham_GUI extends JPanel implements ActionListener, ComponentList
 		JPanel pnCenter = new JPanel(new BorderLayout(10, 10));
 		add(pnCenter, BorderLayout.CENTER);
 
-		// Form nhập liệu
+		// nhập liệu
 		JPanel pnInput = new JPanel(new GridLayout(7, 2, 10, 10));
 		pnInput.setBorder(BorderFactory.createTitledBorder("Thông tin sản phẩm"));
 
