@@ -184,6 +184,7 @@ public class PhieuDatBan_DAO {
 				PhieuDatBan pdb = new PhieuDatBan(rs.getString("maPhieuDat"), rs.getDate("ngayDat").toLocalDate(),
 						rs.getTime("gioBatDau").toLocalTime(), rs.getTime("gioKetThuc").toLocalTime(),
 						rs.getInt("soNguoi"), rs.getString("ghiChu"), rs.getInt("trangThai"), kh, nv);
+				System.out.println(pdb + "\n");
 				dsPDB.add(pdb);
 			}
 		} catch (Exception e) {

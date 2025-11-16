@@ -32,7 +32,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import DAO.ChiTietDatBan_DAO;
 import DAO.PhieuDatBan_DAO;
@@ -83,6 +86,10 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 			}
 		};
 		table = new JTable(modelTabel);
+
+		table.setAutoCreateRowSorter(true);
+		table.setRowSorter(new TableRowSorter<>(modelTabel));
+
 		JScrollPane sp = new JScrollPane(table);
 		sp.setBorder(BorderFactory.createEmptyBorder());
 		tableData.add(sp, BorderLayout.CENTER);
@@ -117,7 +124,7 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 			chonBan();
 		}
 		if (o == btnSearch) {
-			timKiemPhieuDatBan();
+			actionSearch();
 		}
 		if (o == btnHuyPhieu) {
 			huyPhieu();
@@ -140,23 +147,25 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 		}
 	}
 
-	private void timKiemPhieuDatBan() {
-		// TODO Auto-generated method stub
-		String sdt = txtSearch.getText().trim();
-		if (sdt == null || sdt.isEmpty()) {
-			JOptionPane.showMessageDialog(this, "Vui lòng nhập số điện thoại");
-			return;
-		}
-
-		try {
-			ArrayList<PhieuDatBan> dsPDB = pdb_dao.layPhieuDatBanTheoSoDienThoai(sdt);
-			updateTableData(dsPDB);
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-		}
-
-	}
+//	private void timKiemPhieuDatBan() {
+//		// TODO Auto-generated method stub
+//		String sdt = txtSearch.getText().trim();
+//		System.out.println(txtSearch.getText());
+//		if (sdt == null || sdt.isEmpty()) {
+//			JOptionPane.showMessageDialog(this, "Vui lòng nhập số điện thoại");
+//			return;
+//		}
+//
+//		try {
+//			ArrayList<PhieuDatBan> dsPDB = pdb_dao.layPhieuDatBanTheoSoDienThoai(sdt);
+//			System.out.println(dsPDB.size());
+//			updateTableData(dsPDB);
+//		} catch (Exception e) {
+//			// TODO: handle exception
+//			e.printStackTrace();
+//		}
+//
+//	}
 
 	private void chonBan() {
 		// TODO Auto-generated method stub
@@ -211,6 +220,13 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 	}
 
 	public void loadPhieuDatBan() {
+
+		@SuppressWarnings("unchecked")
+		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>) table.getRowSorter();
+		if (sorter != null) {
+			sorter.setRowFilter(null);
+		}
+
 		modelTabel.setRowCount(0);
 		try {
 			ArrayList<PhieuDatBan> dsPDB = (ArrayList<PhieuDatBan>) pdb_dao.layPhieuDatBanHopLe();
@@ -245,6 +261,39 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 
 		Exception e) {
 			// TODO: handle exception
+			e.printStackTrace();
+		}
+	}
+
+	private void actionSearch() {
+		String strSearch = txtSearch.getText().trim();
+		if (strSearch.isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Chưa nhập số điện thoại");
+			return;
+		}
+
+		@SuppressWarnings("unchecked")
+		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>) table.getRowSorter();
+
+		if (sorter == null) {
+			sorter = new TableRowSorter<>(modelTabel);
+			table.setRowSorter(sorter);
+		}
+
+		sorter.setRowFilter(new RowFilter<TableModel, Integer>() {
+			@Override
+			public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
+				String soDienThoai = entry.getStringValue(9);
+				return soDienThoai.toLowerCase().contains(strSearch.toLowerCase());
+			}
+		});
+
+		if (table.getRowCount() > 0) {
+			int viewIndex = 0;
+			table.setRowSelectionInterval(viewIndex, viewIndex);
+			table.scrollRectToVisible(table.getCellRect(viewIndex, 0, true));
+		} else {
+			JOptionPane.showMessageDialog(this, "Không tìm thấy phiếu đặt bàn");
 		}
 	}
 
@@ -263,6 +312,7 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 	@Override
 	public void componentShown(ComponentEvent e) {
 		// TODO Auto-generated method stub
+		txtSearch.setText("");
 		loadPhieuDatBan();
 	}
 
