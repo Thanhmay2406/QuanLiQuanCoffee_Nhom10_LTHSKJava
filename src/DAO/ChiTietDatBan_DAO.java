@@ -32,9 +32,6 @@ public class ChiTietDatBan_DAO {
 		con = ConnectDB.getInstance().getConnection();
 	}
 
-	/**
-	 * Lấy tất cả chi tiết của 1 phiếu đặt bàn
-	 */
 	public List<ChiTietDatBan> layChiTietTheoMaPDB(String maPDB) {
 		List<ChiTietDatBan> ds = new ArrayList<>();
 		String sql = "SELECT * FROM ChiTietDatBan WHERE maPhieuDat = ?";
@@ -46,7 +43,7 @@ public class ChiTietDatBan_DAO {
 				PhieuDatBan pdb = new PhieuDatBan();
 				pdb.setMaPhieuDat(maPDB);
 
-				Ban ban = new Ban(); // = banDAO.timTheoMaBan(rs.getString("maBan"));
+				Ban ban = new Ban();
 				ban.setMaBan(rs.getString("maBan"));
 
 				ChiTietDatBan ct = new ChiTietDatBan(pdb, ban, rs.getString("ghiChu"));
@@ -58,9 +55,6 @@ public class ChiTietDatBan_DAO {
 		return ds;
 	}
 
-	/**
-	 * Thêm một chi tiết đặt bàn (dùng cho Transaction)
-	 */
 	public boolean themChiTiet(ChiTietDatBan ct, Connection transCon) {
 		String sql = "INSERT INTO ChiTietDatBan (maPhieuDat, maBan, ghiChu) VALUES (?, ?, ?)";
 		try (PreparedStatement pstm = transCon.prepareStatement(sql)) {

@@ -33,7 +33,7 @@ public class PhuongThucThanhToan_DAO {
 
 	public List<PhuongThucThanhToan> layTatCa() {
 		List<PhuongThucThanhToan> ds = new ArrayList<>();
-		String sql = "SELECT * FROM PhuongThucThanhToan WHERE trangThai = 1"; // Chỉ lấy PTTT đang hoạt động
+		String sql = "SELECT * FROM PhuongThucThanhToan WHERE trangThai = 1";
 		try (Statement stm = con.createStatement(); ResultSet rs = stm.executeQuery(sql)) {
 
 			while (rs.next()) {
@@ -79,5 +79,4 @@ public class PhuongThucThanhToan_DAO {
 		return null;
 	}
 
-	// ... Thêm các hàm them, capNhat nếu dự án của bạn cho phép quản lý PTTT
 }

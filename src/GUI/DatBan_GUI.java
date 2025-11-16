@@ -147,26 +147,6 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 		}
 	}
 
-//	private void timKiemPhieuDatBan() {
-//		// TODO Auto-generated method stub
-//		String sdt = txtSearch.getText().trim();
-//		System.out.println(txtSearch.getText());
-//		if (sdt == null || sdt.isEmpty()) {
-//			JOptionPane.showMessageDialog(this, "Vui lòng nhập số điện thoại");
-//			return;
-//		}
-//
-//		try {
-//			ArrayList<PhieuDatBan> dsPDB = pdb_dao.layPhieuDatBanTheoSoDienThoai(sdt);
-//			System.out.println(dsPDB.size());
-//			updateTableData(dsPDB);
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//			e.printStackTrace();
-//		}
-//
-//	}
-
 	private void chonBan() {
 		// TODO Auto-generated method stub
 		mainFrame.switchToPanel(mainFrame.KEY_CHON_BAN);
@@ -220,7 +200,6 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 	}
 
 	public void loadPhieuDatBan() {
-
 		@SuppressWarnings("unchecked")
 		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>) table.getRowSorter();
 		if (sorter != null) {

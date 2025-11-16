@@ -34,7 +34,6 @@ public class ChonBan_GUI extends JPanel implements ActionListener, ComponentList
 	private Ban ban_selected;
 	private JButton btnLamTrong;
 
-	// Màu trạng thái
 	private static final Color COLOR_TRONG = new Color(144, 238, 144);
 	private static final Color COLOR_DA_DAT = new Color(211, 211, 211);
 	private static final Color COLOR_DANG_PHUC_VU = new Color(135, 206, 250);

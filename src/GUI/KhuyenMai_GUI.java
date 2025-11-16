@@ -24,8 +24,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.RowFilter;
 import javax.swing.SpinnerDateModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import DAO.KhuyenMai_DAO;
 import Entity.KhuyenMai;
@@ -187,7 +190,39 @@ public class KhuyenMai_GUI extends JPanel implements ActionListener, ComponentLi
 		} else if (o.equals(btnTrangChu)) {
 			mainFrame.switchToPanel(mainFrame.KEY_DAT_BAN);
 		} else if (o.equals(btnSearch)) {
+			actionSearch();
+		}
+	}
 
+	private void actionSearch() {
+		String strSearch = txtSearch.getText().trim();
+		if (strSearch.isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Chưa mã khuyến mãi");
+			return;
+		}
+
+		@SuppressWarnings("unchecked")
+		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>) tblKM.getRowSorter();
+
+		if (sorter == null) {
+			sorter = new TableRowSorter<>(model);
+			tblKM.setRowSorter(sorter);
+		}
+
+		sorter.setRowFilter(new RowFilter<TableModel, Integer>() {
+			@Override
+			public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
+				String maKM = entry.getStringValue(0);
+				return maKM.toLowerCase().contains(strSearch.toLowerCase());
+			}
+		});
+
+		if (tblKM.getRowCount() > 0) {
+			int viewIndex = 0;
+			tblKM.setRowSelectionInterval(viewIndex, viewIndex);
+			tblKM.scrollRectToVisible(tblKM.getCellRect(viewIndex, 0, true));
+		} else {
+			JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm");
 		}
 	}
 

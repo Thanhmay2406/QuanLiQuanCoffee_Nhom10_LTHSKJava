@@ -91,7 +91,7 @@ public class Menu_GUI extends JPanel implements ActionListener, ComponentListene
 
 		// pnCenter
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, createOrderPanel(), createMenuPanel());
-		splitPane.setResizeWeight(0.4); // Panel Order chiếm 40%
+		splitPane.setResizeWeight(0.4);
 		add(splitPane, BorderLayout.CENTER);
 
 		// pnSouth

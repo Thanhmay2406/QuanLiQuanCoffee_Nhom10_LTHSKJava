@@ -46,23 +46,14 @@ public class ThongKe_GUI extends JPanel implements ActionListener, ComponentList
 	private String[] cols = { "Sản phẩm", "Số lượng bán ra", "Doanh thu" };
 	private JTable table;
 	private DefaultTableModel tableModel;
-
 	private ThongKe_DAO tk_dao;
-
 	private JButton btnTrangChu;
-
 	private JLabel lb1;
-
 	private JLabel lb2;
-
 	private JLabel lb3;
-
 	private JLabel ansLb3;
-
 	private JPanel pnlb2;
-
 	private JLabel ansLb2;
-
 	private JLabel ansLb1;
 
 	public ThongKe_GUI(MainFrame mainFrame) {
@@ -159,7 +150,7 @@ public class ThongKe_GUI extends JPanel implements ActionListener, ComponentList
 
 		// right
 		pnRight.setLayout(new BorderLayout());
-		JLabel titleRight = new JLabel("Danh sách sản phẩm bán chạy");
+		JLabel titleRight = new JLabel("Danh sách 10 sản phẩm bán chạy");
 		titleRight.setFont(new Font("Arial", Font.BOLD, 20));
 		JPanel pnTitleRight = new JPanel();
 		pnTitleRight.add(titleRight);

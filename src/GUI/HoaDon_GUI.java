@@ -106,14 +106,12 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 		this.mainFrame = mainFrame;
 		setLayout(new BorderLayout());
 
-		// Tiêu đề chính
 		JPanel pnNorth = new JPanel();
 		JLabel lblTitle = new JLabel("Tạo Hóa Đơn");
 		lblTitle.setFont(new Font("Arial", Font.BOLD, 20));
 		pnNorth.add(lblTitle);
 		add(pnNorth, BorderLayout.NORTH);
 
-		// Nội dung chính
 		JSplitPane pnCenter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		pnCenter.setResizeWeight(0.4);
 		JPanel pnTichDiem = buildTichDiemPanel();
@@ -132,7 +130,7 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 
 	public void setHoaDonHienTai(HoaDon hoaDon) {
 		if (hoaDon == null) {
-			this.hoaDonHienTai = new HoaDon(); // Tạo mới nếu có lỗi
+			this.hoaDonHienTai = new HoaDon();
 		} else {
 			this.hoaDonHienTai = hoaDon;
 		}
@@ -148,7 +146,7 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 			setTrangThaiMacDinh();
 			return;
 		}
-
+		lblNhanVienText.setText("NV001");// mặc địch là NV001 vì hệ thống chưa có lưu tài khoản nhân viên
 		lblHoaDonText.setText(this.hoaDonHienTai.getMaHoaDon());
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 		lblNgayTaoText.setText(dtf.format(LocalDateTime.now()));
@@ -175,8 +173,7 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 		hoadon_model.setRowCount(0);
 		for (ChiTietHoaDon ct : this.hoaDonHienTai.getDsChiTiet()) {
 			hoadon_model.addRow(new Object[] { ct.getSanPham().getTenSanPham(), ct.getSoLuong(),
-					ct.getDonGia().doubleValue(), ct.tinhThanhTien().doubleValue() // Thành tiền
-			});
+					ct.getDonGia().doubleValue(), ct.tinhThanhTien().doubleValue() });
 		}
 
 		tichDiemModel.setRowCount(0);
@@ -208,11 +205,11 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 		double tongTien = hoaDonHienTai.tinhTongTien().doubleValue();
 		double tienGiamKM = hoaDonHienTai.tinhTongGiamTuKM().doubleValue();
 		double tienGiamDiem = hoaDonHienTai.getTienGiamTuDiem().doubleValue();
-		double thanhTien = hoaDonHienTai.tinhTongThanhToan().doubleValue(); // Gọi hàm tự tính toán
+		double thanhTien = hoaDonHienTai.tinhTongThanhToan().doubleValue();
 
 		lblTongTienValue.setText(String.format("%,.0f VND", tongTien));
-		lblTienGiamValue.setText(String.format("%,.0f VND", (tienGiamKM + tienGiamDiem))); // Tổng giảm
-		lblThanhTienValue.setText(String.format("%,.0f VND", thanhTien)); // Tổng cuối
+		lblTienGiamValue.setText(String.format("%,.0f VND", (tienGiamKM + tienGiamDiem)));
+		lblThanhTienValue.setText(String.format("%,.0f VND", thanhTien));
 
 		btnThanhToan.setEnabled(tongTien > 0);
 	}
@@ -403,7 +400,7 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 	private void loadDataToComboBoxKhuyenMai() {
 		ArrayList<KhuyenMai> dsKM = (ArrayList<KhuyenMai>) khuyenmai_dao.layTatCa();
 		DefaultComboBoxModel<String> kmModel = new DefaultComboBoxModel<>();
-		kmModel.addElement("Chọn khuyến mãi"); // Index 0
+		kmModel.addElement("Chọn khuyến mãi");
 		for (KhuyenMai km : dsKM) {
 			kmModel.addElement(km.getTenKM());
 		}
