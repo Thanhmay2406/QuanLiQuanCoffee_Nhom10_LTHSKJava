@@ -1,0 +1,30 @@
+**************************************************
+                 QUÁN COOFFE LMK
+      12 Nguyễn Văn Bảo, P.4, Q.Gò Vấp, TPHCM
+**************************************************
+
+             HÓA ĐƠN BÁN HÀNG
+
+Mã HĐ:       HD024
+Mã NV:       NV001
+Ngày tạo:    16/11/2025 13:21:24
+Mã KH:       KH001
+
+Tên khách hàng:  Nguyễn Văn An
+Mã bàn:       B003,B004
+--------------------------------------------------
+Tên Sản Phẩm               SL    Đơn Giá Thành Tiền
+--------------------------------------------------
+Espresso                    1      40000      40000
+Bánh Croissant              2      30000      60000
+Bánh Mousse Chanh dây       1      40000      40000
+Chanh tuyết                 1      50000      50000
+--------------------------------------------------
+Tổng tiền:                                   190000 VND
+Giảm giá:                                     38000 VND
+Thành tiền:                                  152000 VND
+Phương thức thanh toán:                Chuyển khoản QR
+Ghi chú:                                    thêm đá
+
+
+             Cảm ơn quý khách!

@@ -1,0 +1,28 @@
+**************************************************
+                 QUÁN COOFFE LMK
+      12 Nguyễn Văn Bảo, P.4, Q.Gò Vấp, TPHCM
+**************************************************
+
+             HÓA ĐƠN BÁN HÀNG
+
+Mã HĐ:       HD016
+Mã NV:       NV001
+Ngày tạo:    16/11/2025 12:46:29
+Mã KH:       KH003
+
+Tên khách hàng:  Trần Thị Hồng
+Mã bàn:       
+--------------------------------------------------
+Tên Sản Phẩm               SL    Đơn Giá Thành Tiền
+--------------------------------------------------
+Cappuccino                  1      50000      50000
+Bánh Tiramisu               1      35000      35000
+--------------------------------------------------
+Tổng tiền:                                    85000 VND
+Giảm giá:                                     17000 VND
+Thành tiền:                                   68000 VND
+Phương thức thanh toán:                Chuyển khoản QR
+Ghi chú:                                    thêm đá
+
+
+             Cảm ơn quý khách!

@@ -342,6 +342,12 @@ public class SanPham_GUI extends JPanel implements ActionListener, ComponentList
 	}
 
 	public void hienThiSanPham() {
+
+		@SuppressWarnings("unchecked")
+		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>) tblSanPham.getRowSorter();
+		if (sorter != null) {
+			sorter.setRowFilter(null);
+		}
 		String[] columnNames = { "Mã SP", "Loại SP", "Tên SP", "Đơn vị tính", "Giá", "Trạng thái", "Ảnh", "tenAnh" };
 		model = new DefaultTableModel(columnNames, 0) {
 			@Override
@@ -477,7 +483,7 @@ public class SanPham_GUI extends JPanel implements ActionListener, ComponentList
 		sorter.setRowFilter(new RowFilter<TableModel, Integer>() {
 			@Override
 			public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
-				String tenSP = entry.getStringValue(1);
+				String tenSP = entry.getStringValue(2);
 				return tenSP.toLowerCase().contains(strSearch.toLowerCase());
 			}
 		});
@@ -527,6 +533,7 @@ public class SanPham_GUI extends JPanel implements ActionListener, ComponentList
 	public void componentShown(ComponentEvent e) {
 		xuLyLamMoi();
 		refreshMa();
+		hienThiSanPham();
 	}
 
 	@Override
