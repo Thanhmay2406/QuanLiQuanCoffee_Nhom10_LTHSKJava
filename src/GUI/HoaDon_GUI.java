@@ -155,9 +155,10 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 		lblGhiChuText.setText(this.hoaDonHienTai.getGhiChu());
 		if (mainFrame.getMaKhachHang() != null) {
 			KhachHang kh = kh_dao.timKhachHangTheoMaKH(mainFrame.getMaKhachHang());
-			if (kh != null)
+			if (kh != null) {
 				searchTichDiem(kh.getSoDienThoai());
-			mainFrame.setMaKhachHang("");
+				mainFrame.setMaKhachHang("");
+			}
 		}
 		String dsMaBan = "";
 		ArrayList<String> ds = mainFrame.getDsMaBan();
