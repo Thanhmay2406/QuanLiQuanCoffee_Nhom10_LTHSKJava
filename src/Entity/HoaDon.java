@@ -107,6 +107,7 @@ public class HoaDon {
 		return trangThaiThanhToan;
 	}
 
+	// 0 là chưa thanh toán, 1 là đã thanh toán
 	public void setTrangThaiThanhToan(int trangThai) {
 		this.trangThaiThanhToan = trangThai;
 	}
