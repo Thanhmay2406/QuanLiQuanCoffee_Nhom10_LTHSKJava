@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener; // Thêm
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -24,7 +25,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import DAO.LoaiSanPham_DAO;
 import DAO.SanPham_DAO;
@@ -56,6 +60,10 @@ public class SanPham_GUI extends JPanel implements ActionListener, ComponentList
 	private JComboBox cboLoaiSP;
 	private LoaiSanPham_DAO loaiDAO;
 	private JButton btnTrangChu;
+	private JComboBox cbFilter;
+	private JPanel pnFilterLelf;
+	private JPanel pnFilterRight;
+	private JPanel pnFilter;
 
 	public SanPham_GUI(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
@@ -114,19 +122,43 @@ public class SanPham_GUI extends JPanel implements ActionListener, ComponentList
 		pnAnh.add(btnThemAnh);
 		pnInput.add(pnAnh);
 
-		JPanel pnFormButtons = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+		JPanel pnFormButtons = new JPanel(new BorderLayout());
+		JPanel leftButtons = new JPanel();
 		btnThem = new JButton("Thêm");
 		btnClear = new JButton("Làm mới");
 		btnCapNhat = new JButton("Cập nhật");
+		leftButtons.add(btnThem);
+		leftButtons.add(btnClear);
+		leftButtons.add(btnCapNhat);
+		pnFormButtons.add(leftButtons, BorderLayout.WEST);
+
+		pnFilter = new JPanel(new BorderLayout());
+		ArrayList<LoaiSanPham> dsLSP = (ArrayList<LoaiSanPham>) loaiDAO.layTatCa();
+		String loaiSP = "Tất cả,";
+		for (LoaiSanPham lsp : dsLSP) {
+			loaiSP += lsp.getTenLoai() + ",";
+		}
+		loaiSP = (String) loaiSP.substring(0, loaiSP.length());
+		String[] cbLoai = loaiSP.split(",");
+		cbFilter = new JComboBox<>(cbLoai);
+		pnFilterLelf = new JPanel();
+		pnFilterLelf.add(cbFilter);
+		pnFilter.add(pnFilterLelf, BorderLayout.WEST);
+		pnFilterRight = new JPanel();
+		pnFilterRight.add(new JLabel("Tìm kiếm:"));
+		txtSearch = new JTextField(15);
+		pnFilterRight.add(txtSearch);
+		pnFilterRight.add(btnSearch = new JButton("Tìm"));
+		pnFilter.add(pnFilterRight, BorderLayout.EAST);
+
+		JPanel rightButtons = new JPanel();
+		rightButtons.add(pnFilter);
+		pnFormButtons.add(rightButtons, BorderLayout.EAST);
 
 		Dimension btnSize = new Dimension(100, 30);
 		btnThem.setPreferredSize(btnSize);
 		btnClear.setPreferredSize(btnSize);
 		btnCapNhat.setPreferredSize(btnSize);
-
-		pnFormButtons.add(btnThem);
-		pnFormButtons.add(btnClear);
-		pnFormButtons.add(btnCapNhat);
 
 		JPanel pnTop = new JPanel();
 		pnTop.setLayout(new BorderLayout());
@@ -158,6 +190,8 @@ public class SanPham_GUI extends JPanel implements ActionListener, ComponentList
 		btnClear.addActionListener(this);
 		btnThemAnh.addActionListener(this);
 		btnTrangChu.addActionListener(this);
+		cbFilter.addActionListener(this);
+		btnSearch.addActionListener(this);
 
 		tblSanPham.getSelectionModel().addListSelectionListener(e -> {
 			if (!e.getValueIsAdjusting()) {
@@ -194,6 +228,10 @@ public class SanPham_GUI extends JPanel implements ActionListener, ComponentList
 			xuLyCapNhatSanPham();
 		} else if (o.equals(btnTrangChu)) {
 			mainFrame.switchToPanel(mainFrame.KEY_DAT_BAN);
+		} else if (o.equals(btnSearch)) {
+			actionSearch();
+		} else if (o.equals(cbFilter)) {
+			actionFilter();
 		}
 	}
 
@@ -351,6 +389,8 @@ public class SanPham_GUI extends JPanel implements ActionListener, ComponentList
 		tblSanPham.getColumnModel().getColumn(7).setMaxWidth(0);
 		tblSanPham.getColumnModel().getColumn(7).setWidth(0);
 
+		tblSanPham.setAutoCreateRowSorter(true);
+		tblSanPham.setRowSorter(new TableRowSorter<>(model));
 		tblSanPham.getSelectionModel().addListSelectionListener(e -> {
 			if (!e.getValueIsAdjusting()) {
 				hienThiChiTietSanPham();
@@ -417,6 +457,60 @@ public class SanPham_GUI extends JPanel implements ActionListener, ComponentList
 			JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật");
 			e.printStackTrace();
 		}
+	}
+
+	private void actionSearch() {
+		String strSearch = txtSearch.getText().trim();
+		if (strSearch.isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Chưa nhập tên sản phẩm");
+			return;
+		}
+
+		@SuppressWarnings("unchecked")
+		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>) tblSanPham.getRowSorter();
+
+		if (sorter == null) {
+			sorter = new TableRowSorter<>(model);
+			tblSanPham.setRowSorter(sorter);
+		}
+
+		sorter.setRowFilter(new RowFilter<TableModel, Integer>() {
+			@Override
+			public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
+				String tenSP = entry.getStringValue(1);
+				return tenSP.toLowerCase().contains(strSearch.toLowerCase());
+			}
+		});
+
+		if (tblSanPham.getRowCount() > 0) {
+			int viewIndex = 0;
+			tblSanPham.setRowSelectionInterval(viewIndex, viewIndex);
+			tblSanPham.scrollRectToVisible(tblSanPham.getCellRect(viewIndex, 0, true));
+		} else {
+			JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm");
+		}
+	}
+
+	private void actionFilter() {
+		// TODO Auto-generated method stub
+		tblSanPham.clearSelection(); // làm mới dòng được chọn
+		@SuppressWarnings("unchecked")
+		TableRowSorter<DefaultTableModel> sorter = (TableRowSorter<DefaultTableModel>) tblSanPham.getRowSorter();
+		RowFilter<DefaultTableModel, Object> rf = null;
+		String filter = (String) cbFilter.getSelectedItem();
+		int filterColumn = 1;
+		if (filter.equals("Tất cả")) {
+			sorter.setRowFilter(null);
+			return;
+		}
+		try {
+			rf = RowFilter.regexFilter(filter, filterColumn);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			return;
+		}
+		sorter.setRowFilter(rf);
 	}
 
 	@Override

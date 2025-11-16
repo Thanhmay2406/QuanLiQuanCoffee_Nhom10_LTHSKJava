@@ -9,6 +9,7 @@ package GUI;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,7 +30,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import DAO.KhachHang_DAO;
 import Entity.KhachHang;
@@ -52,6 +56,8 @@ public class KhachHang_GUI extends JPanel implements ActionListener, MouseListen
 	private JTable table;
 	private String[] headerTable = { "Mã KH", "Họ tên", "STĐ", "Email", "Địa chỉ", "Điểm tích lũy", "Ngày đăng ký" };
 	private KhachHang_DAO kh_dao;
+
+	private JLabel lblSearch;
 
 	public KhachHang_GUI(MainFrame mainFrame) {
 		// TODO Auto-generated constructor stub
@@ -127,15 +133,20 @@ public class KhachHang_GUI extends JPanel implements ActionListener, MouseListen
 
 		pnUp.add(pnForm, BorderLayout.CENTER);
 
-		JPanel row7 = new JPanel();
+		JPanel row7 = new JPanel(new BorderLayout());
 		btnAdd = new JButton("Thêm");
 		btnDelete = new JButton("Xóa");
 		btnUpdate = new JButton("Cập nhật");
-		row7.add(btnAdd);
-		row7.add(Box.createHorizontalStrut(10));
-		row7.add(btnDelete);
-		row7.add(Box.createHorizontalStrut(10));
-		row7.add(btnUpdate);
+		JPanel pnButtons = new JPanel();
+		pnButtons.add(btnAdd);
+		pnButtons.add(btnDelete);
+		pnButtons.add(btnUpdate);
+		row7.add(pnButtons, BorderLayout.CENTER);
+		JPanel pnSearch = new JPanel();
+		pnSearch.add(lblSearch = new JLabel("Nhập số điện thoại"));
+		pnSearch.add(txtSearch = new JTextField(10));
+		pnSearch.add(btnSearch = new JButton("Tìm kiếm"));
+		row7.add(pnSearch, BorderLayout.EAST);
 
 		pnUp.add(row7, BorderLayout.SOUTH);
 
@@ -160,6 +171,9 @@ public class KhachHang_GUI extends JPanel implements ActionListener, MouseListen
 		table.getColumnModel().getColumn(5).setPreferredWidth(120);
 		table.getColumnModel().getColumn(6).setPreferredWidth(120);
 
+		table.setAutoCreateRowSorter(true);
+		table.setRowSorter(new TableRowSorter<>(tableModel));
+
 		JScrollPane scroll = new JScrollPane(table);
 
 		scroll.setPreferredSize(new Dimension(820, 300));
@@ -170,18 +184,9 @@ public class KhachHang_GUI extends JPanel implements ActionListener, MouseListen
 
 		add(pnCenter, BorderLayout.CENTER);
 
-		JPanel pnSouth = new JPanel();
+		JPanel pnSouth = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		btnHome = new JButton("Trang chủ");
 		pnSouth.add(btnHome);
-		pnSouth.add(Box.createHorizontalStrut(50));
-		pnSouth.add(new JLabel("Nhập STĐ cần tìm: "));
-		txtSearch = new JTextField(20);
-		pnSouth.add(txtSearch);
-		btnSearch = new JButton("Tìm kiếm");
-		pnSouth.add(btnSearch);
-		pnSouth.add(Box.createHorizontalStrut(30));
-
-		pnSouth.add(Box.createHorizontalStrut(10));
 		add(pnSouth, BorderLayout.SOUTH);
 
 		loadDSKH();
@@ -241,7 +246,7 @@ public class KhachHang_GUI extends JPanel implements ActionListener, MouseListen
 			capNhat();
 			setTrangThaiMacDinh();
 		} else if (o.equals(btnSearch)) {
-			timKiem();
+			actionSearch();
 		} else if (o.equals(btnHome)) {
 			mainFrame.switchToPanel(mainFrame.KEY_DAT_BAN);
 		}
@@ -342,8 +347,36 @@ public class KhachHang_GUI extends JPanel implements ActionListener, MouseListen
 		}
 	}
 
-	public void timKiem() {
+	private void actionSearch() {
+		String strSearch = txtSearch.getText().trim();
+		if (strSearch.isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Chưa nhập số điện thoại");
+			return;
+		}
 
+		@SuppressWarnings("unchecked")
+		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>) table.getRowSorter();
+
+		if (sorter == null) {
+			sorter = new TableRowSorter<>(tableModel);
+			table.setRowSorter(sorter);
+		}
+
+		sorter.setRowFilter(new RowFilter<TableModel, Integer>() {
+			@Override
+			public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
+				String soDienThoai = entry.getStringValue(2);
+				return soDienThoai.toLowerCase().contains(strSearch.toLowerCase());
+			}
+		});
+
+		if (table.getRowCount() > 0) {
+			int viewIndex = 0;
+			table.setRowSelectionInterval(viewIndex, viewIndex);
+			table.scrollRectToVisible(table.getCellRect(viewIndex, 0, true));
+		} else {
+			JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng");
+		}
 	}
 
 	@Override

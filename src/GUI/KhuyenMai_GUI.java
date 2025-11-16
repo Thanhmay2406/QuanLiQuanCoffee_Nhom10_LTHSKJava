@@ -14,6 +14,7 @@ import java.time.ZoneId;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -54,6 +55,9 @@ public class KhuyenMai_GUI extends JPanel implements ActionListener, ComponentLi
 	private JTable tblKM;
 	private JButton btnXoa;
 	private JButton btnTrangChu;
+	private JLabel lblSearch;
+	private JTextField txtSearch;
+	private JButton btnSearch;
 
 	public KhuyenMai_GUI(MainFrame mainFrame) {
 		// TODO Auto-generated constructor stub
@@ -115,7 +119,13 @@ public class KhuyenMai_GUI extends JPanel implements ActionListener, ComponentLi
 		pnFormButtons.add(btnThem);
 		pnFormButtons.add(btnClear);
 		pnFormButtons.add(btnCapNhat);
+		pnFormButtons.add(Box.createHorizontalStrut(20));
 
+		JPanel pnSearch = new JPanel();
+		pnSearch.add(lblSearch = new JLabel("Nhập mã khuyến mãi: "));
+		pnSearch.add(txtSearch = new JTextField(10));
+		pnSearch.add(btnSearch = new JButton("Tìm kiếm"));
+		pnFormButtons.add(pnSearch);
 		JPanel pnTop = new JPanel(new BorderLayout());
 		pnTop.add(pnInput, BorderLayout.CENTER);
 		pnTop.add(pnFormButtons, BorderLayout.SOUTH);
@@ -152,6 +162,7 @@ public class KhuyenMai_GUI extends JPanel implements ActionListener, ComponentLi
 		btnCapNhat.addActionListener(this);
 		btnXoa.addActionListener(this);
 		btnTrangChu.addActionListener(this);
+		btnSearch.addActionListener(this);
 
 		tblKM.getSelectionModel().addListSelectionListener(e -> {
 			if (!e.getValueIsAdjusting())
@@ -175,6 +186,8 @@ public class KhuyenMai_GUI extends JPanel implements ActionListener, ComponentLi
 			capNhatKhuyenMai();
 		} else if (o.equals(btnTrangChu)) {
 			mainFrame.switchToPanel(mainFrame.KEY_DAT_BAN);
+		} else if (o.equals(btnSearch)) {
+
 		}
 	}
 
