@@ -192,6 +192,7 @@ public class SanPham_GUI extends JPanel implements ActionListener, ComponentList
 		btnTrangChu.addActionListener(this);
 		cbFilter.addActionListener(this);
 		btnSearch.addActionListener(this);
+		addComponentListener(this);
 
 		tblSanPham.getSelectionModel().addListSelectionListener(e -> {
 			if (!e.getValueIsAdjusting()) {
@@ -334,7 +335,7 @@ public class SanPham_GUI extends JPanel implements ActionListener, ComponentList
 		txtHienTenAnh.setText("");
 		cboDVT.setSelectedIndex(0);
 		cboTrangThai.setSelectedIndex(0);
-
+		txtSearch.setText("");
 		if (cboLoaiSP.getItemCount() > 0)
 			cboLoaiSP.setSelectedIndex(0);
 
@@ -479,21 +480,27 @@ public class SanPham_GUI extends JPanel implements ActionListener, ComponentList
 			sorter = new TableRowSorter<>(model);
 			tblSanPham.setRowSorter(sorter);
 		}
-
-		sorter.setRowFilter(new RowFilter<TableModel, Integer>() {
+		RowFilter<TableModel, Integer> searchFilter = new RowFilter<TableModel, Integer>() {
 			@Override
 			public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
-				String tenSP = entry.getStringValue(2);
+				String tenSP = entry.getStringValue(1);
 				return tenSP.toLowerCase().contains(strSearch.toLowerCase());
 			}
-		});
+		};
+
+		sorter.setRowFilter(searchFilter);
 
 		if (tblSanPham.getRowCount() > 0) {
 			int viewIndex = 0;
 			tblSanPham.setRowSelectionInterval(viewIndex, viewIndex);
 			tblSanPham.scrollRectToVisible(tblSanPham.getCellRect(viewIndex, 0, true));
 		} else {
-			JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm");
+			JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm nào có tên '" + strSearch + "'", "Thông báo",
+					JOptionPane.INFORMATION_MESSAGE);
+
+			sorter.setRowFilter(null);
+			txtSearch.setText("");
+			tblSanPham.clearSelection();
 		}
 	}
 
