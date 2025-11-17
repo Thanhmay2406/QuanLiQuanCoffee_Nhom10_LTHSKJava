@@ -366,7 +366,6 @@ public class Menu_GUI extends JPanel implements ActionListener, ComponentListene
 
 		} else if (o == btnTrangChu) {
 			mainFrame.switchToPanel(MainFrame.KEY_DAT_BAN);
-			System.out.println("Trang chủ");
 
 		} else if (o == btnXoa) {
 			int[] selected_rows = orderTable.getSelectedRows();

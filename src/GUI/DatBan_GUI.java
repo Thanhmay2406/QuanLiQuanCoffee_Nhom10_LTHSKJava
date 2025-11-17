@@ -162,7 +162,7 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 			if (trangThai.equals("Chưa sử dụng")) {
 				try {
 					pdb_dao.capNhatTrangThaiPhieu(maPhieu, 2); // trangThai = 1 (đang chờ)
-//					mainFrame.switchToPanel(mainFrame.KEY_BAN_HANG);
+					mainFrame.switchToPanel(mainFrame.KEY_BAN_HANG);
 					modelTabel.setValueAt("Đang sử dụng", selectedRow, 6); // set "Đã sử dụng" khi nhấn thanh toán thành
 																			// công
 					// lấy maBan, maPDB lưu vào trung gian MainFrame
