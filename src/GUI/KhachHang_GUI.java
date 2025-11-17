@@ -208,6 +208,7 @@ public class KhachHang_GUI extends JPanel implements ActionListener, MouseListen
 			if (sorter != null) {
 				sorter.setRowFilter(null);
 			}
+
 			tableModel.setRowCount(0);
 			for (KhachHang it : dsKhachHang) {
 				tableModel.addRow(new Object[] { it.getMaKhachHang(), it.getHoTen(), it.getSoDienThoai(), it.getEmail(),

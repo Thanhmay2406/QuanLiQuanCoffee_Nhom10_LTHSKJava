@@ -106,23 +106,25 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 		this.mainFrame = mainFrame;
 		setLayout(new BorderLayout());
 
+		// pnNorth
 		JPanel pnNorth = new JPanel();
 		JLabel lblTitle = new JLabel("Tạo Hóa Đơn");
 		lblTitle.setFont(new Font("Arial", Font.BOLD, 20));
 		pnNorth.add(lblTitle);
 		add(pnNorth, BorderLayout.NORTH);
 
+		// pnCenter
 		JSplitPane pnCenter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		pnCenter.setResizeWeight(0.4);
-		JPanel pnTichDiem = buildTichDiemPanel();
+		JPanel pnTichDiem = pnTichDiem();
 		pnCenter.setLeftComponent(pnTichDiem);
-		JPanel pnHoaDon = buildHoaDonPanel();
+		JPanel pnHoaDon = pnHoaDon();
 		pnCenter.setRightComponent(pnHoaDon);
 
 		add(pnCenter, BorderLayout.CENTER);
 		addListeners();
 
-		loadDataToComboBox();
+		loadDataToComboBoxPTTT();
 		loadDataToComboBoxKhuyenMai();
 
 		setTrangThaiMacDinh();
@@ -138,10 +140,10 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 		String maHDMoi = taoMaHoaDon();
 		this.hoaDonHienTai.setMaHoaDon(maHDMoi);
 
-		refreshUIFromEntity();
+		lamMoiGiaoDienVoiHoaDon();
 	}
 
-	private void refreshUIFromEntity() {
+	private void lamMoiGiaoDienVoiHoaDon() {
 		if (this.hoaDonHienTai == null) {
 			setTrangThaiMacDinh();
 			return;
@@ -171,12 +173,14 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 		}
 
 		hoadon_model.setRowCount(0);
+
 		for (ChiTietHoaDon ct : this.hoaDonHienTai.getDsChiTiet()) {
 			hoadon_model.addRow(new Object[] { ct.getSanPham().getTenSanPham(), ct.getSoLuong(),
 					ct.getDonGia().doubleValue(), ct.tinhThanhTien().doubleValue() });
 		}
 
 		tichDiemModel.setRowCount(0);
+
 		KhachHang kh = this.hoaDonHienTai.getKhachHang();
 		if (kh != null) {
 			tichDiemModel.addRow(new Object[] { kh.getMaKhachHang(), kh.getHoTen(), kh.getDiemTichLuy() });
@@ -215,7 +219,7 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 	}
 
 	// pnTichDiem
-	private JPanel buildTichDiemPanel() {
+	private JPanel pnTichDiem() {
 		JPanel pnTichDiem = new JPanel(new BorderLayout(10, 10));
 		pnTichDiem.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -255,7 +259,7 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 	}
 
 	// pnHoaDon
-	private JPanel buildHoaDonPanel() {
+	private JPanel pnHoaDon() {
 		JPanel pnHoaDon = new JPanel(new BorderLayout(10, 10));
 		pnHoaDon.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -388,7 +392,7 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 		return pnHoaDon;
 	}
 
-	private void loadDataToComboBox() {
+	private void loadDataToComboBoxPTTT() {
 		ArrayList<PhuongThucThanhToan> dsPTTT = (ArrayList<PhuongThucThanhToan>) pttt_dao.layTatCa();
 		DefaultComboBoxModel<String> ptttModel = new DefaultComboBoxModel<>();
 		for (PhuongThucThanhToan pttt : dsPTTT) {
@@ -411,7 +415,7 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 		this.hoaDonHienTai = new HoaDon();
 		this.hoaDonHienTai.setMaHoaDon(taoMaHoaDon());
 		this.hoaDonHienTai.setNgayTao(LocalDate.now());
-		refreshUIFromEntity();
+		lamMoiGiaoDienVoiHoaDon();
 		txtTichDiemSearch.setText("");
 	}
 
@@ -442,7 +446,7 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 			String txtSearch = txtTichDiemSearch.getText().trim();
 			this.hoaDonHienTai.setTienGiamTuDiem(BigDecimal.ZERO);
 			searchTichDiem(txtSearch);
-			refreshUIFromEntity();
+			lamMoiGiaoDienVoiHoaDon();
 		} else if (o.equals(btnThanhToan)) {
 			xuLyThanhToan();
 
@@ -474,7 +478,7 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 			JOptionPane.showMessageDialog(this,
 					String.format("Đã áp dụng điểm tích lũy vào hóa đơn.", tienGiamTuDiemToiDa, tienGiamTuDiemToiDa));
 
-			refreshUIFromEntity();
+			lamMoiGiaoDienVoiHoaDon();
 		} else if (o == btnTaoTaiKhoan) {
 			mainFrame.switchToPanel(mainFrame.KEY_KHACH_HANG);
 
@@ -487,7 +491,7 @@ public class HoaDon_GUI extends JPanel implements ActionListener {
 				KhuyenMai km = khuyenmai_dao.timKhuyenMaiTheoTen(selected);
 				this.hoaDonHienTai.setKhuyenMai(km);
 			}
-			refreshUIFromEntity();
+			lamMoiGiaoDienVoiHoaDon();
 
 		} else if (o.equals(cbPTTT)) {
 			String selected = cbPTTT.getSelectedItem().toString().trim();
