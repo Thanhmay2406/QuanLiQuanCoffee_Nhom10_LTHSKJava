@@ -61,12 +61,12 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 		this.pdb_dao = new PhieuDatBan_DAO();
 		this.ctdb_dao = new ChiTietDatBan_DAO();
 		this.setLayout(new BorderLayout());
-		// -------North--------
+		// pnNorth
 		JPanel pnNorth = new JPanel();
 		pnNorth.add(title = new JLabel("Quản lý Đặt bàn"));
 		Font fnt = new Font("Arial", Font.BOLD, 20);
 		title.setFont(fnt);
-		// --------Center--------
+		// pnCenter
 		JPanel pnCenter = new JPanel();
 		pnCenter.setLayout(new BoxLayout(pnCenter, BoxLayout.Y_AXIS));
 		JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
@@ -95,7 +95,7 @@ public class DatBan_GUI extends JPanel implements ActionListener, ComponentListe
 		tableData.add(sp, BorderLayout.CENTER);
 		pnCenter.add(tableData, BorderLayout.CENTER);
 
-		// -------South---------
+		// pnSouth
 		JPanel pnSouth = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		pnSouth.add(btnHuyPhieu = new JButton("Hủy phiếu"));
 		pnSouth.add(Box.createHorizontalStrut(10));
